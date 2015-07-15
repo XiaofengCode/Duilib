@@ -35,12 +35,15 @@ namespace DuiLib
 		virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 	protected:
 		virtual CDuiString GetStringTableFile();
+		virtual CDuiString GetStringTableLang();
+		virtual LPCTSTR LoadString(LPCTSTR lpszID);
 		virtual CDuiString GetSkinFolder() = 0;
 		virtual CDuiString GetSkinFile() = 0;
 		virtual LPCTSTR GetWindowClassName(void) const = 0 ;
 		virtual LRESULT ResponseDefaultKeyEvent(WPARAM wParam);
 
 		CPaintManagerUI m_PaintManager;
+		CStringTable m_StringTable;
 		static LPBYTE m_lpResourceZIPBuffer;
 
 	public:

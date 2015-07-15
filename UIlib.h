@@ -82,6 +82,7 @@
 #include "Core/UIControl.h"
 #include "Core/UIContainer.h"
 #include "Core/UIMarkup.h"
+#include "Core/StringTable.h"
 #include "Core/UIDlgBuilder.h"
 #include "Core/UIRender.h"
 #include "Core/UITimer.h"

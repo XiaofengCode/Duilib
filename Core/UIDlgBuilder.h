@@ -25,10 +25,13 @@ public:
 
 	void SetAttrbuteCallBack(IDialogBuilderAttrbuteCallback * pAttrbuteCallback = NULL);
 
-    CControlUI* Create(STRINGorID xml, LPCTSTR type = NULL, IDialogBuilderCallback* pCallback = NULL,
+    CControlUI* Create(STRINGorID xml, STRINGorID siStringTableXml, LPCTSTR lpszLang, LPCTSTR type = NULL, IDialogBuilderCallback* pCallback = NULL,
         CPaintManagerUI* pManager = NULL, CControlUI* pParent = NULL);
 
-    CControlUI* Create(IDialogBuilderCallback* pCallback = NULL, CPaintManagerUI* pManager = NULL,
+	CControlUI* Create(STRINGorID xml, CStringTable* pStringTable, LPCTSTR type = NULL, IDialogBuilderCallback* pCallback = NULL,
+		CPaintManagerUI* pManager = NULL, CControlUI* pParent = NULL);
+
+    CControlUI* Create(CStringTable* pStringTable, IDialogBuilderCallback* pCallback = NULL, CPaintManagerUI* pManager = NULL,
         CControlUI* pParent = NULL);
 
     CMarkup* GetMarkup();
@@ -36,12 +39,13 @@ public:
     void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
     void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;
 private:
-    CControlUI* _Parse(CMarkupNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
+    CControlUI* _Parse(CStringTable* pStringTable, CMarkupNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
 
     CMarkup m_xml;
     IDialogBuilderCallback* m_pCallback;
     LPCTSTR m_pstrtype;
 	IDialogBuilderAttrbuteCallback * m_pAttrbuteCallback;
+	CStringTable m_StringTable;
 };
 
 } // namespace DuiLib
