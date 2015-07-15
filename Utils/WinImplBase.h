@@ -31,7 +31,10 @@ namespace DuiLib
 		DUI_DECLARE_MESSAGE_MAP()
 		virtual void OnClick(TNotifyUI& msg);
 		virtual CControlUI* GetDlgItem(LPCTSTR lpszName);
+		virtual CDuiString GetDlgItemText(LPCTSTR lpszCtrlName);
+		virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 	protected:
+		virtual CDuiString GetStringTableFile();
 		virtual CDuiString GetSkinFolder() = 0;
 		virtual CDuiString GetSkinFile() = 0;
 		virtual LPCTSTR GetWindowClassName(void) const = 0 ;

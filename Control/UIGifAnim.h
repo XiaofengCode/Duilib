@@ -9,7 +9,7 @@ namespace DuiLib
 
 #define EVENT_TIEM_ID	100
 
-	class UILIB_API CGifAnimUI : public CControlUI
+	class UILIB_API CGifAnimUI : public CLabelUI
 	{
 	public:
 		CGifAnimUI(void);

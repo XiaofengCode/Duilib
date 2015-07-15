@@ -121,5 +121,5 @@
 #include "Control/UIFlash.h"
 
 #include "Control/UIMenu.h"
-#include "Control/UISliderTabLayout.h"
+#include "Layout/UISliderTabLayout.h"
 #include "Control/UIIpAddress.h"

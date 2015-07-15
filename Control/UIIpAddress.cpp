@@ -4,7 +4,9 @@
 
 DWORD GetDefaultIpAddress()   
 {   
-	DWORD dwIP = MAKEIPADDRESS(127, 0, 0, 1);
+	//Windows跟Socket使用高低位相反
+	DWORD dwIP = inet_addr("127.0.0.1");
+	
 	return dwIP;
 }
 
@@ -66,7 +68,8 @@ namespace DuiLib
 		if (m_pOwner->GetText().IsEmpty())
 			m_pOwner->m_dwIP = GetDefaultIpAddress();
 		
-		::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
+		SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&m_pOwner->m_dwIP));
+		//::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
 		::ShowWindow(m_hWnd, SW_SHOW);
 		::SetFocus(m_hWnd);
 		
@@ -178,7 +181,11 @@ namespace DuiLib
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		if (m_pOwner->m_nIPUpdateFlag == IP_NONE)
 		{
-			::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&m_pOwner->m_dwIP);
+			//Windows控件的IP地址和Socket使用的相反，所以要根据字符串转换一下
+			char szIp[32] = {0};
+			::SendMessageA(m_hWnd, WM_GETTEXT, sizeof(szIp), (LPARAM)szIp);
+			m_pOwner->m_dwIP = inet_addr(szIp);
+			//::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&m_pOwner->m_dwIP);
 			m_pOwner->m_nIPUpdateFlag = IP_UPDATE;
 			m_pOwner->UpdateText();
 		}
@@ -256,7 +263,7 @@ namespace DuiLib
 			TCHAR szIP[MAX_PATH] = {0};
 			in_addr addr;
 			addr.S_un.S_addr = m_dwIP;
-			_stprintf(szIP, _T("%3d.%3d.%3d.%3d"), addr.S_un.S_un_b.s_b4, addr.S_un.S_un_b.s_b3, addr.S_un.S_un_b.s_b2, addr.S_un.S_un_b.s_b1);
+			_stprintf(szIP, _T("%3d.%3d.%3d.%3d"), addr.S_un.S_un_b.s_b1, addr.S_un.S_un_b.s_b2, addr.S_un.S_un_b.s_b3, addr.S_un.S_un_b.s_b4);
 			SetText(szIP);
 		}
 	}

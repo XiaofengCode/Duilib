@@ -496,7 +496,7 @@ namespace DuiLib
 		CDuiString sCtrlName = msg.pSender->GetName();
 		if( sCtrlName == _T("btn_Close") )
 		{
-			Close();
+			Close(IDCLOSE);
 			return; 
 		}
 		else if( sCtrlName == _T("btn_MinSize"))
@@ -525,6 +525,30 @@ namespace DuiLib
 	CControlUI* WindowImplBase::GetDlgItem( LPCTSTR lpszName )
 	{
 		return m_PaintManager.FindControl(lpszName);
+	}
+
+	void WindowImplBase::SetDlgItemText( LPCTSTR lpszCtrlName, LPCTSTR lpszText )
+	{
+		CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
+		if (pCtrl)
+		{
+			pCtrl->SetText(lpszText);
+		}
+	}
+
+	CDuiString WindowImplBase::GetDlgItemText( LPCTSTR lpszCtrlName )
+	{
+		CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
+		if (pCtrl)
+		{
+			return pCtrl->GetText();
+		}
+		return _T("");
+	}
+
+	DuiLib::CDuiString WindowImplBase::GetStringTableFile()
+	{
+		return _T("String.xml");
 	}
 
 }

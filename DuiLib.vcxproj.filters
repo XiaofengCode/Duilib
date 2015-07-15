@@ -165,14 +165,14 @@
     <ClCompile Include="Utils\UIShadow.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Control\UISliderTabLayout.cpp">
-      <Filter>Source Files\Control</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\DuiTrayIcon.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Control\UIIpAddress.cpp">
       <Filter>Source Files\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\UISliderTabLayout.cpp">
+      <Filter>Source Files\Layout</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,14 +314,14 @@
     <ClInclude Include="Utils\UIShadow.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Control\UISliderTabLayout.h">
-      <Filter>Header Files\Control</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\DuiTrayIcon.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Control\UIIpAddress.h">
       <Filter>Header Files\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\UISliderTabLayout.h">
+      <Filter>Header Files\Layout</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
