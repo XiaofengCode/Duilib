@@ -318,6 +318,7 @@ namespace DuiLib
 	{
 		m_sText = pstrText;
 		if( m_pWindow != NULL ) Edit_SetText(*m_pWindow, m_sText);
+		GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
 		Invalidate();
 	}
 

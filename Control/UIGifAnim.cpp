@@ -72,7 +72,7 @@ namespace DuiLib
 	LPVOID CGifAnimUI::GetInterface( LPCTSTR pstrName )
 	{
 		if( _tcscmp(pstrName, DUI_CTR_GIFANIM) == 0 ) return static_cast<CGifAnimUI*>(this);
-		return CControlUI::GetInterface(pstrName);
+		return CLabelUI::GetInterface(pstrName);
 	}
 
 	void CGifAnimUI::DoInit()
@@ -88,6 +88,7 @@ namespace DuiLib
 			InitGifImage();
 		}
 		DrawFrame( hDC );
+		PaintText(hDC);
 	}
 
 	void CGifAnimUI::DoEvent( TEventUI& event )
@@ -98,7 +99,7 @@ namespace DuiLib
 
 	void CGifAnimUI::SetVisible(bool bVisible /* = true */)
 	{
-		CControlUI::SetVisible(bVisible);
+		CLabelUI::SetVisible(bVisible);
 		if (bVisible)
 			PlayGif();
 		else
@@ -115,7 +116,7 @@ namespace DuiLib
 			SetAutoSize(_tcscmp(pstrValue, _T("true")) == 0);
 		}
 		else
-			CControlUI::SetAttribute(pstrName, pstrValue);
+			CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
 	void CGifAnimUI::SetBkImage(LPCTSTR pStrImage)
