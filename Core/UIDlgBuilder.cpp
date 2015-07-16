@@ -133,7 +133,8 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
         }
 
         pstrClass = root.GetName();
-        if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
+		if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
+			CDuiString strStringTable, strLang;
             if( pManager->GetPaintWindow() ) {
                 int nAttributes = root.GetAttributeCount();
                 for( int i = 0; i < nAttributes; i++ ) {
@@ -271,10 +272,21 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if(_tcscmp(pstrName, _T("titile")) == 0 ) {
 						pManager->SetWindowTitile(pstrValue);
 					}
+					else if(_tcscmp(pstrName, _T("stringtable")) == 0 ) {
+						strStringTable = pstrValue;
+					}
+					else if(_tcscmp(pstrName, _T("stringtablelang")) == 0 ) {
+						strLang = pstrValue;
+					}
                 }
             }
+			if (strStringTable.GetLength())
+			{
+				pManager->GetStringTable().Load((LPCTSTR)strStringTable, 0, strLang);
+			}
         }
     }
+	
     return _Parse(&root, pParent, pManager);
 }
 

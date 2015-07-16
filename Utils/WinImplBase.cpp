@@ -385,13 +385,10 @@ namespace DuiLib
 		if (GetResourceType()==UILIB_RESOURCE)
 		{
 			STRINGorID xml(_ttoi(GetSkinFile().GetData()));
-			STRINGorID xmlStringTable(_ttoi(GetStringTableFile().GetData()));
-			m_PaintManager.GetStringTable().Load(xmlStringTable, _T("xml"), GetStringTableLang());
 			pRoot = builder.Create(xml, _T("xml"), this, &m_PaintManager);
 		}
 		else
 		{
-			m_PaintManager.GetStringTable().Load(GetStringTableFile().GetData(), 0, GetStringTableLang());
 			pRoot = builder.Create(GetSkinFile().GetData(), (UINT)0, this, &m_PaintManager);
 		}
 		ASSERT(pRoot);
@@ -552,19 +549,9 @@ namespace DuiLib
 		return _T("");
 	}
 
-	DuiLib::CDuiString WindowImplBase::GetStringTableFile()
-	{
-		return _T("String.xml");
-	}
-
-	LPCTSTR WindowImplBase::GetStringTableLang()
-	{
-		return NULL;
-	}
-
 	LPCTSTR WindowImplBase::LoadString( LPCTSTR lpszID )
 	{
-		return m_PaintManager.m_StringTable.GetString(lpszID);
+		return m_PaintManager.GetStringTable().GetString(lpszID);
 	}
 
 }
