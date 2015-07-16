@@ -345,6 +345,7 @@ namespace DuiLib
 			m_PaintManager.SetResourcePath(strResourcePath.GetData());
 		}
 
+
 		switch(GetResourceType())
 		{
 		case UILIB_ZIP:
@@ -387,7 +388,9 @@ namespace DuiLib
 			pRoot = builder.Create(xml, _T("xml"), this, &m_PaintManager);
 		}
 		else
+		{
 			pRoot = builder.Create(GetSkinFile().GetData(), (UINT)0, this, &m_PaintManager);
+		}
 		ASSERT(pRoot);
 		if (pRoot==NULL)
 		{
@@ -546,9 +549,9 @@ namespace DuiLib
 		return _T("");
 	}
 
-	DuiLib::CDuiString WindowImplBase::GetStringTableFile()
+	LPCTSTR WindowImplBase::LoadString( LPCTSTR lpszID )
 	{
-		return _T("String.xml");
+		return m_PaintManager.GetStringTable().GetString(lpszID);
 	}
 
 }

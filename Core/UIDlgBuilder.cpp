@@ -12,36 +12,34 @@ void CDialogBuilder::SetAttrbuteCallBack( IDialogBuilderAttrbuteCallback * pAttr
 	m_pAttrbuteCallback = pAttrbuteCallback;
 }
 
-CControlUI* CDialogBuilder::Create(STRINGorID xml, LPCTSTR type, IDialogBuilderCallback* pCallback, 
-                                   CPaintManagerUI* pManager, CControlUI* pParent)
+CControlUI* CDialogBuilder::Create( STRINGorID xml, LPCTSTR type /*= NULL*/, IDialogBuilderCallback* pCallback /*= NULL*/, CPaintManagerUI* pManager /*= NULL*/, CControlUI* pParent /*= NULL*/ )
 {
 	//资源ID为0-65535，两个字节；字符串指针为4个字节
 	//字符串以<开头认为是XML字符串，否则认为是XML文件
 
-    if( HIWORD(xml.m_lpstr) != NULL ) {
-        if( *(xml.m_lpstr) == _T('<') ) {
-            if( !m_xml.Load(xml.m_lpstr) ) return NULL;
-        }
-        else {
-            if( !m_xml.LoadFromFile(xml.m_lpstr) ) return NULL;
-        }
-    }
-    else {
-        HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
-        if( hResource == NULL ) return NULL;
-        HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
-        if( hGlobal == NULL ) {
-            FreeResource(hResource);
-            return NULL;
-        }
+	if( HIWORD(xml.m_lpstr) != NULL ) {
+		if( *(xml.m_lpstr) == _T('<') ) {
+			if( !m_xml.Load(xml.m_lpstr) ) return NULL;
+		}
+		else {
+			if( !m_xml.LoadFromFile(xml.m_lpstr) ) return NULL;
+		}
+	}
+	else {
+		HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
+		if( hResource == NULL ) return NULL;
+		HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
+		if( hGlobal == NULL ) {
+			FreeResource(hResource);
+			return NULL;
+		}
 
-        m_pCallback = pCallback;
-        if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) return NULL;
-        ::FreeResource(hResource);
-        m_pstrtype = type;
-    }
-
-    return Create(pCallback, pManager, pParent);
+		m_pCallback = pCallback;
+		if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) return NULL;
+		::FreeResource(hResource);
+		m_pstrtype = type;
+	}
+	return Create(pCallback, pManager, pParent);
 }
 
 CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintManagerUI* pManager, CControlUI* pParent)
@@ -65,7 +63,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                 DWORD mask = 0;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
-                    pstrValue = node.GetAttributeValue(i);
+                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
                     if( _tcscmp(pstrName, _T("name")) == 0 ) {
                         pImageName = pstrValue;
                     }
@@ -89,7 +87,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                 bool defaultfont = false;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
-                    pstrValue = node.GetAttributeValue(i);
+                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
                     if( _tcscmp(pstrName, _T("name")) == 0 ) {
                         pFontName = pstrValue;
                     }
@@ -120,7 +118,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                 LPCTSTR pControlValue = NULL;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
-                    pstrValue = node.GetAttributeValue(i);
+                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
                     if( _tcscmp(pstrName, _T("name")) == 0 ) {
                         pControlName = pstrValue;
                     }
@@ -135,12 +133,13 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
         }
 
         pstrClass = root.GetName();
-        if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
+		if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
+			CDuiString strStringTable, strLang;
             if( pManager->GetPaintWindow() ) {
                 int nAttributes = root.GetAttributeCount();
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = root.GetAttributeName(i);
-                    pstrValue = root.GetAttributeValue(i);
+                    pstrValue = CDuiStringTable::FormatString(pManager, root.GetAttributeValue(i));
                     if( _tcscmp(pstrName, _T("size")) == 0 ) {
                         LPTSTR pstr = NULL;
                         int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
@@ -273,10 +272,21 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if(_tcscmp(pstrName, _T("titile")) == 0 ) {
 						pManager->SetWindowTitile(pstrValue);
 					}
+					else if(_tcscmp(pstrName, _T("stringtable")) == 0 ) {
+						strStringTable = pstrValue;
+					}
+					else if(_tcscmp(pstrName, _T("stringtablelang")) == 0 ) {
+						strLang = pstrValue;
+					}
                 }
             }
+			if (strStringTable.GetLength())
+			{
+				pManager->GetStringTable().Load((LPCTSTR)strStringTable, 0, strLang);
+			}
         }
     }
+	
     return _Parse(&root, pParent, pManager);
 }
 
@@ -306,15 +316,23 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 
         CControlUI* pControl = NULL;
         if( _tcscmp(pstrClass, _T("Include")) == 0 ) {
-            if( !node.HasAttributes() ) continue;
+            if( !node.HasAttributes() ) 
+			{
+				continue;
+			}
             int count = 1;
             LPTSTR pstr = NULL;
             TCHAR szValue[500] = { 0 };
             SIZE_T cchLen = lengthof(szValue) - 1;
             if ( node.GetAttributeValue(_T("count"), szValue, cchLen) )
+			{
                 count = _tcstol(szValue, &pstr, 10);
+			}
             cchLen = lengthof(szValue) - 1;
-            if ( !node.GetAttributeValue(_T("source"), szValue, cchLen) ) continue;
+            if ( !node.GetAttributeValue(_T("source"), szValue, cchLen) ) 
+			{
+				continue;
+			}
             for ( int i = 0; i < count; i++ ) {
                 CDialogBuilder builder;
                 if( m_pstrtype != NULL ) { // 使用资源dll，从资源中读取
@@ -354,13 +372,13 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 				// Set ordinary attributes
 				int nAttributes = node.GetAttributeCount();
 				for( int i = 0; i < nAttributes; i++ ) {
-					pNode->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
+					pNode->SetAttribute(node.GetAttributeName(i), CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i)));
 				}
 			}
 
 			//检索子节点及附加控件
 			if(node.HasChildren()){
-				CControlUI* pSubControl = _Parse(&node,pNode,pManager);
+				CControlUI* pSubControl = _Parse(&node, pNode, pManager);
 				if(pSubControl && _tcscmp(pSubControl->GetClass(),_T("TreeNodeUI")) != 0)
 				{
 					// 					pSubControl->SetFixedWidth(30);
@@ -509,12 +527,13 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
             int nAttributes = node.GetAttributeCount();
             for( int i = 0; i < nAttributes; i++ ) {
 				if (m_pAttrbuteCallback){
-					if (m_pAttrbuteCallback->SetAttribute(pControl, node.GetAttributeName(i), node.GetAttributeValue(i))){
-						pControl->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
+					if (m_pAttrbuteCallback->SetAttribute(pControl, node.GetAttributeName(i), CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i))))
+					{
+						pControl->SetAttribute(node.GetAttributeName(i), CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i)));
 					}
 				}
 				else{
-					pControl->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
+					pControl->SetAttribute(node.GetAttributeName(i), CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i)));
 				}
             }
         }

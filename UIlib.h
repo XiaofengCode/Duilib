@@ -77,6 +77,7 @@
 #include "Utils/UIDelegate.h"
 #include "Utils/DuiTrayIcon.h"
 #include "Core/UIDefine.h"
+#include "Core/UIStringTable.h"
 #include "Core/UIManager.h"
 #include "Core/UIBase.h"
 #include "Core/UIControl.h"

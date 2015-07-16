@@ -329,6 +329,7 @@ public:
 
 	CDuiTrayIcon& GetTrayObject(){return m_DuiTray;}
 	void SetWindowTitile(LPCTSTR lpTitle);
+	CDuiStringTable& GetStringTable(){return m_StringTable;}
 private:
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
@@ -430,6 +431,7 @@ private:
 public:
 	static CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;
+	CDuiStringTable m_StringTable;
 };
 
 } // namespace DuiLib
