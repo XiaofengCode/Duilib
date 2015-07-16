@@ -68,7 +68,7 @@ namespace DuiLib
 		if (m_pOwner->GetText().IsEmpty())
 			m_pOwner->m_dwIP = GetDefaultIpAddress();
 		
-		SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&m_pOwner->m_dwIP));
+		::SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&m_pOwner->m_dwIP));
 		//::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
 		::ShowWindow(m_hWnd, SW_SHOW);
 		::SetFocus(m_hWnd);

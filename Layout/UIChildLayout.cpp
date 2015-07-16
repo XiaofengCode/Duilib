@@ -13,7 +13,7 @@ namespace DuiLib
 		if (!m_pstrXMLFile.IsEmpty())
 		{
 			CDialogBuilder builder;
-			CContainerUI* pChildWindow = static_cast<CContainerUI*>(builder.Create(m_pstrXMLFile.GetData(), m_strStringTableXMLFile.GetData(), m_strLang, (UINT)0, NULL, m_pManager));
+			CContainerUI* pChildWindow = static_cast<CContainerUI*>(builder.Create(m_pstrXMLFile.GetData(), (UINT)0, NULL, m_pManager));
 			if (pChildWindow)
 			{
 				this->Add(pChildWindow);
@@ -29,42 +29,18 @@ namespace DuiLib
 	{
 		if( _tcscmp(pstrName, _T("xmlfile")) == 0 )
 			SetChildLayoutXML(pstrValue);
-		else if( _tcscmp(pstrName, _T("stringtablefile")) == 0 )
-			SetChildStringTableXML(pstrValue);
-		else if( _tcscmp(pstrName, _T("stringtablelang")) == 0 )
-			SetChildStringTableLang(pstrValue);
 		else
 			CContainerUI::SetAttribute(pstrName,pstrValue);
 	}
 
-	void CChildLayoutUI::SetChildLayoutXML( CDuiString pXML )
+	void CChildLayoutUI::SetChildLayoutXML( DuiLib::CDuiString pXML )
 	{
 		m_pstrXMLFile=pXML;
 	}
 
-	CDuiString CChildLayoutUI::GetChildLayoutXML()
+	DuiLib::CDuiString CChildLayoutUI::GetChildLayoutXML()
 	{
 		return m_pstrXMLFile;
-	}
-
-	void CChildLayoutUI::SetChildStringTableXML( CDuiString pXML )
-	{
-		m_strStringTableXMLFile=pXML;
-	}
-
-	CDuiString CChildLayoutUI::GetChildStringTableXML()
-	{
-		return m_strStringTableXMLFile;
-	}
-
-	void CChildLayoutUI::SetChildStringTableLang( CDuiString strLan )
-	{
-		m_strLang=strLan;
-	}
-
-	CDuiString CChildLayoutUI::GetChildStringTableLang()
-	{
-		return m_strLang;
 	}
 
 	LPVOID CChildLayoutUI::GetInterface( LPCTSTR pstrName )

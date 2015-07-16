@@ -174,7 +174,7 @@
     <ClCompile Include="Layout\UISliderTabLayout.cpp">
       <Filter>Source Files\Layout</Filter>
     </ClCompile>
-    <ClCompile Include="Core\StringTable.cpp">
+    <ClCompile Include="Core\UIStringTable.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,7 +326,7 @@
     <ClInclude Include="Layout\UISliderTabLayout.h">
       <Filter>Header Files\Layout</Filter>
     </ClInclude>
-    <ClInclude Include="Core\StringTable.h">
+    <ClInclude Include="Core\UIStringTable.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

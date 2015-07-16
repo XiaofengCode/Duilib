@@ -117,8 +117,7 @@ void CMenuUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 CMenuWnd::CMenuWnd():
 m_pOwner(NULL),
 m_pLayout(),
-m_xml(_T("")),
-m_xmlStringTable(_T(""))
+m_xml(_T(""))
 {
 	m_dwAlignment = eMenuAlignment_Left | eMenuAlignment_Top;
 }
@@ -156,7 +155,7 @@ BOOL CMenuWnd::Receive(ContextMenuParam param)
 	return TRUE;
 }
 
-void CMenuWnd::Init(CMenuElementUI* pOwner, STRINGorID xml, STRINGorID xmlStringTable, LPCTSTR lpszLang, POINT point,
+void CMenuWnd::Init(CMenuElementUI* pOwner, STRINGorID xml, POINT point,
 					CPaintManagerUI* pMainPaintManager, std::map<CDuiString,bool>* pMenuCheckInfo/* = NULL*/,
 					DWORD dwAlignment/* = eMenuAlignment_Left | eMenuAlignment_Top*/)
 {
@@ -165,11 +164,6 @@ void CMenuWnd::Init(CMenuElementUI* pOwner, STRINGorID xml, STRINGorID xmlString
     m_pOwner = pOwner;
     m_pLayout = NULL;
 	m_xml = xml;
-	m_xmlStringTable = xmlStringTable;
-	if (lpszLang)
-		m_strStringTableLang = lpszLang;
-	else
-		m_strStringTableLang = _T("");
 	m_dwAlignment = dwAlignment;
 
 	// 如果是一级菜单的创建
@@ -386,7 +380,7 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 		CDialogBuilder builder;
 
-		CControlUI* pRoot = builder.Create(m_xml, m_xmlStringTable, m_strStringTableLang, UINT(0), this, &m_pm);
+		CControlUI* pRoot = builder.Create(m_xml,UINT(0), this, &m_pm);
 		m_pm.GetShadow()->ShowShadow(false);
 		m_pm.AttachDialog(pRoot);
 		m_pm.AddNotifier(this);
@@ -824,7 +818,7 @@ void CMenuElementUI::CreateMenuWnd()
 	param.wParam = 2;
 	CMenuWnd::GetGlobalContextMenuObserver().RBroadcast(param);
 
-	m_pWindow->Init(static_cast<CMenuElementUI*>(this), _T(""), _T(""), NULL, CDuiPoint(), NULL);
+	m_pWindow->Init(static_cast<CMenuElementUI*>(this), _T(""), CDuiPoint(), NULL);
 }
 
 void CMenuElementUI::SetLineType()

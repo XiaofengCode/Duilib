@@ -552,7 +552,7 @@
     <ClCompile Include="Control\UIIpAddress.cpp" />
     <ClCompile Include="Control\UIMenu.cpp" />
     <ClCompile Include="Control\UIProgressButton.cpp" />
-    <ClCompile Include="Core\StringTable.cpp" />
+    <ClCompile Include="Core\UIStringTable.cpp" />
     <ClCompile Include="Core\UITimer.cpp" />
     <ClCompile Include="Layout\UISliderTabLayout.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -643,7 +643,7 @@
     <ClInclude Include="Control\UIIpAddress.h" />
     <ClInclude Include="Control\UIMenu.h" />
     <ClInclude Include="Control\UIProgressButton.h" />
-    <ClInclude Include="Core\StringTable.h" />
+    <ClInclude Include="Core\UIStringTable.h" />
     <ClInclude Include="Core\UITimer.h" />
     <ClInclude Include="Layout\UISliderTabLayout.h" />
     <ClInclude Include="StdAfx.h" />

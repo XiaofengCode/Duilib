@@ -280,7 +280,7 @@ public:
 	 *	@pMenuCheckInfo	保存菜单的单选和复选信息结构指针
 	 *	@dwAlignment		菜单的出现位置，默认出现在鼠标的右下侧。
 	 */
-    void Init(CMenuElementUI* pOwner, STRINGorID xml, STRINGorID xmlStringTable, LPCTSTR lpszLang, POINT point,
+    void Init(CMenuElementUI* pOwner, STRINGorID xml, POINT point,
 		CPaintManagerUI* pMainPaintManager, std::map<CDuiString,bool>* pMenuCheckInfo = NULL,
 		DWORD dwAlignment = eMenuAlignment_Left | eMenuAlignment_Top);
     LPCTSTR GetWindowClassName() const;
@@ -299,8 +299,6 @@ public:
 
 	POINT			m_BasedPoint;
 	STRINGorID		m_xml;
-	STRINGorID		m_xmlStringTable;
-	CDuiString		m_strStringTableLang;
     CPaintManagerUI m_pm;
     CMenuElementUI* m_pOwner;
     CMenuUI*	m_pLayout;
