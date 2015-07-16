@@ -148,26 +148,32 @@ namespace DuiLib
 // 		}
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
-			int nValue;
-			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-				m_uButtonState &= ~UISTATE_CAPTURED;
-			}
-			if( m_bHorizontal ) {
-				if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) nValue = m_nMax;
-				else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) nValue = m_nMin;
-				else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
-			}
-			else {
-				if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) nValue = m_nMin;
-				else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) nValue = m_nMax;
-				else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
-			}
-			if(/*m_nValue !=nValue && 2014.7.28 redrain 这个注释很关键，是他导致了鼠标拖动滑块无法发出DUI_MSGTYPE_VALUECHANGED消息*/nValue>=m_nMin && nValue<=m_nMax)
+			//Eric Modified 2015-7-13
+			//只在Enable时有效
+			if (IsEnabled())
 			{
-				m_nValue =nValue;
-				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
-				Invalidate();
+				int nValue;
+				if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+					m_uButtonState &= ~UISTATE_CAPTURED;
+				}
+				if( m_bHorizontal ) {
+					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) nValue = m_nMax;
+					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) nValue = m_nMin;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+				}
+				else {
+					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) nValue = m_nMin;
+					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) nValue = m_nMax;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+				}
+				if(/*m_nValue !=nValue && 2014.7.28 redrain 这个注释很关键，是他导致了鼠标拖动滑块无法发出DUI_MSGTYPE_VALUECHANGED消息*/nValue>=m_nMin && nValue<=m_nMax)
+				{
+					m_nValue =nValue;
+					m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
+					Invalidate();
+				}
 			}
+			
 			return;
 		}
 		if( event.Type == UIEVENT_CONTEXTMENU )
@@ -179,11 +185,11 @@ namespace DuiLib
 			switch( LOWORD(event.wParam) ) {
 		case SB_LINEUP:
 			SetValue(GetValue() + GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
+			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
 			return;
 		case SB_LINEDOWN:
 			SetValue(GetValue() - GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
+			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
 			return;
 			}
 		}
