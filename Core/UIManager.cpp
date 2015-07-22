@@ -64,6 +64,7 @@ short CPaintManagerUI::m_L = 100;
 CStdPtrArray CPaintManagerUI::m_aPreMessages;
 CStdPtrArray CPaintManagerUI::m_aPlugins;
 const UINT kCaretTimerID = 0xF1;
+CDuiString CPaintManagerUI::m_pStrCurrentStringTableFolder;
 
 CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
@@ -2484,6 +2485,16 @@ void CPaintManagerUI::SetWindowTitile( LPCTSTR lpTitle )
 	{
 		SetWindowText(m_hWndPaint, lpTitle);
 	}
+}
+
+void CPaintManagerUI::SetCurrentStringTableFolder( LPCTSTR pStrFolder )
+{
+	m_pStrCurrentStringTableFolder = pStrFolder;
+}
+
+DuiLib::CDuiString CPaintManagerUI::GetCurrentStringTableFolder()
+{
+	return m_pStrCurrentStringTableFolder;
 }
 
 } // namespace DuiLib
