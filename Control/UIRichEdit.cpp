@@ -1062,7 +1062,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
-	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false)
+	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0)
 {
 #ifndef _UNICODE
 	m_fAccumulateDBC =true;
@@ -1197,7 +1197,7 @@ void CRichEditUI::SetEnabled(bool bEnabled)
 	if (m_bEnabled == bEnabled) return;
 
 	if( m_pTwh ) {
-		m_pTwh->SetColor(bEnabled ? m_dwTextColor : m_pManager->GetDefaultDisabledColor());
+		m_pTwh->SetColor(bEnabled ? m_dwTextColor : m_dwDisabledTextColor);
 	}
 	
 	CContainerUI::SetEnabled(bEnabled);
@@ -1224,6 +1224,17 @@ void CRichEditUI::SetTextColor(DWORD dwTextColor)
     if( m_pTwh ) {
         m_pTwh->SetColor(dwTextColor);
     }
+}
+
+void CRichEditUI::SetDisabledTextColor(DWORD dwTextColor)
+{
+	m_dwDisabledTextColor = dwTextColor;
+	Invalidate();
+}
+
+DWORD CRichEditUI::GetDisabledTextColor() const
+{
+	return m_dwDisabledTextColor;
 }
 
 int CRichEditUI::GetLimitText()
@@ -1714,6 +1725,8 @@ long CRichEditUI::StreamOut(int nFormat, EDITSTREAM &es)
 
 void CRichEditUI::DoInit()
 {
+	if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
+	if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
 	if(m_bInited)
 		return ;
 
@@ -1733,7 +1746,7 @@ void CRichEditUI::DoInit()
         m_pManager->AddMessageFilter(this);
 		if (!m_bEnabled)
 		{
-			m_pTwh->SetColor(m_pManager->GetDefaultDisabledColor());
+			m_pTwh->SetColor(m_dwDisabledTextColor);
 		}
 		else if (GetText() == _T("") && !m_sTipValue.IsEmpty())
 		{
@@ -2369,6 +2382,12 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		if (_tcslen(pstrValue))
 			m_bTip = false;
 		SetText(pstrValue);
+	}
+	else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDisabledTextColor(clrColor);
 	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
