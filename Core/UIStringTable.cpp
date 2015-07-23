@@ -80,7 +80,11 @@ namespace DuiLib{
 		}
 		if (m_strLan.GetLength())
 		{
-			root = root.GetChild(m_strLan);
+			CMarkupNode node = root.GetChild(m_strLan);
+			if (node.IsValid())
+			{
+				root = node;
+			}
 		}
 		for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) 
 		{
@@ -139,13 +143,6 @@ namespace DuiLib{
 				}
 				strValue += cLetter;
 			}
-// 			strValue.Replace(_T("\\n"), _T("\n"));
-// 			strValue.Replace(_T("\\t"), _T("\t"));
-// 			strValue.Replace(_T("\\r"), _T("\r"));
-// 			strValue.Replace(_T("&lt;"), _T("<"));
-// 			strValue.Replace(_T("&gt;"), _T(">"));
-// 			strValue.Replace(_T("&quot;"), _T("\""));
-// 			strValue.Replace(_T("\\\\"), _T("\\"));
 			CDuiString* pString = new CDuiString(strValue);
 			m_mapStringHash.Set(node.GetName(), pString);
 		}
@@ -182,6 +179,64 @@ namespace DuiLib{
 			return lpszSource;
 		}
 		return pManager->GetStringTable().FormatString(lpszSource);
+	}
+
+	bool CDuiStringTable::LoadFromFile( LPCTSTR lpszFile, LPCTSTR lpszLang )
+	{
+		if (lpszLang)
+		{
+			m_strLan = lpszLang;
+		}
+		else
+		{
+			m_strLan.Empty();
+		}
+		HANDLE hFile = ::CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if( hFile == INVALID_HANDLE_VALUE )
+		{
+			hFile = ::CreateFile(CPaintManagerUI::GetInstancePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			if( hFile == INVALID_HANDLE_VALUE )
+			{
+				hFile = ::CreateFile(CPaintManagerUI::GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+				if( hFile == INVALID_HANDLE_VALUE )
+				{
+					return _Failed(_T("LoadFromFile Error opening file"));
+				}
+			}
+		}
+		DWORD dwSize = ::GetFileSize(hFile, NULL);
+		if( dwSize == 0 ) return _Failed(_T("LoadFromFile File is empty"));
+		if ( dwSize > 4096*1024 ) return _Failed(_T("LoadFromFile File too large"));
+
+		DWORD dwRead = 0;
+		BYTE* pByte = new BYTE[ dwSize ];
+		::ReadFile( hFile, pByte, dwSize, &dwRead, NULL );
+		::CloseHandle( hFile );
+
+		if( dwRead != dwSize ) 
+		{
+			delete[] pByte;
+			return _Failed(_T("LoadFromFile Could not read file"));
+		}
+		bool ret = m_xml.LoadFromMem(pByte, dwSize);
+		delete[] pByte;
+		if (!ret)
+		{
+			return _Failed(_T("LoadFromFile LoadFromMem failed"));
+		}
+		Parse();
+		return true;
+	}
+
+	bool CDuiStringTable::_Failed( LPCTSTR pstrError, LPCTSTR pstrLocation /*= NULL*/ )
+	{
+		OutputDebugString(pstrLocation);
+		return false;
+	}
+
+	bool CDuiStringTable::IsValid()
+	{
+		return m_xml.IsValid();
 	}
 
 }

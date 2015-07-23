@@ -380,7 +380,11 @@ namespace DuiLib
 			}
 			break;
 		}
-
+		CDuiString strPath = GetStringTableFile();
+		if (strPath.GetLength())
+		{
+			m_PaintManager.GetStringTable().LoadFromFile(strPath, GetStringTableLang());
+		}
 		CControlUI* pRoot=NULL;
 		if (GetResourceType()==UILIB_RESOURCE)
 		{
@@ -549,9 +553,19 @@ namespace DuiLib
 		return _T("");
 	}
 
+	DuiLib::CDuiString WindowImplBase::GetStringTableFile()
+	{
+		return _T("String.xml");
+	}
+
+	LPCTSTR WindowImplBase::GetStringTableLang()
+	{
+		return NULL;
+	}
+
 	LPCTSTR WindowImplBase::LoadString( LPCTSTR lpszID )
 	{
-		return m_PaintManager.GetStringTable().GetString(lpszID);
+		return m_PaintManager.m_StringTable.GetString(lpszID);
 	}
 
 }

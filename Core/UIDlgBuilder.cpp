@@ -48,89 +48,12 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
     CMarkupNode root = m_xml.GetRoot();
     if( !root.IsValid() ) return NULL;
 
-    if( pManager ) {
-        LPCTSTR pstrClass = NULL;
-        int nAttributes = 0;
-        LPCTSTR pstrName = NULL;
-        LPCTSTR pstrValue = NULL;
-        LPTSTR pstr = NULL;
-        for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) {
-            pstrClass = node.GetName();
-            if( _tcscmp(pstrClass, _T("Image")) == 0 ) {
-                nAttributes = node.GetAttributeCount();
-                LPCTSTR pImageName = NULL;
-                LPCTSTR pImageResType = NULL;
-                DWORD mask = 0;
-                for( int i = 0; i < nAttributes; i++ ) {
-                    pstrName = node.GetAttributeName(i);
-                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
-                    if( _tcscmp(pstrName, _T("name")) == 0 ) {
-                        pImageName = pstrValue;
-                    }
-                    else if( _tcscmp(pstrName, _T("restype")) == 0 ) {
-                        pImageResType = pstrValue;
-                    }
-                    else if( _tcscmp(pstrName, _T("mask")) == 0 ) {
-                        if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-                        mask = _tcstoul(pstrValue, &pstr, 16);
-                    }
-                }
-                if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
-            }
-            else if( _tcscmp(pstrClass, _T("Font")) == 0 ) {
-                nAttributes = node.GetAttributeCount();
-                LPCTSTR pFontName = NULL;
-                int size = 12;
-                bool bold = false;
-                bool underline = false;
-                bool italic = false;
-                bool defaultfont = false;
-                for( int i = 0; i < nAttributes; i++ ) {
-                    pstrName = node.GetAttributeName(i);
-                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
-                    if( _tcscmp(pstrName, _T("name")) == 0 ) {
-                        pFontName = pstrValue;
-                    }
-                    else if( _tcscmp(pstrName, _T("size")) == 0 ) {
-                        size = _tcstol(pstrValue, &pstr, 10);
-                    }
-                    else if( _tcscmp(pstrName, _T("bold")) == 0 ) {
-                        bold = (_tcscmp(pstrValue, _T("true")) == 0);
-                    }
-                    else if( _tcscmp(pstrName, _T("underline")) == 0 ) {
-                        underline = (_tcscmp(pstrValue, _T("true")) == 0);
-                    }
-                    else if( _tcscmp(pstrName, _T("italic")) == 0 ) {
-                        italic = (_tcscmp(pstrValue, _T("true")) == 0);
-                    }
-                    else if( _tcscmp(pstrName, _T("default")) == 0 ) {
-                        defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
-                    }
-                }
-                if( pFontName ) {
-                    pManager->AddFont(pFontName, size, bold, underline, italic);
-                    if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
-                }
-            }
-            else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {
-                nAttributes = node.GetAttributeCount();
-                LPCTSTR pControlName = NULL;
-                LPCTSTR pControlValue = NULL;
-                for( int i = 0; i < nAttributes; i++ ) {
-                    pstrName = node.GetAttributeName(i);
-                    pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
-                    if( _tcscmp(pstrName, _T("name")) == 0 ) {
-                        pControlName = pstrValue;
-                    }
-                    else if( _tcscmp(pstrName, _T("value")) == 0 ) {
-                        pControlValue = pstrValue;
-                    }
-                }
-                if( pControlName ) {
-                    pManager->AddDefaultAttributeList(pControlName, pControlValue);
-                }
-            }
-        }
+	if( pManager ) {
+		LPCTSTR pstrClass = NULL;
+		int nAttributes = 0;
+		LPCTSTR pstrName = NULL;
+		LPCTSTR pstrValue = NULL;
+		LPTSTR pstr = NULL;
 
         pstrClass = root.GetName();
 		if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
@@ -280,11 +203,90 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					}
                 }
             }
-			if (strStringTable.GetLength())
+			CDuiStringTable& st = pManager->GetStringTable();
+			if (!st.IsValid() && strStringTable.GetLength())
 			{
 				pManager->GetStringTable().Load((LPCTSTR)strStringTable, 0, strLang);
 			}
         }
+
+		for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) {
+			pstrClass = node.GetName();
+			if( _tcscmp(pstrClass, _T("Image")) == 0 ) {
+				nAttributes = node.GetAttributeCount();
+				LPCTSTR pImageName = NULL;
+				LPCTSTR pImageResType = NULL;
+				DWORD mask = 0;
+				for( int i = 0; i < nAttributes; i++ ) {
+					pstrName = node.GetAttributeName(i);
+					pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
+					if( _tcscmp(pstrName, _T("name")) == 0 ) {
+						pImageName = pstrValue;
+					}
+					else if( _tcscmp(pstrName, _T("restype")) == 0 ) {
+						pImageResType = pstrValue;
+					}
+					else if( _tcscmp(pstrName, _T("mask")) == 0 ) {
+						if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+						mask = _tcstoul(pstrValue, &pstr, 16);
+					}
+				}
+				if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
+			}
+			else if( _tcscmp(pstrClass, _T("Font")) == 0 ) {
+				nAttributes = node.GetAttributeCount();
+				LPCTSTR pFontName = NULL;
+				int size = 12;
+				bool bold = false;
+				bool underline = false;
+				bool italic = false;
+				bool defaultfont = false;
+				for( int i = 0; i < nAttributes; i++ ) {
+					pstrName = node.GetAttributeName(i);
+					pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
+					if( _tcscmp(pstrName, _T("name")) == 0 ) {
+						pFontName = pstrValue;
+					}
+					else if( _tcscmp(pstrName, _T("size")) == 0 ) {
+						size = _tcstol(pstrValue, &pstr, 10);
+					}
+					else if( _tcscmp(pstrName, _T("bold")) == 0 ) {
+						bold = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+					else if( _tcscmp(pstrName, _T("underline")) == 0 ) {
+						underline = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+					else if( _tcscmp(pstrName, _T("italic")) == 0 ) {
+						italic = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+					else if( _tcscmp(pstrName, _T("default")) == 0 ) {
+						defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+				}
+				if( pFontName ) {
+					pManager->AddFont(pFontName, size, bold, underline, italic);
+					if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+				}
+			}
+			else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {
+				nAttributes = node.GetAttributeCount();
+				LPCTSTR pControlName = NULL;
+				LPCTSTR pControlValue = NULL;
+				for( int i = 0; i < nAttributes; i++ ) {
+					pstrName = node.GetAttributeName(i);
+					pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
+					if( _tcscmp(pstrName, _T("name")) == 0 ) {
+						pControlName = pstrValue;
+					}
+					else if( _tcscmp(pstrName, _T("value")) == 0 ) {
+						pControlValue = pstrValue;
+					}
+				}
+				if( pControlName ) {
+					pManager->AddDefaultAttributeList(pControlName, pControlValue);
+				}
+			}
+		}
     }
 	
     return _Parse(&root, pParent, pManager);
