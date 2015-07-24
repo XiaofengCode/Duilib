@@ -34,6 +34,8 @@ namespace DuiLib
 		virtual CDuiString GetDlgItemText(LPCTSTR lpszCtrlName);
 		virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 	protected:
+		virtual CDuiString GetStringTableFile();
+		virtual LPCTSTR GetStringTableLang();
 		virtual LPCTSTR LoadString(LPCTSTR lpszID);
 		virtual CDuiString GetSkinFolder() = 0;
 		virtual CDuiString GetSkinFile() = 0;

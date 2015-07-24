@@ -146,6 +146,8 @@ public:
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 	void SetTipText(LPCTSTR pstrText);
+	void CRichEditUI::SetDisabledTextColor(DWORD dwTextColor);
+	DWORD CRichEditUI::GetDisabledTextColor() const;
 protected:
     CTxtWinHost* m_pTwh;
     bool m_bVScrollBarFixing;
@@ -173,6 +175,7 @@ protected:
 	CDuiString m_sTipValue;
 	DWORD m_dwTipValueColor;
 	bool m_bTip;
+	DWORD m_dwDisabledTextColor;
 };
 
 } // namespace DuiLib

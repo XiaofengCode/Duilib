@@ -87,11 +87,12 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("max")) == 0 ) SetMaxValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("value")) == 0 ) SetValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("isstretchfore"))==0) SetStretchForeImage(_tcscmp(pstrValue, _T("true")) == 0? true : false);
-		else CLabelUI::SetAttribute(pstrName, pstrValue);
+		else CButtonUI::SetAttribute(pstrName, pstrValue);
 	}
 
 	void CProgressButtonUI::PaintStatusImage(HDC hDC)
 	{
+		CButtonUI::PaintStatusImage(hDC);
 		if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
 		if( m_nValue > m_nMax ) m_nValue = m_nMax;
 		if( m_nValue < m_nMin ) m_nValue = m_nMin;
