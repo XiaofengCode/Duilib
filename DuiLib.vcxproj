@@ -569,6 +569,7 @@
     </ClCompile>
     <ClCompile Include="UIlib.cpp" />
     <ClCompile Include="Utils\DuiTrayIcon.cpp" />
+    <ClCompile Include="Utils\GifImage.cpp" />
     <ClCompile Include="Utils\UIShadow.cpp" />
     <ClCompile Include="Utils\WinImplBase.cpp" />
     <ClCompile Include="Utils\stb_image.c">
@@ -654,6 +655,7 @@
     <ClInclude Include="Utils\DuiPointer.h" />
     <ClInclude Include="Utils\DuiTrayIcon.h" />
     <ClInclude Include="Utils\FlashEventHandler.h" />
+    <ClInclude Include="Utils\GifImage.h" />
     <ClInclude Include="Utils\Internal.h" />
     <ClInclude Include="Utils\UIDelegate.h" />
     <ClInclude Include="Utils\UIShadow.h" />
@@ -690,6 +692,7 @@
     <ClInclude Include="Control\UIText.h" />
     <ClInclude Include="Control\UITreeView.h" />
     <ClInclude Include="Control\UIWebBrowser.h" />
+    <ClInclude Include="Utils\XUnzip.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
