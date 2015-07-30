@@ -241,6 +241,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 				bool underline = false;
 				bool italic = false;
 				bool defaultfont = false;
+				bool checkexist = false; //检查字体是否存在
 				for( int i = 0; i < nAttributes; i++ ) {
 					pstrName = node.GetAttributeName(i);
 					pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
@@ -262,10 +263,16 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if( _tcscmp(pstrName, _T("default")) == 0 ) {
 						defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
 					}
+					else if( _tcscmp(pstrName, _T("checkexist")) == 0 ) {
+						checkexist = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
 				}
-				if( pFontName ) {
-					pManager->AddFont(pFontName, size, bold, underline, italic);
-					if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+				if( pFontName ) 
+				{
+					if (NULL != pManager->AddFont(pFontName, size, bold, underline, italic, checkexist))
+					{
+						if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+					}
 				}
 			}
 			else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {

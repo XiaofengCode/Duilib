@@ -1874,8 +1874,29 @@ DWORD CPaintManagerUI::GetCustomFontCount() const
     return m_aCustomFonts.GetSize();
 }
 
-HFONT CPaintManagerUI::AddFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
+
+int CALLBACK EnumFontsProc(
+	LOGFONT*    lplf,
+	TEXTMETRIC* lptm,
+	DWORD	dwType,
+	LPARAM	lpData)
 {
+	return 0;
+}
+
+HFONT CPaintManagerUI::AddFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bCheckExist/* = false*/)
+{
+	if (bCheckExist)
+	{
+		//先枚举该字体是否存在，不存在直接返回
+		int nRet = EnumFonts(m_hDcPaint, pStrFontName, (FONTENUMPROC)EnumFontsProc, NULL);
+		if (nRet)
+		{
+			return NULL;
+		}
+	}
+
+
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcsncpy(lf.lfFaceName, pStrFontName, LF_FACESIZE);

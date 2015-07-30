@@ -163,6 +163,8 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 
 	m_gifBk.Stop();
 	m_gifBk.DeleteImage();
+	m_gifBk.InitImage(this, GetBkImage());
+
     Invalidate();
 }
 
@@ -960,10 +962,6 @@ void CControlUI::PaintBkImage(HDC hDC)
 {
     if( m_sBkImage.IsEmpty() ) return;
 
-	if ( !m_gifBk.IsValid() )
-	{		
-		m_gifBk.InitImage(this, GetBkImage());
-	}
 	if (m_gifBk.IsValid())
 	{
 		m_gifBk.DrawFrame( hDC, m_rcItem );
