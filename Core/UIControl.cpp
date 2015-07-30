@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+///////////////////////////////////////////////////////////////////////////////////////
 
 namespace DuiLib {
 
@@ -159,6 +160,9 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
     if( m_sBkImage == pStrImage ) return;
 
     m_sBkImage = pStrImage;
+
+	m_gifBk.Stop();
+	m_gifBk.DeleteImage();
     Invalidate();
 }
 
@@ -537,6 +541,11 @@ void CControlUI::SetVisible(bool bVisible)
     if( IsVisible() != v ) {
         NeedParentUpdate();
     }
+
+	if (bVisible)
+		m_gifBk.Play();
+	else
+		m_gifBk.Stop();
 }
 
 void CControlUI::SetInternVisible(bool bVisible)
@@ -675,7 +684,7 @@ void CControlUI::Init()
 
 void CControlUI::DoInit()
 {
-
+	m_gifBk.InitImage(this, GetBkImage());
 }
 
 void CControlUI::Event(TEventUI& event)
@@ -704,6 +713,7 @@ void CControlUI::DoEvent(TEventUI& event)
     }
     if( event.Type == UIEVENT_TIMER )
     {
+		OnTimer( (UINT_PTR)event.wParam );
         m_pManager->SendNotify(this, DUI_MSGTYPE_TIMER, event.wParam, event.lParam);
         return;
     }
@@ -949,6 +959,17 @@ void CControlUI::PaintBkColor(HDC hDC)
 void CControlUI::PaintBkImage(HDC hDC)
 {
     if( m_sBkImage.IsEmpty() ) return;
+
+	if ( !m_gifBk.IsValid() )
+	{		
+		m_gifBk.InitImage(this, GetBkImage());
+	}
+	if (m_gifBk.IsValid())
+	{
+		m_gifBk.DrawFrame( hDC, m_rcItem );
+		return;
+	}
+
     if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
 }
 
@@ -1066,6 +1087,11 @@ void CControlUI::SetBorderStyle( int nStyle )
 {
 	m_nBorderStyle = nStyle;
 	Invalidate();
+}
+
+void CControlUI::OnTimer( UINT_PTR idEvent )
+{
+	m_gifBk.OnTimer(idEvent);
 }
 
 } // namespace DuiLib

@@ -2,12 +2,11 @@
 #define __UICONTROL_H__
 
 #pragma once
-
 namespace DuiLib {
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
-
+#define TIMER_BK_GIF	1000
 typedef CControlUI* (CALLBACK* FINDCONTROLPROC)(CControlUI*, LPVOID);
 
 class UILIB_API CControlUI
@@ -163,6 +162,7 @@ public:
 	//ÐéÄâ´°¿Ú²ÎÊý
 	void SetVirtualWnd(LPCTSTR pstrValue);
 	CDuiString GetVirtualWnd() const;
+ 	virtual void  OnTimer( UINT_PTR idEvent );
 
 public:
     CEventSource OnInit;
@@ -215,6 +215,9 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
+
+	//Gif
+	CGifImage		m_gifBk;
 };
 
 } // namespace DuiLib

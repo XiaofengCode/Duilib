@@ -25,31 +25,31 @@ namespace DuiLib
 		void	SetBkImage(LPCTSTR pStrImage);
 		LPCTSTR GetBkImage();
 
-		void	SetAutoPlay(bool bIsAuto = true );
-		bool	IsAutoPlay() const;
+		void	SetGifBkAutoPlay(bool bIsAuto = true );
+		bool	IsGifBkAutoPlay() const;
 		void	SetAutoSize(bool bIsAuto = true );
 		bool	IsAutoSize() const;
-		void	PlayGif();
-		void	PauseGif();
-		void	StopGif();
+		void	PlayGifBk();
+		void	PauseGifBk();
+		void	StopGifBk();
 
 	private:
-		void	InitGifImage();
-		void	DeleteGif();
+		void	InitGifBkImage();
+		void	DeleteGifBk();
 		void    OnTimer( UINT_PTR idEvent );
-		void	DrawFrame( HDC hDC );		// 绘制GIF每帧
+		void	DrawGifBkFrame( HDC hDC );		// 绘制GIF每帧
 		Gdiplus::Image*	LoadGifFromFile(LPCTSTR pstrGifPath);
 		Gdiplus::Image* LoadGifFromMemory( LPVOID pBuf,size_t dwSize );
 	private:
-		Gdiplus::Image	*m_pGifImage;
-		UINT			m_nFrameCount;				// gif图片总帧数
-		UINT			m_nFramePosition;			// 当前放到第几帧
-		Gdiplus::PropertyItem*	m_pPropertyItem;	// 帧与帧之间间隔时间
+		Gdiplus::Image	*m_pGifBkImage;
+		UINT			m_nGifBkFrameCount;				// gif图片总帧数
+		UINT			m_nGifBkFramePosition;			// 当前放到第几帧
+		Gdiplus::PropertyItem*	m_pGifBkPropertyItem;	// 帧与帧之间间隔时间
 
 		CDuiString		m_sBkImage;
-		bool			m_bIsAutoPlay;				// 是否自动播放gif
-		bool			m_bIsAutoSize;				// 是否自动根据图片设置大小
-		bool			m_bIsPlaying;
+		bool			m_bIsGifBkAutoPlay;				// 是否自动播放gif
+		bool			m_bIsGifBkAutoSize;				// 是否自动根据图片设置大小
+		bool			m_bIsGifBkPlaying;
 
 	};
 }

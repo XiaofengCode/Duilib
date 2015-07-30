@@ -1,13 +1,6 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 
-DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
-typedef DWORD ZRESULT;
-#define OpenZip OpenZipU
-#define CloseZip(hz) CloseZipU(hz)
-extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
-extern ZRESULT CloseZipU(HZIP hz);
-
 namespace DuiLib {
 
 /////////////////////////////////////////////////////////////////////////////////////

@@ -2,64 +2,26 @@
 #include "UIGifAnim.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
-typedef DWORD ZRESULT;
-typedef struct
-{ 
-	int index;                 // index of this file within the zip
-	char name[MAX_PATH];       // filename within the zip
-	DWORD attr;                // attributes, as in GetFileAttributes.
-	FILETIME atime,ctime,mtime;// access, create, modify filetimes
-	long comp_size;            // sizes of item, compressed and uncompressed. These
-	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-} ZIPENTRY;
-typedef struct
-{ 
-	int index;                 // index of this file within the zip
-	TCHAR name[MAX_PATH];      // filename within the zip
-	DWORD attr;                // attributes, as in GetFileAttributes.
-	FILETIME atime,ctime,mtime;// access, create, modify filetimes
-	long comp_size;            // sizes of item, compressed and uncompressed. These
-	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-} ZIPENTRYW;
-#define OpenZip OpenZipU
-#define CloseZip(hz) CloseZipU(hz)
-extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
-extern ZRESULT CloseZipU(HZIP hz);
-#ifdef _UNICODE
-#define ZIPENTRY ZIPENTRYW
-#define GetZipItem GetZipItemW
-#define FindZipItem FindZipItemW
-#else
-#define GetZipItem GetZipItemA
-#define FindZipItem FindZipItemA
-#endif
-extern ZRESULT GetZipItemA(HZIP hz, int index, ZIPENTRY *ze);
-extern ZRESULT GetZipItemW(HZIP hz, int index, ZIPENTRYW *ze);
-extern ZRESULT FindZipItemA(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *ze);
-extern ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRYW *ze);
-extern ZRESULT UnzipItem(HZIP hz, int index, void *dst, unsigned int len, DWORD flags);
-///////////////////////////////////////////////////////////////////////////////////////
 
 namespace DuiLib
 {
 
 	CGifAnimUI::CGifAnimUI(void)
 	{
-		m_pGifImage			=	NULL;
-		m_pPropertyItem		=	NULL;
-		m_nFrameCount		=	0;	
-		m_nFramePosition	=	0;	
-		m_bIsAutoPlay		=	true;
-		m_bIsAutoSize		=	false;
-		m_bIsPlaying		=	false;
+		m_pGifBkImage			=	NULL;
+		m_pGifBkPropertyItem		=	NULL;
+		m_nGifBkFrameCount		=	0;	
+		m_nGifBkFramePosition	=	0;	
+		m_bIsGifBkAutoPlay		=	true;
+		m_bIsGifBkAutoSize		=	false;
+		m_bIsGifBkPlaying		=	false;
 
 	}
 
 
 	CGifAnimUI::~CGifAnimUI(void)
 	{
-		DeleteGif();
+		DeleteGifBk();
 		m_pManager->KillTimer( this, EVENT_TIEM_ID );
 
 	}
@@ -77,17 +39,17 @@ namespace DuiLib
 
 	void CGifAnimUI::DoInit()
 	{
-		InitGifImage();
+		InitGifBkImage();
 	}
 
 	void CGifAnimUI::DoPaint( HDC hDC, const RECT& rcPaint )
 	{
 		if( !::IntersectRect( &m_rcPaint, &rcPaint, &m_rcItem ) ) return;
-		if ( NULL == m_pGifImage )
+		if ( NULL == m_pGifBkImage )
 		{		
-			InitGifImage();
+			InitGifBkImage();
 		}
-		DrawFrame( hDC );
+		DrawGifBkFrame( hDC );
 		PaintText(hDC);
 	}
 
@@ -101,16 +63,16 @@ namespace DuiLib
 	{
 		CLabelUI::SetVisible(bVisible);
 		if (bVisible)
-			PlayGif();
+			PlayGifBk();
 		else
-			StopGif();
+			StopGifBk();
 	}
 
 	void CGifAnimUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		if( _tcscmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("autoplay")) == 0 ) {
-			SetAutoPlay(_tcscmp(pstrValue, _T("true")) == 0);
+			SetGifBkAutoPlay(_tcscmp(pstrValue, _T("true")) == 0);
 		}
 		else if( _tcscmp(pstrName, _T("autosize")) == 0 ) {
 			SetAutoSize(_tcscmp(pstrValue, _T("true")) == 0);
@@ -125,8 +87,8 @@ namespace DuiLib
 
 		m_sBkImage = pStrImage;
 
-		StopGif();
-		DeleteGif();
+		StopGifBk();
+		DeleteGifBk();
 
 		Invalidate();
 
@@ -137,106 +99,106 @@ namespace DuiLib
 		return m_sBkImage.GetData();
 	}
 
-	void CGifAnimUI::SetAutoPlay(bool bIsAuto)
+	void CGifAnimUI::SetGifBkAutoPlay(bool bIsAuto)
 	{
-		m_bIsAutoPlay = bIsAuto;
+		m_bIsGifBkAutoPlay = bIsAuto;
 	}
 
-	bool CGifAnimUI::IsAutoPlay() const
+	bool CGifAnimUI::IsGifBkAutoPlay() const
 	{
-		return m_bIsAutoPlay;
+		return m_bIsGifBkAutoPlay;
 	}
 
 	void CGifAnimUI::SetAutoSize(bool bIsAuto)
 	{
-		m_bIsAutoSize = bIsAuto;
+		m_bIsGifBkAutoSize = bIsAuto;
 	}
 
 	bool CGifAnimUI::IsAutoSize() const
 	{
-		return m_bIsAutoSize;
+		return m_bIsGifBkAutoSize;
 	}
 
-	void CGifAnimUI::PlayGif()
+	void CGifAnimUI::PlayGifBk()
 	{
-		if (m_bIsPlaying || m_pGifImage == NULL)
+		if (m_bIsGifBkPlaying || m_pGifBkImage == NULL)
 		{
 			return;
 		}
 
-		long lPause = ((long*) m_pPropertyItem->value)[m_nFramePosition] * 10;
+		long lPause = ((long*) m_pGifBkPropertyItem->value)[m_nGifBkFramePosition] * 10;
 		if ( lPause == 0 ) lPause = 100;
 		m_pManager->SetTimer( this, EVENT_TIEM_ID, lPause );
 
-		m_bIsPlaying = true;
+		m_bIsGifBkPlaying = true;
 	}
 
-	void CGifAnimUI::PauseGif()
+	void CGifAnimUI::PauseGifBk()
 	{
-		if (!m_bIsPlaying || m_pGifImage == NULL)
+		if (!m_bIsGifBkPlaying || m_pGifBkImage == NULL)
 		{
 			return;
 		}
 
 		m_pManager->KillTimer(this, EVENT_TIEM_ID);
 		this->Invalidate();
-		m_bIsPlaying = false;
+		m_bIsGifBkPlaying = false;
 	}
 
-	void CGifAnimUI::StopGif()
+	void CGifAnimUI::StopGifBk()
 	{
-		if (!m_bIsPlaying)
+		if (!m_bIsGifBkPlaying)
 		{
 			return;
 		}
 
 		m_pManager->KillTimer(this, EVENT_TIEM_ID);
-		m_nFramePosition = 0;
+		m_nGifBkFramePosition = 0;
 		this->Invalidate();
-		m_bIsPlaying = false;
+		m_bIsGifBkPlaying = false;
 	}
 
-	void CGifAnimUI::InitGifImage()
+	void CGifAnimUI::InitGifBkImage()
 	{
-		m_pGifImage = LoadGifFromFile(GetBkImage());
-		if ( NULL == m_pGifImage ) return;
+		m_pGifBkImage = LoadGifFromFile(GetBkImage());
+		if ( NULL == m_pGifBkImage ) return;
 		UINT nCount	= 0;
-		nCount	=	m_pGifImage->GetFrameDimensionsCount();
+		nCount	=	m_pGifBkImage->GetFrameDimensionsCount();
 		GUID* pDimensionIDs	=	new GUID[ nCount ];
-		m_pGifImage->GetFrameDimensionsList( pDimensionIDs, nCount );
-		m_nFrameCount	=	m_pGifImage->GetFrameCount( &pDimensionIDs[0] );
-		int nSize		=	m_pGifImage->GetPropertyItemSize( PropertyTagFrameDelay );
-		m_pPropertyItem	=	(Gdiplus::PropertyItem*) malloc( nSize );
-		m_pGifImage->GetPropertyItem( PropertyTagFrameDelay, nSize, m_pPropertyItem );
+		m_pGifBkImage->GetFrameDimensionsList( pDimensionIDs, nCount );
+		m_nGifBkFrameCount	=	m_pGifBkImage->GetFrameCount( &pDimensionIDs[0] );
+		int nSize		=	m_pGifBkImage->GetPropertyItemSize( PropertyTagFrameDelay );
+		m_pGifBkPropertyItem	=	(Gdiplus::PropertyItem*) malloc( nSize );
+		m_pGifBkImage->GetPropertyItem( PropertyTagFrameDelay, nSize, m_pGifBkPropertyItem );
 		delete  pDimensionIDs;
 		pDimensionIDs = NULL;
 
-		if (m_bIsAutoSize)
+		if (m_bIsGifBkAutoSize)
 		{
-			SetFixedWidth(m_pGifImage->GetWidth());
-			SetFixedHeight(m_pGifImage->GetHeight());
+			SetFixedWidth(m_pGifBkImage->GetWidth());
+			SetFixedHeight(m_pGifBkImage->GetHeight());
 		}
-		if (m_bIsAutoPlay)
+		if (m_bIsGifBkAutoPlay)
 		{
-			PlayGif();
+			PlayGifBk();
 		}
 	}
 
-	void CGifAnimUI::DeleteGif()
+	void CGifAnimUI::DeleteGifBk()
 	{
-		if ( m_pGifImage != NULL )
+		if ( m_pGifBkImage != NULL )
 		{
-			delete m_pGifImage;
-			m_pGifImage = NULL;
+			delete m_pGifBkImage;
+			m_pGifBkImage = NULL;
 		}
 
-		if ( m_pPropertyItem != NULL )
+		if ( m_pGifBkPropertyItem != NULL )
 		{
-			free( m_pPropertyItem );
-			m_pPropertyItem = NULL;
+			free( m_pGifBkPropertyItem );
+			m_pGifBkPropertyItem = NULL;
 		}
-		m_nFrameCount		=	0;	
-		m_nFramePosition	=	0;	
+		m_nGifBkFrameCount		=	0;	
+		m_nGifBkFramePosition	=	0;	
 	}
 
 	void CGifAnimUI::OnTimer( UINT_PTR idEvent )
@@ -246,20 +208,20 @@ namespace DuiLib
 		m_pManager->KillTimer( this, EVENT_TIEM_ID );
 		this->Invalidate();
 
-		m_nFramePosition = (++m_nFramePosition) % m_nFrameCount;
+		m_nGifBkFramePosition = (++m_nGifBkFramePosition) % m_nGifBkFrameCount;
 
-		long lPause = ((long*) m_pPropertyItem->value)[m_nFramePosition] * 10;
+		long lPause = ((long*) m_pGifBkPropertyItem->value)[m_nGifBkFramePosition] * 10;
 		if ( lPause == 0 ) lPause = 100;
 		m_pManager->SetTimer( this, EVENT_TIEM_ID, lPause );
 	}
 
-	void CGifAnimUI::DrawFrame( HDC hDC )
+	void CGifAnimUI::DrawGifBkFrame( HDC hDC )
 	{
-		if ( NULL == hDC || NULL == m_pGifImage ) return;
+		if ( NULL == hDC || NULL == m_pGifBkImage ) return;
 		GUID pageGuid = Gdiplus::FrameDimensionTime;
 		Gdiplus::Graphics graphics( hDC );
-		graphics.DrawImage( m_pGifImage, m_rcItem.left, m_rcItem.top, m_rcItem.right-m_rcItem.left, m_rcItem.bottom-m_rcItem.top );
-		m_pGifImage->SelectActiveFrame( &pageGuid, m_nFramePosition );
+		graphics.DrawImage( m_pGifBkImage, m_rcItem.left, m_rcItem.top, m_rcItem.right-m_rcItem.left, m_rcItem.bottom-m_rcItem.top );
+		m_pGifBkImage->SelectActiveFrame( &pageGuid, m_nGifBkFramePosition );
 	}
 
 	Gdiplus::Image* CGifAnimUI::LoadGifFromFile(LPCTSTR pstrGifPath)
