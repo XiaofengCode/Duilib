@@ -53,6 +53,7 @@ namespace DuiLib{
 		{
 			return;
 		}
+
 		m_pImage = LoadGifFromFile(m_sImagePath);
 		if ( NULL == m_pImage ) return;
 		UINT nCount	= 0;
@@ -61,8 +62,15 @@ namespace DuiLib{
 		m_pImage->GetFrameDimensionsList( pDimensionIDs, nCount );
 		m_nFrameCount	=	m_pImage->GetFrameCount( &pDimensionIDs[0] );
 		int nSize		=	m_pImage->GetPropertyItemSize( PropertyTagFrameDelay );
+		if (nSize == 0)
+		{
+			DeleteImage();
+			return;
+		}
+
 		m_pPropertyItem	=	(Gdiplus::PropertyItem*) malloc( nSize );
 		m_pImage->GetPropertyItem( PropertyTagFrameDelay, nSize, m_pPropertyItem );
+	
 		delete  pDimensionIDs;
 		pDimensionIDs = NULL;
 		if (m_bIsAutoPlay)
