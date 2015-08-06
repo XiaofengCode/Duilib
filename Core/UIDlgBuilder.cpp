@@ -241,8 +241,15 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 				bool underline = false;
 				bool italic = false;
 				bool defaultfont = false;
-				bool checkexist = false; //检查字体是否存在
-				for( int i = 0; i < nAttributes; i++ ) {
+
+				LPCTSTR pFontName2 = NULL;
+				int size2 = 12;
+				bool bold2 = false;
+				bool underline2 = false;
+				bool italic2 = false;
+
+				for( int i = 0; i < nAttributes; i++ ) 
+				{
 					pstrName = node.GetAttributeName(i);
 					pstrValue = CDuiStringTable::FormatString(pManager, node.GetAttributeValue(i));
 					if( _tcscmp(pstrName, _T("name")) == 0 ) {
@@ -263,16 +270,48 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if( _tcscmp(pstrName, _T("default")) == 0 ) {
 						defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
 					}
-					else if( _tcscmp(pstrName, _T("checkexist")) == 0 ) {
-						checkexist = (_tcscmp(pstrValue, _T("true")) == 0);
+					if( _tcscmp(pstrName, _T("name2")) == 0 ) {
+						pFontName2 = pstrValue;
+					}
+					else if( _tcscmp(pstrName, _T("size2")) == 0 ) {
+						size2 = _tcstol(pstrValue, &pstr, 10);
+					}
+					else if( _tcscmp(pstrName, _T("bold2")) == 0 ) {
+						bold2 = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+					else if( _tcscmp(pstrName, _T("underline2")) == 0 ) {
+						underline2 = (_tcscmp(pstrValue, _T("true")) == 0);
+					}
+					else if( _tcscmp(pstrName, _T("italic2")) == 0 ) {
+						italic2 = (_tcscmp(pstrValue, _T("true")) == 0);
 					}
 				}
+
 				if( pFontName ) 
 				{
-					if (NULL != pManager->AddFont(pFontName, size, bold, underline, italic, checkexist))
+					if (pFontName2)
 					{
-						if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+						//支持备用字体
+						if (NULL == pManager->AddFont(pFontName, size, bold, underline, italic, TRUE))
+						{
+							if (NULL != pManager->AddFont(pFontName2, size2, bold2, underline2, italic2))
+							{
+								if( defaultfont ) pManager->SetDefaultFont(pFontName2, size2, bold2, underline2, italic2);
+							}
+						}
+						else
+						{
+							if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+						}
 					}
+					else
+					{
+						if (NULL != pManager->AddFont(pFontName, size, bold, underline, italic))
+						{
+							if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+						}
+					}
+
 				}
 			}
 			else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {
