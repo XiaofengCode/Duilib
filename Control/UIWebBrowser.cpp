@@ -445,13 +445,13 @@ void DuiLib::CWebBrowserUI::Refresh2( int Level )
 
 void DuiLib::CWebBrowserUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 {
-	if (_tcscmp(pstrName, _T("homepage")) == 0)
+	if (_tcsicmp(pstrName, _T("homepage")) == 0)
 	{
 		m_sHomePage = pstrValue;
 	}
-	else if (_tcscmp(pstrName, _T("autonavi"))==0)
+	else if (_tcsicmp(pstrName, _T("autonavi"))==0)
 	{
-		m_bAutoNavi = (_tcscmp(pstrValue, _T("true")) == 0);
+		m_bAutoNavi = (_tcsicmp(pstrValue, _T("true")) == 0);
 	}
 	else
 		CActiveXUI::SetAttribute(pstrName, pstrValue);

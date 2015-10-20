@@ -295,46 +295,46 @@ namespace DuiLib
 
 	void CButtonUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("hotforeimage")) == 0 ) SetHotForeImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("bindtabindex")) == 0 ) BindTabIndex(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("bindtablayoutname")) == 0 ) BindTabLayoutName(pstrValue);
-		else if( _tcscmp(pstrName, _T("hotbkcolor")) == 0 )
+		if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("hotforeimage")) == 0 ) SetHotForeImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("bindtabindex")) == 0 ) BindTabIndex(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("bindtablayoutname")) == 0 ) BindTabLayoutName(pstrValue);
+		else if( _tcsicmp(pstrName, _T("hotbkcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotBkColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("hottextcolor")) == 0 )
+		else if( _tcsicmp(pstrName, _T("hottextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("pushedtextcolor")) == 0 )
+		else if( _tcsicmp(pstrName, _T("pushedtextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetPushedTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("focusedtextcolor")) == 0 )
+		else if( _tcsicmp(pstrName, _T("focusedtextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetFocusedTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("multiline")) == 0 )
+		else if( _tcsicmp(pstrName, _T("multiline")) == 0 )
 		{
-			if( _tcscmp(pstrValue, _T("true")) == 0)
+			if( _tcsicmp(pstrValue, _T("true")) == 0)
 			{
 				m_uTextStyle = m_uTextStyle & ~DT_SINGLELINE;
 				m_uTextStyle |= DT_WORDBREAK;
