@@ -48,7 +48,7 @@ CMarkupNode CMarkupNode::GetChild(LPCTSTR pstrName)
     if( m_pOwner == NULL ) return CMarkupNode();
     ULONG iPos = m_pOwner->m_pElements[m_iPos].iChild;
     while( iPos != 0 ) {
-        if( _tcscmp(m_pOwner->m_pstrXML + m_pOwner->m_pElements[iPos].iStart, pstrName) == 0 ) {
+        if( _tcsicmp(m_pOwner->m_pstrXML + m_pOwner->m_pElements[iPos].iStart, pstrName) == 0 ) {
             return CMarkupNode(m_pOwner, iPos);
         }
         iPos = m_pOwner->m_pElements[iPos].iNext;
@@ -108,7 +108,7 @@ LPCTSTR CMarkupNode::GetAttributeValue(LPCTSTR pstrName)
     if( m_pOwner == NULL ) return NULL;
     if( m_nAttributes == 0 ) _MapAttributes();
     for( int i = 0; i < m_nAttributes; i++ ) {
-        if( _tcscmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) return m_pOwner->m_pstrXML + m_aAttributes[i].iValue;
+        if( _tcsicmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) return m_pOwner->m_pstrXML + m_aAttributes[i].iValue;
     }
     return _T("");
 }
@@ -127,7 +127,7 @@ bool CMarkupNode::GetAttributeValue(LPCTSTR pstrName, LPTSTR pstrValue, SIZE_T c
     if( m_pOwner == NULL ) return false;
     if( m_nAttributes == 0 ) _MapAttributes();
     for( int i = 0; i < m_nAttributes; i++ ) {
-        if( _tcscmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) {
+        if( _tcsicmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) {
             _tcsncpy(pstrValue, m_pOwner->m_pstrXML + m_aAttributes[i].iValue, cchMax);
             return true;
         }
@@ -154,7 +154,7 @@ bool CMarkupNode::HasAttribute(LPCTSTR pstrName)
     if( m_pOwner == NULL ) return false;
     if( m_nAttributes == 0 ) _MapAttributes();
     for( int i = 0; i < m_nAttributes; i++ ) {
-        if( _tcscmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) return true;
+        if( _tcsicmp(m_pOwner->m_pstrXML + m_aAttributes[i].iName, pstrName) == 0 ) return true;
     }
     return false;
 }
@@ -489,7 +489,7 @@ bool CMarkup::_Parse(LPTSTR& pstrText, ULONG iParent)
                 pstrText += 2;
                 _SkipWhitespace(pstrText);
                 SIZE_T cchName = pstrNameEnd - pstrName;
-                if( _tcsncmp(pstrText, pstrName, cchName) != 0 ) return _Failed(_T("Unmatched closing tag"), pstrText);
+                if( _tcsnicmp(pstrText, pstrName, cchName) != 0 ) return _Failed(_T("Unmatched closing tag"), pstrText);
                 pstrText += cchName;
                 _SkipWhitespace(pstrText);
                 if( *pstrText++ != _T('>') ) return _Failed(_T("Unmatched closing tag"), pstrText);

@@ -2388,7 +2388,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromClass(CControlUI* pThis, 
     LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
     LPCTSTR pType = pThis->GetClass();
     CStdPtrArray* pFoundControls = pThis->GetManager()->GetSubControlsByClass();
-    if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) {
+    if( _tcsicmp(pstrType, _T("*")) == 0 || _tcsicmp(pstrType, pType) == 0 ) {
         int iIndex = -1;
         while( pFoundControls->GetAt(++iIndex) != NULL ) ;
         if( iIndex < pFoundControls->GetSize() ) pFoundControls->SetAt(iIndex, pThis);
@@ -2401,7 +2401,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlsFromClass(CControlUI* pThis,
 {
     LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
     LPCTSTR pType = pThis->GetClass();
-    if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) 
+    if( _tcsicmp(pstrType, _T("*")) == 0 || _tcsicmp(pstrType, pType) == 0 ) 
         pThis->GetManager()->GetSubControlsByClass()->Add((LPVOID)pThis);
     return NULL;
 }

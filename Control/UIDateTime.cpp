@@ -305,9 +305,9 @@ namespace DuiLib
 
 	void CDateTimeUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 	{
-		if (_tcscmp(pstrName, _T("dtstyle")) == 0)
+		if (_tcsicmp(pstrName, _T("dtstyle")) == 0)
 		{
-			if (_tcscmp(pstrValue, DTUI_TIMEFORMAT) == 0)
+			if (_tcsicmp(pstrValue, DTUI_TIMEFORMAT) == 0)
 			{
 				m_uDptStyle = DTS_TIMEFORMAT;
 				m_nDTUpdateFlag = DT_UPDATE;

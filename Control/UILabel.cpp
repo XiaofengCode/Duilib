@@ -172,7 +172,7 @@ namespace DuiLib
 
 	void CLabelUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("align")) == 0 ) {
+		if( _tcsicmp(pstrName, _T("align")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
 				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT | DT_SINGLELINE);
 				m_uTextStyle |= DT_LEFT;
@@ -186,7 +186,7 @@ namespace DuiLib
 				m_uTextStyle |= DT_RIGHT;
 			}
 		}
-		else if( _tcscmp(pstrName, _T("valign")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("valign")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("top")) != NULL ) {
 				m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
 				m_uTextStyle |= (DT_TOP | DT_SINGLELINE);
@@ -200,24 +200,24 @@ namespace DuiLib
 				m_uTextStyle |= (DT_BOTTOM | DT_SINGLELINE);
 			}
 		}
-		else if( _tcscmp(pstrName, _T("endellipsis")) == 0 ) {
-			if( _tcscmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
+		else if( _tcsicmp(pstrName, _T("endellipsis")) == 0 ) {
+			if( _tcsicmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
 			else m_uTextStyle &= ~DT_END_ELLIPSIS;
 		}    
-		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("textcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("disabledtextcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetDisabledTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textpadding")) == 0 ) {
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
 			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
@@ -226,51 +226,51 @@ namespace DuiLib
 			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 			SetTextPadding(rcTextPadding);
 		}
-		else if( _tcscmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
 
-		else if( _tcscmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcsicmp(pstrValue, _T("true")) == 0);
 		//else if( _tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingHintAntiAlias(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("transshadow")) == 0 ) SetTransShadow(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("transtext")) == 0 ) SetTransText(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("transshadow1")) == 0 ) SetTransShadow1(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("transtext1")) == 0 ) SetTransText1(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("gradientangle")) == 0 ) SetGradientAngle(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("enabledstroke")) == 0 ) SetEnabledStroke(_tcscmp(pstrValue, _T("true")) == 0);
-		else if( _tcscmp(pstrName, _T("enabledshadow")) == 0 ) SetEnabledShadow(_tcscmp(pstrValue, _T("true")) == 0);
-		else if( _tcscmp(pstrName, _T("transstroke")) == 0 ) SetTransStroke(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("gradientlength")) == 0 ) SetGradientLength(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("shadowoffset")) == 0 ){
+		else if( _tcsicmp(pstrName, _T("transshadow")) == 0 ) SetTransShadow(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("transtext")) == 0 ) SetTransText(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("transshadow1")) == 0 ) SetTransShadow1(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("transtext1")) == 0 ) SetTransText1(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("gradientangle")) == 0 ) SetGradientAngle(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("enabledstroke")) == 0 ) SetEnabledStroke(_tcsicmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("enabledshadow")) == 0 ) SetEnabledShadow(_tcsicmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("transstroke")) == 0 ) SetTransStroke(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("gradientlength")) == 0 ) SetGradientLength(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("shadowoffset")) == 0 ){
 			LPTSTR pstr = NULL;
 			int offsetx = _tcstol(pstrValue, &pstr, 10);	ASSERT(pstr);    
 			int offsety = _tcstol(pstr + 1, &pstr, 10);		ASSERT(pstr);
 			SetShadowOffset(offsetx,offsety);
 		}
-		else if( _tcscmp(pstrName, _T("textcolor1")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textcolor1")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextColor1(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("textshadowcolora")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textshadowcolora")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextShadowColorA(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("textshadowcolorb")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textshadowcolorb")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextShadowColorB(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("strokecolor")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("strokecolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetStrokeColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("autocalcwidth")) == 0 ) {
-			SetAutoCalcWidth(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("autocalcwidth")) == 0 ) {
+			SetAutoCalcWidth(_tcsicmp(pstrValue, _T("true")) == 0);
 		}
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}

@@ -217,10 +217,10 @@ namespace DuiLib {
 
 	void CSliderTabLayoutUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("direction")) == 0 && _tcscmp( pstrValue, _T("vertical")) == 0 ) m_bIsVertical = true; // pstrValue = "vertical" or "horizontal"
-		else if( _tcscmp(pstrName, _T("ellapse")) == 0)m_nEllapse = _ttoi(pstrValue);
-		else if( _tcscmp(pstrName, _T("framecount")) == 0)m_nFrameCount = _ttoi(pstrValue);
-		else if( _tcscmp(pstrName, _T("scrollwheel")) == 0 && _tcscmp( pstrValue, _T("true")) == 0)m_bScrollWheel = true;
+		if( _tcsicmp(pstrName, _T("direction")) == 0 && _tcsicmp( pstrValue, _T("vertical")) == 0 ) m_bIsVertical = true; // pstrValue = "vertical" or "horizontal"
+		else if( _tcsicmp(pstrName, _T("ellapse")) == 0)m_nEllapse = _ttoi(pstrValue);
+		else if( _tcsicmp(pstrName, _T("framecount")) == 0)m_nFrameCount = _ttoi(pstrValue);
+		else if( _tcsicmp(pstrName, _T("scrollwheel")) == 0 && _tcsicmp( pstrValue, _T("true")) == 0)m_bScrollWheel = true;
 		return CTabLayoutUI::SetAttribute(pstrName, pstrValue);
 	}
 

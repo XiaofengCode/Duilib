@@ -907,38 +907,38 @@ void CMenuElementUI::SetShowExplandIcon(bool bShow)
 
 void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	if( _tcscmp(pstrName, _T("icon")) == 0){
+	if( _tcsicmp(pstrName, _T("icon")) == 0){
 		SetIcon(pstrValue);
 	}
-	else if( _tcscmp(pstrName, _T("iconsize")) == 0 ) {
+	else if( _tcsicmp(pstrName, _T("iconsize")) == 0 ) {
 		LPTSTR pstr = NULL;
 		LONG cx = 0, cy = 0;
 		cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
 		cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);   
 		SetIconSize(cx, cy);
 	}
-	else if( _tcscmp(pstrName, _T("checkitem")) == 0 ) {		
-		SetCheckItem(_tcscmp(pstrValue, _T("true")) == 0 ? true : false);		
+	else if( _tcsicmp(pstrName, _T("checkitem")) == 0 ) {		
+		SetCheckItem(_tcsicmp(pstrValue, _T("true")) == 0 ? true : false);		
 	}
-	else if( _tcscmp(pstrName, _T("ischeck")) == 0 ) {		
+	else if( _tcsicmp(pstrName, _T("ischeck")) == 0 ) {		
 		if (CMenuWnd::GetGlobalContextMenuObserver().GetMenuCheckInfo() != NULL && CMenuWnd::GetGlobalContextMenuObserver().GetMenuCheckInfo()->find(GetName()) == CMenuWnd::GetGlobalContextMenuObserver().GetMenuCheckInfo()->end())
 		{
-			SetChecked(_tcscmp(pstrValue, _T("true")) == 0 ? true : false);
+			SetChecked(_tcsicmp(pstrValue, _T("true")) == 0 ? true : false);
 		}	
 	}	
-	else if( _tcscmp(pstrName, _T("linetype")) == 0){
-		if (_tcscmp(pstrValue, _T("true")) == 0)
+	else if( _tcsicmp(pstrName, _T("linetype")) == 0){
+		if (_tcsicmp(pstrValue, _T("true")) == 0)
 			SetLineType();
 	}
-	else if( _tcscmp(pstrName, _T("expland")) == 0 ) {
-		SetShowExplandIcon(_tcscmp(pstrValue, _T("true")) == 0 ? true : false);
+	else if( _tcsicmp(pstrName, _T("expland")) == 0 ) {
+		SetShowExplandIcon(_tcsicmp(pstrValue, _T("true")) == 0 ? true : false);
 	}
-	else if( _tcscmp(pstrName, _T("linecolor")) == 0){
+	else if( _tcsicmp(pstrName, _T("linecolor")) == 0){
 		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 		LPTSTR pstr = NULL;
 		SetLineColor(_tcstoul(pstrValue, &pstr, 16));
 	}
-	else if( _tcscmp(pstrName, _T("linepadding")) == 0 ) {
+	else if( _tcsicmp(pstrName, _T("linepadding")) == 0 ) {
 		RECT rcInset = { 0 };
 		LPTSTR pstr = NULL;
 		rcInset.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
@@ -947,7 +947,7 @@ void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		rcInset.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 		SetLinePadding(rcInset);
 	}
-	else if	( _tcscmp(pstrName, _T("height")) == 0){
+	else if	( _tcsicmp(pstrName, _T("height")) == 0){
 		SetFixedHeight(_ttoi(pstrValue));
 	}
 	else

@@ -391,44 +391,44 @@ namespace DuiLib
 
 	void CTreeNodeUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 	{
-		if(_tcscmp(pstrName, _T("text")) == 0 )
+		if(_tcsicmp(pstrName, _T("text")) == 0 )
 			pItemButton->SetText(pstrValue);
-		else if(_tcscmp(pstrName, _T("horizattr")) == 0 )
+		else if(_tcsicmp(pstrName, _T("horizattr")) == 0 )
 			pHoriz->ApplyAttributeList(pstrValue);
-		else if(_tcscmp(pstrName, _T("dotlineattr")) == 0 )
+		else if(_tcsicmp(pstrName, _T("dotlineattr")) == 0 )
 			pDottedLine->ApplyAttributeList(pstrValue);
-		else if(_tcscmp(pstrName, _T("folderattr")) == 0 )
+		else if(_tcsicmp(pstrName, _T("folderattr")) == 0 )
 			pFolderButton->ApplyAttributeList(pstrValue);
-		else if(_tcscmp(pstrName, _T("checkboxattr")) == 0 )
+		else if(_tcsicmp(pstrName, _T("checkboxattr")) == 0 )
 			pCheckBox->ApplyAttributeList(pstrValue);
-		else if(_tcscmp(pstrName, _T("itemattr")) == 0 )
+		else if(_tcsicmp(pstrName, _T("itemattr")) == 0 )
 			pItemButton->ApplyAttributeList(pstrValue);
-		else if(_tcscmp(pstrName, _T("itemtextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("itemtextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("itemhottextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("itemhottextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemHotTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("selitemtextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("selitemtextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSelItemTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("selitemhottextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("selitemhottextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSelItemHotTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName,_T("defaultexpand")) == 0)
-			GetFolderButton()->Selected(_tcscmp(pstrValue,_T("true")) == 0);
+		else if(_tcsicmp(pstrName,_T("defaultexpand")) == 0)
+			GetFolderButton()->Selected(_tcsicmp(pstrValue,_T("true")) == 0);
 		else CListContainerElementUI::SetAttribute(pstrName,pstrValue);
 	}
 
@@ -991,31 +991,31 @@ namespace DuiLib
 
 	void CTreeViewUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 	{
-		if(_tcscmp(pstrName,_T("visiblefolderbtn")) == 0)
-			SetVisibleFolderBtn(_tcscmp(pstrValue,_T("true")) == 0);
-		else if(_tcscmp(pstrName,_T("visiblecheckbtn")) == 0)
-			SetVisibleCheckBtn(_tcscmp(pstrValue,_T("true")) == 0);
-		else if(_tcscmp(pstrName,_T("itemminwidth")) == 0)
+		if(_tcsicmp(pstrName,_T("visiblefolderbtn")) == 0)
+			SetVisibleFolderBtn(_tcsicmp(pstrValue,_T("true")) == 0);
+		else if(_tcsicmp(pstrName,_T("visiblecheckbtn")) == 0)
+			SetVisibleCheckBtn(_tcsicmp(pstrValue,_T("true")) == 0);
+		else if(_tcsicmp(pstrName,_T("itemminwidth")) == 0)
 			SetItemMinWidth(_ttoi(pstrValue));
-		else if(_tcscmp(pstrName, _T("itemtextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("itemtextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("itemhottextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("itemhottextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemHotTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("selitemtextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("selitemtextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSelItemTextColor(clrColor);
 		}
-		else if(_tcscmp(pstrName, _T("selitemhottextcolor")) == 0 ){
+		else if(_tcsicmp(pstrName, _T("selitemhottextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);

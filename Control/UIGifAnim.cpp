@@ -70,12 +70,12 @@ namespace DuiLib
 
 	void CGifAnimUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("autoplay")) == 0 ) {
-			SetGifBkAutoPlay(_tcscmp(pstrValue, _T("true")) == 0);
+		if( _tcsicmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
+		else if( _tcsicmp(pstrName, _T("autoplay")) == 0 ) {
+			SetGifBkAutoPlay(_tcsicmp(pstrValue, _T("true")) == 0);
 		}
-		else if( _tcscmp(pstrName, _T("autosize")) == 0 ) {
-			SetAutoSize(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("autosize")) == 0 ) {
+			SetAutoSize(_tcsicmp(pstrValue, _T("true")) == 0);
 		}
 		else
 			CLabelUI::SetAttribute(pstrName, pstrValue);

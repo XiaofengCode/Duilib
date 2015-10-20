@@ -959,15 +959,105 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 
                     sImageResType = sValue;
 					++image_count;
-                }
-                else if( sItem == _T("dest") ) {
-                    rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-                    rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-                    rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-					if (rcItem.right > rc.right) rcItem.right = rc.right;
-                    rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
-                }
+				}
+				//Kevin, 支持相对右边和下边的偏移
+				else if( sItem == _T("dest") ) {
+// 					ASSERT(FALSE);
+// 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
+// 					rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+// 					rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+// 					if (rcItem.right > rc.right) rcItem.right = rc.right;
+// 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+//					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
+
+					bool bRight = false;
+					bool bBottom = false;
+					int x = _tcstol(sValue.GetData(), &pstr, 10);
+					ASSERT(pstr);
+					if (x < 0)
+					{
+						bRight = true;
+					}
+					else if (x == 0)
+					{
+						LPCTSTR pstrTmp = pstr - 1;
+						while (pstrTmp && *pstrTmp && (*pstrTmp) >= '0' && (*pstrTmp) <= '9')
+						{
+							--pstrTmp;
+						}
+						if (pstrTmp && (*pstrTmp) == '-')
+						{
+							bRight = true;
+						}
+					}
+					int y = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);
+					if (y < 0)
+					{
+						bRight = true;
+					}
+					else if (y == 0)
+					{
+						LPCTSTR pstrTmp = pstr - 1;
+						while (pstrTmp && *pstrTmp && (*pstrTmp) >= '0' && (*pstrTmp) <= '9')
+						{
+							--pstrTmp;
+						}
+						if (pstrTmp && (*pstrTmp) == '-')
+						{
+							bBottom = true;
+						}
+					}
+					int cx = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);
+					int cy = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);
+					if (bRight)
+					{
+						rcItem.right = rc.right + x;
+						rcItem.left = rc.right - cx;
+						if (rcItem.left < rc.left)
+						{
+							rcItem.left = rc.left;
+						}
+					}
+					else
+					{
+						rcItem.left = rc.left + x;  
+						rcItem.right = rc.left + cx;
+						if (rcItem.right > rc.right)
+						{
+							rcItem.right = rc.right;
+						}
+					}
+
+					if (bBottom)
+					{
+						rcItem.bottom = rc.bottom + y;
+						rcItem.top = rc.bottom - cy;
+						if (rcItem.top < rc.top)
+						{
+							rcItem.top = rc.top;
+						}
+					}
+					else
+					{
+						rcItem.top = rc.top + y;  
+						rcItem.bottom = rc.top + cy;
+						if (rcItem.bottom > rc.bottom)
+						{
+							rcItem.bottom = rc.bottom;
+						}
+					}
+				}
+// 				else if( sItem == _T("dest") ) {
+// 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
+// 					rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+// 					rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+// 					if (rcItem.right > rc.right) rcItem.right = rc.right;
+// 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+// 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
+// 				}
                 else if( sItem == _T("source") ) {
                     rcBmpPart.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
                     rcBmpPart.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
