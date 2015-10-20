@@ -172,7 +172,10 @@ void CPaintManagerUI::Init(HWND hWnd)
     m_hDcPaint = ::GetDC(hWnd);
     // We'll want to filter messages globally too
     m_aPreMessages.Add(this);
-	SetWindowText(hWnd, m_sTitile);
+	SetWindowText(hWnd, m_sTitile);\
+	
+	int nValue = GetDeviceCaps(m_hDcPaint, LOGPIXELSX);
+	m_nScale = nValue / 96.0;
 }
 
 HINSTANCE CPaintManagerUI::GetInstance()
@@ -335,6 +338,11 @@ HWND CPaintManagerUI::GetPaintWindow() const
 HWND CPaintManagerUI::GetTooltipWindow() const
 {
     return m_hwndTooltip;
+}
+
+double CPaintManagerUI::GetDpiScale() const
+{
+	return m_nScale;
 }
 
 HDC CPaintManagerUI::GetPaintDC() const

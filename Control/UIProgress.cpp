@@ -113,12 +113,18 @@ namespace DuiLib
 
 		if( !m_sForeImage.IsEmpty() ) {
 			m_sForeImageModify.Empty();
+			double S = GetScaleDpi();
 			if (m_bStretchForeImage)
-				m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rc.left, rc.top, rc.right, rc.bottom);
+			{
+				m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"),
+					(int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+			}
 			else
+			{
 				m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d' source='%d,%d,%d,%d'")
-				, rc.left, rc.top, rc.right, rc.bottom
-				, rc.left, rc.top, rc.right, rc.bottom);
+					, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S)
+					, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+			}
 
 			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage, (LPCTSTR)m_sForeImageModify) ) m_sForeImage.Empty();
 			else return;

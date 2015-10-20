@@ -894,6 +894,8 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 {
 	if ((pManager == NULL) || (hDC == NULL)) return false;
 
+	double S = pManager->GetDpiScale();
+
     // 1¡¢aaa.jpg
     // 2¡¢file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' 
     // mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false'
@@ -961,11 +963,11 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 					++image_count;
                 }
                 else if( sItem == _T("dest") ) {
-                    rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-                    rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-                    rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+					rcItem.left = rc.left + S*_tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);
+					rcItem.top = rc.top + S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+					rcItem.right = rc.left + S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
 					if (rcItem.right > rc.right) rcItem.right = rc.right;
-                    rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+					rcItem.bottom = rc.top + S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
                 }
                 else if( sItem == _T("source") ) {

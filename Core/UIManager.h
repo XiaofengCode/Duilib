@@ -170,6 +170,8 @@ public:
     HWND GetPaintWindow() const;
     HWND GetTooltipWindow() const;
 
+	double GetDpiScale() const;
+
     POINT GetMousePos() const;
     SIZE GetClientSize() const;
     SIZE GetInitSize();
@@ -345,6 +347,8 @@ private:
     static CControlUI* CALLBACK __FindControlsFromClass(CControlUI* pThis, LPVOID pData);
 
 private:
+	double	m_nScale;
+
     HWND m_hWndPaint;
 	int m_nOpacity;
     HDC m_hDcPaint;

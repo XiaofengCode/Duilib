@@ -172,6 +172,8 @@ namespace DuiLib
 
 	void CLabelUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
+		double S = GetManager()->GetDpiScale();
+		
 		if( _tcscmp(pstrName, _T("align")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
 				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT | DT_SINGLELINE);
@@ -220,10 +222,10 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
-			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-			rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+			rcTextPadding.left = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+			rcTextPadding.top = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+			rcTextPadding.right = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+			rcTextPadding.bottom = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetTextPadding(rcTextPadding);
 		}
 		else if( _tcscmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
@@ -241,8 +243,8 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("gradientlength")) == 0 ) SetGradientLength(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("shadowoffset")) == 0 ){
 			LPTSTR pstr = NULL;
-			int offsetx = _tcstol(pstrValue, &pstr, 10);	ASSERT(pstr);    
-			int offsety = _tcstol(pstr + 1, &pstr, 10);		ASSERT(pstr);
+			int offsetx = S*_tcstol(pstrValue, &pstr, 10);	ASSERT(pstr);
+			int offsety = S*_tcstol(pstr + 1, &pstr, 10);		ASSERT(pstr);
 			SetShadowOffset(offsetx,offsety);
 		}
 		else if( _tcscmp(pstrName, _T("textcolor1")) == 0 ) {

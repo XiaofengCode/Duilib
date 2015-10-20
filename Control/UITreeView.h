@@ -14,7 +14,7 @@ namespace DuiLib
 	class UILIB_API CTreeNodeUI : public CListContainerElementUI
 	{
 	public:
-		CTreeNodeUI(CTreeNodeUI* _ParentNode = NULL);
+		CTreeNodeUI(CTreeNodeUI* _ParentNode = NULL, CPaintManagerUI* pManager = NULL);
 		~CTreeNodeUI(void);
 
 	public:
