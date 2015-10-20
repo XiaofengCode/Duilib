@@ -47,7 +47,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
     m_pCallback = pCallback;
     CMarkupNode root = m_xml.GetRoot();
     if( !root.IsValid() ) return NULL;
-
+	double S = pManager->GetDpiScale();
 	if( pManager ) {
 		LPCTSTR pstrClass = NULL;
 		int nAttributes = 0;
@@ -65,44 +65,44 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     pstrValue = CDuiStringTable::FormatString(pManager, root.GetAttributeValue(i));
                     if( _tcsicmp(pstrName, _T("size")) == 0 ) {
                         LPTSTR pstr = NULL;
-                        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+                        int cx = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        int cy = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
                         pManager->SetInitSize(cx, cy);
                     } 
                     else if( _tcsicmp(pstrName, _T("sizebox")) == 0 ) {
                         RECT rcSizeBox = { 0 };
                         LPTSTR pstr = NULL;
-                        rcSizeBox.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        rcSizeBox.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-                        rcSizeBox.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-                        rcSizeBox.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+                        rcSizeBox.left = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        rcSizeBox.top = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+                        rcSizeBox.right = S * _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+                        rcSizeBox.bottom = S * _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
                         pManager->SetSizeBox(rcSizeBox);
                     }
                     else if( _tcsicmp(pstrName, _T("caption")) == 0 ) {
                         RECT rcCaption = { 0 };
                         LPTSTR pstr = NULL;
-                        rcCaption.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        rcCaption.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-                        rcCaption.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-                        rcCaption.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+                        rcCaption.left = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        rcCaption.top = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+                        rcCaption.right = S * _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+                        rcCaption.bottom = S * _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
                         pManager->SetCaptionRect(rcCaption);
                     }
                     else if( _tcsicmp(pstrName, _T("roundcorner")) == 0 ) {
                         LPTSTR pstr = NULL;
-                        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+                        int cx = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        int cy = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
                         pManager->SetRoundCorner(cx, cy);
                     } 
                     else if( _tcsicmp(pstrName, _T("mininfo")) == 0 ) {
                         LPTSTR pstr = NULL;
-                        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+                        int cx = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        int cy = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
                         pManager->SetMinInfo(cx, cy);
                     }
                     else if( _tcsicmp(pstrName, _T("maxinfo")) == 0 ) {
                         LPTSTR pstr = NULL;
-                        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-                        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+                        int cx = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+                        int cy = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
                         pManager->SetMaxInfo(cx, cy);
                     }
                     else if( _tcsicmp(pstrName, _T("showdirty")) == 0 ) {
@@ -145,7 +145,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                         pManager->SetDefaultSelectedBkColor(clrColor);
                     } 
 					else if( _tcsicmp(pstrName, _T("shadowsize")) == 0 ) {
-						pManager->GetShadow()->SetSize(_ttoi(pstrValue));
+						pManager->GetShadow()->SetSize(S * _ttoi(pstrValue));
 					}
 					else if( _tcsicmp(pstrName, _T("shadowsharpness")) == 0 ) {
 						pManager->GetShadow()->SetSharpness(_ttoi(pstrValue));
@@ -155,8 +155,8 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					}
 					else if( _tcsicmp(pstrName, _T("shadowposition")) == 0 ) {
 						LPTSTR pstr = NULL;
-						int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-						int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+						int cx = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+						int cy = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
 						pManager->GetShadow()->SetPosition(cx, cy);
 					}
 					else if( _tcsicmp(pstrName, _T("shadowcolor")) == 0 ) {
@@ -168,10 +168,10 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if( _tcsicmp(pstrName, _T("shadowcorner")) == 0 ) {
 						RECT rcCorner = { 0 };
 						LPTSTR pstr = NULL;
-						rcCorner.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-						rcCorner.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-						rcCorner.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-						rcCorner.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+						rcCorner.left = S * _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+						rcCorner.top = S * _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+						rcCorner.right = S * _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+						rcCorner.bottom = S * _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 						pManager->GetShadow()->SetShadowCorner(rcCorner);
 					}
 					else if( _tcsicmp(pstrName, _T("shadowimage")) == 0 ) {
@@ -236,7 +236,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 			else if( _tcsicmp(pstrClass, _T("Font")) == 0 ) {
 				nAttributes = node.GetAttributeCount();
 				LPCTSTR pFontName = NULL;
-				int size = 12;
+				int size = S * 12;
 				bool bold = false;
 				bool underline = false;
 				bool italic = false;
@@ -249,7 +249,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 						pFontName = pstrValue;
 					}
 					else if( _tcsicmp(pstrName, _T("size")) == 0 ) {
-						size = _tcstol(pstrValue, &pstr, 10);
+						size =S *  _tcstol(pstrValue, &pstr, 10);
 					}
 					else if( _tcsicmp(pstrName, _T("bold")) == 0 ) {
 						bold = (_tcsicmp(pstrValue, _T("true")) == 0);

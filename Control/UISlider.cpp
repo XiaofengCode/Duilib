@@ -311,6 +311,7 @@ namespace DuiLib
 	{
 		CProgressUI::PaintStatusImage(hDC);
 
+		double S = GetScaleDpi();
 		RECT rcThumb = GetThumbRect();
 		rcThumb.left -= m_rcItem.left;
 		rcThumb.top -= m_rcItem.top;
@@ -319,7 +320,9 @@ namespace DuiLib
 		if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
 			if( !m_sThumbPushedImage.IsEmpty() ) {
 				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
+					(int)(rcThumb.left / S), (int)(rcThumb.top / S), 
+					(int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
 				if( !DrawImage(hDC, (LPCTSTR)m_sThumbPushedImage, (LPCTSTR)m_sImageModify) ) m_sThumbPushedImage.Empty();
 				else return;
 			}
@@ -327,7 +330,9 @@ namespace DuiLib
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
 			if( !m_sThumbHotImage.IsEmpty() ) {
 				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
+					(int)(rcThumb.left / S), (int)(rcThumb.top / S), 
+					(int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
 				if( !DrawImage(hDC, (LPCTSTR)m_sThumbHotImage, (LPCTSTR)m_sImageModify) ) m_sThumbHotImage.Empty();
 				else return;
 			}
@@ -335,7 +340,8 @@ namespace DuiLib
 
 		if( !m_sThumbImage.IsEmpty() ) {
 			m_sImageModify.Empty();
-			m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+			m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
+				(int)(rcThumb.left / S), (int)(rcThumb.top / S), (int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
 			if( !DrawImage(hDC, (LPCTSTR)m_sThumbImage, (LPCTSTR)m_sImageModify) ) m_sThumbImage.Empty();
 			else return;
 		}

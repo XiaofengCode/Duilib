@@ -111,6 +111,17 @@ void CControlUI::SetText(LPCTSTR pstrText)
     Invalidate();
 }
 
+double CControlUI::GetScaleDpi()
+{
+	double S = 1.0;
+	if (m_pManager)
+	{
+		S = m_pManager->GetDpiScale();
+	}
+
+	return S;
+}
+
 DWORD CControlUI::GetBkColor() const
 {
     return m_dwBackColor;
@@ -726,7 +737,12 @@ void CControlUI::DoEvent(TEventUI& event)
             return;
         }
     }
-
+    if( event.Type == UIEVENT_DBLCLICK )
+    {
+        m_pManager->SendNotify(this, DUI_MSGTYPE_DBCLICK, event.wParam, event.lParam);
+        //return;
+    }
+    
     if( m_pParent != NULL ) m_pParent->DoEvent(event);
 }
 
@@ -757,13 +773,14 @@ CDuiString CControlUI::GetVirtualWnd() const
 
 void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-    if( _tcsicmp(pstrName, _T("pos")) == 0 ) {
+	double S = GetManager()->GetDpiScale();
+	if( _tcsicmp(pstrName, _T("pos")) == 0 ) {
         RECT rcPos = { 0 };
         LPTSTR pstr = NULL;
-        rcPos.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcPos.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcPos.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+		rcPos.left = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+		rcPos.top = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+		rcPos.right = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+		rcPos.bottom = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SIZE szXY = {rcPos.left >= 0 ? rcPos.left : rcPos.right, rcPos.top >= 0 ? rcPos.top : rcPos.bottom};
         SetFixedXY(szXY);
         SetFixedWidth(rcPos.right - rcPos.left);
@@ -772,19 +789,19 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("relativepos")) == 0 ) {
         SIZE szMove,szZoom;
         LPTSTR pstr = NULL;
-        szMove.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        szMove.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        szZoom.cx = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        szZoom.cy = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr); 
+		szMove.cx = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+		szMove.cy = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+		szZoom.cx = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+		szZoom.cy = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SetRelativePos(szMove,szZoom);
     }
     else if( _tcsicmp(pstrName, _T("padding")) == 0 ) {
         RECT rcPadding = { 0 };
         LPTSTR pstr = NULL;
-        rcPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+		rcPadding.left = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+		rcPadding.top = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+		rcPadding.right = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+		rcPadding.bottom = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SetPadding(rcPadding);
     }
     else if( _tcsicmp(pstrName, _T("bkcolor")) == 0 || _tcsicmp(pstrName, _T("bkcolor1")) == 0 ) {
@@ -839,17 +856,17 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		{
 			RECT rcPadding = { 0 };
 			LPTSTR pstr = NULL;
-			rcPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
-			rcPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-			rcPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-			rcPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcPadding.left = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+			rcPadding.top = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+			rcPadding.right = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+			rcPadding.bottom = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetBorderSize(rcPadding);
 		}
 	}
-	else if( _tcsicmp(pstrName, _T("leftbordersize")) == 0 ) SetLeftBorderSize(_ttoi(pstrValue));
-	else if( _tcsicmp(pstrName, _T("topbordersize")) == 0 ) SetTopBorderSize(_ttoi(pstrValue));
-	else if( _tcsicmp(pstrName, _T("rightbordersize")) == 0 ) SetRightBorderSize(_ttoi(pstrValue));
-	else if( _tcsicmp(pstrName, _T("bottombordersize")) == 0 ) SetBottomBorderSize(_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("leftbordersize")) == 0) SetLeftBorderSize(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("topbordersize")) == 0) SetTopBorderSize(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("rightbordersize")) == 0) SetRightBorderSize(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("bottombordersize")) == 0) SetBottomBorderSize(S*_ttoi(pstrValue));
 	else if( _tcsicmp(pstrName, _T("borderstyle")) == 0 ) SetBorderStyle(_ttoi(pstrValue));
     else if( _tcsicmp(pstrName, _T("borderround")) == 0 ) {
         SIZE cxyRound = { 0 };
@@ -859,12 +876,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetBorderRound(cxyRound);
     }
     else if( _tcsicmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("width")) == 0 ) SetFixedWidth(_ttoi(pstrValue));
-    else if( _tcsicmp(pstrName, _T("height")) == 0 ) SetFixedHeight(_ttoi(pstrValue));
-    else if( _tcsicmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(pstrValue));
-    else if( _tcsicmp(pstrName, _T("minheight")) == 0 ) SetMinHeight(_ttoi(pstrValue));
-    else if( _tcsicmp(pstrName, _T("maxwidth")) == 0 ) SetMaxWidth(_ttoi(pstrValue));
-    else if( _tcsicmp(pstrName, _T("maxheight")) == 0 ) SetMaxHeight(_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("width")) == 0) SetFixedWidth(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("height")) == 0) SetFixedHeight(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("minwidth")) == 0) SetMinWidth(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("minheight")) == 0) SetMinHeight(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("maxwidth")) == 0) SetMaxWidth(S*_ttoi(pstrValue));
+	else if (_tcsicmp(pstrName, _T("maxheight")) == 0) SetMaxHeight(S*_ttoi(pstrValue));
     else if( _tcsicmp(pstrName, _T("name")) == 0 ) SetName(pstrValue);
     else if( _tcsicmp(pstrName, _T("text")) == 0 ) SetText(pstrValue);
     else if( _tcsicmp(pstrName, _T("tooltip")) == 0 ) SetToolTip(pstrValue);
@@ -884,6 +901,9 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
     CDuiString sItem;
     CDuiString sValue;
     while( *pstrList != _T('\0') ) {
+		
+		std::vector<TCHAR> sep;
+
         sItem.Empty();
         sValue.Empty();
         while( *pstrList != _T('\0') && *pstrList != _T('=') ) {
@@ -892,18 +912,39 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
                 sItem += *pstrList++;
             }
         }
+
         ASSERT( *pstrList == _T('=') );
         if( *pstrList++ != _T('=') ) return this;
-        ASSERT( *pstrList == _T('\"') );
-        if( *pstrList++ != _T('\"') ) return this;
-        while( *pstrList != _T('\0') && *pstrList != _T('\"') ) {
+		ASSERT(*pstrList == _T('\"') || *pstrList == _T('\''));		
+		if (*pstrList != _T('\"') && *pstrList != _T('\'')) return this;				
+		sep.push_back(*pstrList);
+		pstrList++;
+		
+        //while( *pstrList != _T('\0') && *pstrList != _T('\"') ) {
+		while (*pstrList != _T('\0') && sep.size() != 0) 
+		{
             LPTSTR pstrTemp = ::CharNext(pstrList);
             while( pstrList < pstrTemp) {
                 sValue += *pstrList++;
             }
+
+			TCHAR s = sep.back();
+			if (s == *pstrList)
+			{
+				sep.pop_back();
+			}
+			else
+			{
+				s = *pstrList;
+				if (s == _T('\"') || s == _T('\''))
+				{
+					sep.push_back(s);
+				}
+			}
         }
-        ASSERT( *pstrList == _T('\"') );
-        if( *pstrList++ != _T('\"') ) return this;
+        //ASSERT( *pstrList == _T('\"') );
+        //if( *pstrList++ != _T('\"') ) return this;
+		pstrList++;
         SetAttribute(sItem, sValue);
         if( *pstrList++ != _T(' ') ) return this;
     }

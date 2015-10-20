@@ -1683,8 +1683,13 @@ void CListHeaderItemUI::PaintStatusImage(HDC hDC)
         rcThumb.right -= m_rcItem.left;
         rcThumb.bottom -= m_rcItem.top;
 
+		double S = GetScaleDpi();
         m_sSepImageModify.Empty();
-        m_sSepImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+        m_sSepImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
+			(int)(rcThumb.left / S), 
+			(int)(rcThumb.top / S), 
+			(int)(rcThumb.right / S), 
+			(int)(rcThumb.bottom / S));
         if( !DrawImage(hDC, (LPCTSTR)m_sSepImage, (LPCTSTR)m_sSepImageModify) ) m_sSepImage.Empty();
     }
 }

@@ -12,6 +12,7 @@ namespace DuiLib
 
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
+		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 		CContainerUI* GetOwner() const;
 		void SetOwner(CContainerUI* pOwner);

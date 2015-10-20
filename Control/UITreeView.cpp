@@ -4,7 +4,7 @@
 #pragma warning( disable: 4251 )
 namespace DuiLib
 {
-	CTreeNodeUI::CTreeNodeUI( CTreeNodeUI* _ParentNode /*= NULL*/ )
+	CTreeNodeUI::CTreeNodeUI( CTreeNodeUI* _ParentNode /*= NULL*/, CPaintManagerUI* pManager /*= NULL*/ )
 	{
 		m_dwItemTextColor		= 0x00000000;
 		m_dwItemHotTextColor	= 0;
@@ -12,20 +12,29 @@ namespace DuiLib
 		m_dwSelItemHotTextColor	= 0;
 
 		pTreeView		= NULL;
-		m_bIsVisable	= false;  //edit by redrain 2014.11.7,应该为false,原来为true
+		m_bIsVisable	= false;
 		m_bIsCheckBox	= false;
 		pParentTreeNode	= NULL;
 
-		pHoriz			= new CHorizontalLayoutUI();
-		pFolderButton	= new CCheckBoxUI();
-		pDottedLine		= new CLabelUI();
-		pCheckBox		= new CCheckBoxUI();
-		pItemButton		= new COptionUI();
+		SetManager(pManager, NULL, true);
 
-		this->SetFixedHeight(18);
-	//	this->SetFixedWidth(250);
+		pHoriz			= new CHorizontalLayoutUI();
+		pHoriz->SetManager(pManager, this);
+		pFolderButton	= new CCheckBoxUI();
+		pFolderButton->SetManager(pManager, this);
+		pDottedLine		= new CLabelUI();
+		pDottedLine->SetManager(pManager, this);
+		pCheckBox		= new CCheckBoxUI();
+		pCheckBox->SetManager(pManager, this);
+		pItemButton		= new COptionUI();
+		pItemButton->SetManager(pManager, this);
+
+		double S = pManager->GetDpiScale();
+
+		this->SetFixedHeight(S*18);
+		//this->SetFixedWidth(250);
 		pFolderButton->SetFixedWidth(GetFixedHeight());
-		pDottedLine->SetFixedWidth(2);
+		pDottedLine->SetFixedWidth(S * 2);
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
 
@@ -39,7 +48,7 @@ namespace DuiLib
 				return;
 
 			pDottedLine->SetVisible(_ParentNode->IsVisible());
-			pDottedLine->SetFixedWidth(_ParentNode->GetDottedLine()->GetFixedWidth()+16);
+			pDottedLine->SetFixedWidth(_ParentNode->GetDottedLine()->GetFixedWidth() + S * 16);
 			this->SetParentNode(_ParentNode);
 		}
 
@@ -48,6 +57,14 @@ namespace DuiLib
 		pHoriz->Add(pCheckBox);
 		pHoriz->Add(pItemButton);
 		Add(pHoriz);
+
+		if (pManager)
+		{
+			LPCTSTR pDefaultAttributes = pManager->GetDefaultAttributeList(_T("TreeNode"));
+			if (pDefaultAttributes) {
+				ApplyAttributeList(pDefaultAttributes);
+			}
+		}
 	}
 	
 	CTreeNodeUI::~CTreeNodeUI( void )
@@ -240,74 +257,28 @@ namespace DuiLib
         }
         if(iIndex != iDestIndex) iIndex = iDestIndex;
 
+		if(NULL == static_cast<CTreeNodeUI*>(pControl->GetInterface(_T("TreeNode"))))
+			return false;
+
 		CTreeNodeUI* pIndexNode = static_cast<CTreeNodeUI*>(mTreeNodes.GetAt(iIndex));
+		if(!pIndexNode){
+			if(!mTreeNodes.Add(pControl))
+				return false;
+		}
+		else if(pIndexNode && !mTreeNodes.InsertAt(iIndex,pControl))
+			return false;
+
+		if(!pIndexNode && pTreeView && pTreeView->GetItemAt(GetTreeIndex()+1))
+			pIndexNode = static_cast<CTreeNodeUI*>(pTreeView->GetItemAt(GetTreeIndex()+1)->GetInterface(_T("TreeNode")));
 
 		pControl = CalLocation((CTreeNodeUI*)pControl);
 
-        bool bRet = false;
-        int iTreeIndex = -1;
-        if (pTreeView)
-        {
-            //Get TreeView insert index
-            if (pIndexNode)
-            {
-                iTreeIndex = pIndexNode->GetTreeIndex();
-                bRet = pTreeView->AddAt((CTreeNodeUI*)pControl, iTreeIndex) >= 0;
-                if (bRet)
-                {
-                    mTreeNodes.InsertAt(iIndex, pControl);
-                }
-            }
-            else
-            {
-                CTreeNodeUI *pChildNode = NULL;
-                //insert child node position index(new node insert to tail, default add tail)
-                int iChIndex = -1;
-                //insert child node tree-view position index(new node insert to tail)
-                int iChTreeIndex = -1;
-                //search tree index reverse
-                for (int i = GetCountChild(); i > 0; i++)
-                {
-                    pChildNode = GetChildNode(i - 1);
-                    iChTreeIndex = pChildNode->GetTreeIndex();
-                    if (iChTreeIndex >= GetTreeIndex() && iChTreeIndex <= GetTreeIndex() + GetCountChild() )
-                    {
-                        //new child node position
-                        iChIndex = i;
-                        //child node tree position
-                        iTreeIndex = iChTreeIndex + 1;
-                        break;
-                    }
-                }
-                //child not find tree index directly insert to parent tail
-                if (iTreeIndex <= GetTreeIndex())
-                {
-                    iTreeIndex = GetTreeIndex() + 1;
-                }
-                //insert TreeNode to TreeView
-                bRet = pTreeView->AddAt((CTreeNodeUI*)pControl, iTreeIndex) >= 0;
-                //insert TreeNode to parent TreeNode
-                if (bRet)
-                {
-                    if (iChIndex > 0)
-                        bRet = mTreeNodes.InsertAt(iChIndex, pControl);
-                    else
-                        bRet = mTreeNodes.Add(pControl);
-                }
-            }
-        }
-        else
-        {
-            //parent TreeNode not bind TreeView just insert to parent TreeNode
-            bRet = mTreeNodes.InsertAt(iIndex, pControl);
-        }
+		if(pTreeView && pIndexNode)
+			return pTreeView->AddAt((CTreeNodeUI*)pControl,pIndexNode);
+		else 
+			return pTreeView->Add((CTreeNodeUI*)pControl);
 
-		if(bRet)  //add by redrain 2014.11.7
-		{
-			pControl->SetVisible(GetFolderButton()->IsSelected());
-		}
-
-		return bRet;
+		return true;
 	}
 
 
@@ -545,8 +516,9 @@ namespace DuiLib
 
 	CTreeNodeUI* CTreeNodeUI::CalLocation( CTreeNodeUI* _pTreeNodeUI )
 	{
+		double S = GetScaleDpi();
 		_pTreeNodeUI->GetDottedLine()->SetVisible(true);
-		_pTreeNodeUI->GetDottedLine()->SetFixedWidth(pDottedLine->GetFixedWidth()+16);
+		_pTreeNodeUI->GetDottedLine()->SetFixedWidth(pDottedLine->GetFixedWidth()+16*S);
 		_pTreeNodeUI->SetParentNode(this);
 		_pTreeNodeUI->GetItemButton()->SetGroup(pItemButton->GetGroup());
 		_pTreeNodeUI->SetTreeView(pTreeView);
@@ -635,8 +607,8 @@ namespace DuiLib
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
+		pControl->SetVisibleFolderBtn(m_bVisibleFolderBtn);
 		pControl->SetVisibleCheckBtn(m_bVisibleCheckBtn);
-		pControl->SetVisibleFolderBtn(false);
 		if(m_uItemMinWidth > 0)
 			pControl->SetMinWidth(m_uItemMinWidth);
 
@@ -644,7 +616,6 @@ namespace DuiLib
 
 		if(pControl->GetCountChild() > 0)
 		{
-			pControl->SetVisibleFolderBtn(m_bVisibleFolderBtn);
 			int nCount = pControl->GetCountChild();
 			for(int nIndex = 0;nIndex < nCount;nIndex++)
 			{
@@ -653,10 +624,8 @@ namespace DuiLib
 					Add(pNode);
 			}
 		}
-		
 
 		pControl->SetTreeView(this);
-
 		return true;
 	}
 
@@ -675,18 +644,6 @@ namespace DuiLib
 		if (_tcsicmp(pControl->GetClass(), _T("TreeNodeUI")) != 0)
 			return -1;
 
-		//filter invalidate index
-		int iDestIndex = iIndex;
-		if (iDestIndex < 0)
-		{
-			iDestIndex = 0;
-		}
-		else if (iDestIndex > GetCount())
-		{
-			iDestIndex = GetCount();
-		}
-		if(iIndex != iDestIndex) iIndex = iDestIndex;
-
 		//CTreeNodeUI* pParent = static_cast<CTreeNodeUI*>(GetItemAt(iIndex));
 		//if(!pParent)
 		//	return -1;
@@ -695,15 +652,16 @@ namespace DuiLib
 		pControl->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pControl->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
-		pControl->SetVisibleCheckBtn(m_bVisibleCheckBtn);
 		pControl->SetVisibleFolderBtn(m_bVisibleFolderBtn);
+		pControl->SetVisibleCheckBtn(m_bVisibleCheckBtn);
+
 		if(m_uItemMinWidth > 0)
 			pControl->SetMinWidth(m_uItemMinWidth);
 
 		CListUI::AddAt(pControl,iIndex);
 
 		if(pControl->GetCountChild() > 0)
-		{	
+		{
 			int nCount = pControl->GetCountChild();
 			for(int nIndex = 0;nIndex < nCount;nIndex++)
 			{
@@ -713,9 +671,7 @@ namespace DuiLib
 			}
 		}
 		else
-		{
 			return iIndex+1;
-		}
 
 		return -1;
 	}
@@ -796,10 +752,6 @@ namespace DuiLib
 			CCheckBoxUI* pCheckBox = (CCheckBoxUI*)pMsg->pSender;
 			CTreeNodeUI* pItem = (CTreeNodeUI*)pCheckBox->GetParent()->GetParent();
 			SetItemCheckBox(pCheckBox->GetCheck(),pItem);
-
-			if(pItem->GetParentNode() != NULL)  //edit by:Redrain  2014.12.11
-				pItem->GetParentNode()->IsAllChildChecked();
-		
 			return true;
 		}
 		return true;
@@ -812,8 +764,8 @@ namespace DuiLib
 		{
 			CCheckBoxUI* pFolder = (CCheckBoxUI*)pMsg->pSender;
 			CTreeNodeUI* pItem = (CTreeNodeUI*)pFolder->GetParent()->GetParent();
-			pItem->SetVisibleTag(pFolder->GetCheck());  //edit by:Redrain  2014.8.8
-			SetItemExpand(pFolder->GetCheck(),pItem);
+			pItem->SetVisibleTag(!pFolder->GetCheck());
+			SetItemExpand(!pFolder->GetCheck(),pItem);
 			return true;
 		}
 		return true;
@@ -826,9 +778,9 @@ namespace DuiLib
 		{
 			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
 			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
-			pFolder->Selected(!pFolder->IsSelected());    
-//			pItem->SetVisibleTag(pFolder->GetCheck());		//edit by:Redrain  2014.11.12 这两行代码无用，pFolder->Selected(!pFolder->IsSelected()); 会触发OnFolderChanged函数，OnFolderChanged函数会执行这两行代码
-//			SetItemExpand(pFolder->GetCheck(),pItem);
+			pFolder->Selected(!pFolder->IsSelected());
+			pItem->SetVisibleTag(!pFolder->GetCheck());
+			SetItemExpand(!pFolder->GetCheck(),pItem);
 			return true;
 		}
 		return false;

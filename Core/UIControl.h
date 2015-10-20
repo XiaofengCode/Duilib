@@ -31,6 +31,8 @@ public:
     virtual CDuiString GetText() const;
     virtual void SetText(LPCTSTR pstrText);
 
+	virtual	double GetScaleDpi();
+
     // Õº–Œœ‡πÿ
     DWORD GetBkColor() const;
     void SetBkColor(DWORD dwBackColor);

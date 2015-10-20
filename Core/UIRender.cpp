@@ -894,6 +894,8 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 {
 	if ((pManager == NULL) || (hDC == NULL)) return false;
 
+	double S = pManager->GetDpiScale();
+
     // 1、aaa.jpg
     // 2、file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' 
     // mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false'
@@ -959,7 +961,7 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 
                     sImageResType = sValue;
 					++image_count;
-				}
+                }
 				//Kevin, 支持相对右边和下边的偏移
 				else if( sItem == _T("dest") ) {
 // 					ASSERT(FALSE);
@@ -1049,6 +1051,10 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 							rcItem.bottom = rc.bottom;
 						}
 					}
+					rcItem.left *= S;
+					rcItem.top *= S;
+					rcItem.right *= S;
+					rcItem.bottom *= S;
 				}
 // 				else if( sItem == _T("dest") ) {
 // 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
