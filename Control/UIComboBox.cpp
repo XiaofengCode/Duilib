@@ -55,10 +55,14 @@ namespace DuiLib
 			double S = GetScaleDpi();
 			CDuiRect rcBmpPart;
 			LPTSTR lpszValue = NULL;
-			rcBmpPart.left = S*_tcstol(sModify.GetData() + nPos2 + 1, &lpszValue, 10);  ASSERT(lpszValue);    
-			rcBmpPart.top = S*_tcstol(lpszValue + 1, &lpszValue, 10);    ASSERT(lpszValue);
-			rcBmpPart.right = S*_tcstol(lpszValue + 1, &lpszValue, 10);  ASSERT(lpszValue);
-			rcBmpPart.bottom = S*_tcstol(lpszValue + 1, &lpszValue, 10); ASSERT(lpszValue);
+			rcBmpPart.left = (LONG)(S * _tcstol(sModify.GetData() + nPos2 + 1, &lpszValue, 10));
+			ASSERT(lpszValue);    
+			rcBmpPart.top = (LONG)(S * _tcstol(lpszValue + 1, &lpszValue, 10));
+			ASSERT(lpszValue);
+			rcBmpPart.right = (LONG)(S * _tcstol(lpszValue + 1, &lpszValue, 10));
+			ASSERT(lpszValue);
+			rcBmpPart.bottom = (LONG)(S * _tcstol(lpszValue + 1, &lpszValue, 10));
+			ASSERT(lpszValue);
 
 			m_nArrowWidth = rcBmpPart.GetWidth() / 5;
 			rcBmpPart.left += nIndex * m_nArrowWidth;

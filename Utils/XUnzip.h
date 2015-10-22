@@ -718,6 +718,7 @@ extern ZRESULT CloseZipU(HZIP hz);
 #define GetZipItem GetZipItemW
 #define FindZipItem FindZipItemW
 #else
+#define ZIPENTRY ZIPENTRYA
 #define GetZipItem GetZipItemA
 #define FindZipItem FindZipItemA
 #endif

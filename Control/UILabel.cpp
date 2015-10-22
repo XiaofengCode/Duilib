@@ -172,7 +172,11 @@ namespace DuiLib
 
 	void CLabelUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		double S = GetManager()->GetDpiScale();
+		double S = 1.0;
+		if (m_pManager)
+		{
+			S = m_pManager->GetDpiScale();
+		}
 		if( _tcsicmp(pstrName, _T("align")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
 				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT | DT_SINGLELINE);
@@ -212,24 +216,35 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextColor(clrColor);
 		}
-		else if( _tcsicmp(pstrName, _T("disabledtextcolor")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("disabledtextcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetDisabledTextColor(clrColor);
 		}
-		else if( _tcsicmp(pstrName, _T("textpadding")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textpadding")) == 0 )
+		{
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
-			rcTextPadding.left = S*_tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.top = S*_tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-			rcTextPadding.right = S*_tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-			rcTextPadding.bottom = S*_tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcTextPadding.left = (LONG)(S * _tcstol(pstrValue, &pstr, 10)); 
+			ASSERT(pstr);    
+			rcTextPadding.top = (LONG)(S * _tcstol(pstr + 1, &pstr, 10));
+			ASSERT(pstr);
+			rcTextPadding.right = (LONG)(S * _tcstol(pstr + 1, &pstr, 10));  
+			ASSERT(pstr);
+			rcTextPadding.bottom = (LONG)(S * _tcstol(pstr + 1, &pstr, 10)); 
+			ASSERT(pstr);
 			SetTextPadding(rcTextPadding);
 		}
-		else if( _tcsicmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
-
-		else if( _tcsicmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcsicmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("showhtml")) == 0 )
+		{
+			SetShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("enabledeffect")) == 0 )
+		{
+			SetEnabledEffect(_tcsicmp(pstrValue, _T("true")) == 0);
+		}
 		//else if( _tcscmp(pstrName, _T("rhaa")) == 0 ) SetTextRenderingHintAntiAlias(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("transshadow")) == 0 ) SetTransShadow(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("transtext")) == 0 ) SetTransText(_ttoi(pstrValue));
@@ -240,19 +255,27 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("enabledshadow")) == 0 ) SetEnabledShadow(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcsicmp(pstrName, _T("transstroke")) == 0 ) SetTransStroke(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("gradientlength")) == 0 ) SetGradientLength(_ttoi(pstrValue));
-		else if( _tcsicmp(pstrName, _T("shadowoffset")) == 0 ){
+		else if( _tcsicmp(pstrName, _T("shadowoffset")) == 0 )
+		{
 			LPTSTR pstr = NULL;
-			int offsetx = S*_tcstol(pstrValue, &pstr, 10);	ASSERT(pstr);
-			int offsety = S*_tcstol(pstr + 1, &pstr, 10);		ASSERT(pstr);
-			SetShadowOffset(offsetx,offsety);
+			int offsetx = (int)(S * _tcstol(pstrValue, &pstr, 10));
+			ASSERT(pstr);
+			int offsety = (int)(S * _tcstol(pstr + 1, &pstr, 10));
+			ASSERT(pstr);
+			SetShadowOffset(offsetx, offsety);
 		}
-		else if( _tcsicmp(pstrName, _T("textcolor1")) == 0 ) {
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		else if( _tcsicmp(pstrName, _T("textcolor1")) == 0 )
+		{
+			if( *pstrValue == _T('#'))
+			{
+				pstrValue = ::CharNext(pstrValue);
+			}
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetTextColor1(clrColor);
 		}
-		else if( _tcsicmp(pstrName, _T("textshadowcolora")) == 0 ) {
+		else if( _tcsicmp(pstrName, _T("textshadowcolora")) == 0 )
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
