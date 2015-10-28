@@ -25,7 +25,7 @@ namespace DuiLib
 
 	void COptionUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
 	{
-		CControlUI::SetManager(pManager, pParent, bInit);
+		CButtonUI::SetManager(pManager, pParent, bInit);
 		if( bInit && !m_sGroupName.IsEmpty() ) {
 			if (m_pManager) m_pManager->AddOptionGroup(m_sGroupName, this);
 		}
@@ -102,7 +102,7 @@ namespace DuiLib
 
 	void COptionUI::SetEnabled(bool bEnable)
 	{
-		CControlUI::SetEnabled(bEnable);
+		CButtonUI::SetEnabled(bEnable);
 		if( !IsEnabled() ) {
 			if( m_bSelected ) m_uButtonState = UISTATE_SELECTED;
 			else m_uButtonState = 0;
@@ -188,7 +188,7 @@ namespace DuiLib
 	SIZE COptionUI::EstimateSize(SIZE szAvailable)
 	{
 		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
-		return CControlUI::EstimateSize(szAvailable);
+		return CButtonUI::EstimateSize(szAvailable);
 	}
 
 	void COptionUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)

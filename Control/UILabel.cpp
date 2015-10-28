@@ -62,7 +62,7 @@ namespace DuiLib
 	LPVOID CLabelUI::GetInterface(LPCTSTR pstrName)
 	{
 		if( _tcscmp(pstrName, _T("Label")) == 0 ) return static_cast<CLabelUI*>(this);
-		return CControlUI::GetInterface(pstrName);
+		return CContainerUI::GetInterface(pstrName);
 	}
 
 	void CLabelUI::SetTextStyle(UINT uStyle)
@@ -144,7 +144,7 @@ namespace DuiLib
 		}
 
 		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
-		return CControlUI::EstimateSize(szAvailable);
+		return CContainerUI::EstimateSize(szAvailable);
 	}
 
 	void CLabelUI::DoEvent(TEventUI& event)
@@ -167,7 +167,7 @@ namespace DuiLib
 		{
 			// return;
 		}
-		CControlUI::DoEvent(event);
+		CContainerUI::DoEvent(event);
 	}
 
 	void CLabelUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -296,7 +296,7 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("autocalcwidth")) == 0 ) {
 			SetAutoCalcWidth(_tcsicmp(pstrValue, _T("true")) == 0);
 		}
-		else CControlUI::SetAttribute(pstrName, pstrValue);
+		else CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
 	void CLabelUI::PaintText(HDC hDC)
@@ -469,7 +469,7 @@ namespace DuiLib
 	void CLabelUI::SetText( LPCTSTR pstrText )
 	{
 		if(!GetEnabledEffect())
-			return CControlUI::SetText(pstrText);
+			return CContainerUI::SetText(pstrText);
 
 		m_TextValue = pstrText;
 	}
@@ -477,7 +477,7 @@ namespace DuiLib
 	CDuiString CLabelUI::GetText() const
 	{
 		if(!m_EnableEffect)
-			return CControlUI::GetText();
+			return CContainerUI::GetText();
 		return m_TextValue;
 	}
 

@@ -108,7 +108,7 @@ SIZE CMenuUI::EstimateSize(SIZE szAvailable)
 
 void CMenuUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	CListUI::SetAttribute(pstrName, pstrValue);
+	__super::SetAttribute(pstrName, pstrValue);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -170,12 +170,12 @@ void CMenuWnd::Init(CMenuElementUI* pOwner, STRINGorID xml, POINT point,
 	if (pOwner == NULL)
 	{
 		ASSERT(pMainPaintManager != NULL);
-		CMenuWnd::GetGlobalContextMenuObserver().SetManger(pMainPaintManager);
+		GetGlobalContextMenuObserver().SetManger(pMainPaintManager);
 		if (pMenuCheckInfo != NULL)
-			CMenuWnd::GetGlobalContextMenuObserver().SetMenuCheckInfo(pMenuCheckInfo);
+			GetGlobalContextMenuObserver().SetMenuCheckInfo(pMenuCheckInfo);
 	}
 
-	CMenuWnd::GetGlobalContextMenuObserver().AddReceiver(this);
+	GetGlobalContextMenuObserver().AddReceiver(this);
 
 	Create((m_pOwner == NULL) ? pMainPaintManager->GetPaintWindow() : m_pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP , WS_EX_TOOLWINDOW | WS_EX_TOPMOST, CDuiRect());
 

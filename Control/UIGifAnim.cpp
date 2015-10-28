@@ -63,9 +63,9 @@ namespace DuiLib
 	{
 		CLabelUI::SetVisible(bVisible);
 		if (bVisible)
-			PlayGifBk();
+			PlayGif();
 		else
-			StopGifBk();
+			StopGif();
 	}
 
 	void CGifAnimUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -87,7 +87,7 @@ namespace DuiLib
 
 		m_sBkImage = pStrImage;
 
-		StopGifBk();
+		StopGif();
 		DeleteGifBk();
 
 		Invalidate();
@@ -119,7 +119,7 @@ namespace DuiLib
 		return m_bIsGifBkAutoSize;
 	}
 
-	void CGifAnimUI::PlayGifBk()
+	void CGifAnimUI::PlayGif()
 	{
 		if (m_bIsGifBkPlaying || m_pGifBkImage == NULL)
 		{
@@ -133,7 +133,7 @@ namespace DuiLib
 		m_bIsGifBkPlaying = true;
 	}
 
-	void CGifAnimUI::PauseGifBk()
+	void CGifAnimUI::PauseGif()
 	{
 		if (!m_bIsGifBkPlaying || m_pGifBkImage == NULL)
 		{
@@ -145,7 +145,7 @@ namespace DuiLib
 		m_bIsGifBkPlaying = false;
 	}
 
-	void CGifAnimUI::StopGifBk()
+	void CGifAnimUI::StopGif()
 	{
 		if (!m_bIsGifBkPlaying)
 		{
@@ -180,7 +180,7 @@ namespace DuiLib
 		}
 		if (m_bIsGifBkAutoPlay)
 		{
-			PlayGifBk();
+			PlayGif();
 		}
 	}
 
