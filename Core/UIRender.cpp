@@ -894,7 +894,11 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 {
 	if ((pManager == NULL) || (hDC == NULL)) return false;
 
-	double S = pManager->GetDpiScale();
+	double S = 1.0;
+	if (pManager)
+	{
+		S = pManager->GetDpiScale();
+	}
 
     // 1¡¢aaa.jpg
     // 2¡¢file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' 
@@ -970,11 +974,11 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 // 					rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
 // 					if (rcItem.right > rc.right) rcItem.right = rc.right;
 // 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-//					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
+// 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
 
 					bool bRight = false;
 					bool bBottom = false;
-					int x = _tcstol(sValue.GetData(), &pstr, 10);
+					int x = (int)(S * _tcstol(sValue.GetData(), &pstr, 10));
 					ASSERT(pstr);
 					if (x < 0)
 					{
@@ -992,7 +996,7 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 							bRight = true;
 						}
 					}
-					int y = _tcstol(pstr + 1, &pstr, 10);
+					int y = (int)(S * _tcstol(pstr + 1, &pstr, 10));
 					ASSERT(pstr);
 					if (y < 0)
 					{
@@ -1010,9 +1014,9 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 							bBottom = true;
 						}
 					}
-					int cx = _tcstol(pstr + 1, &pstr, 10);
+					int cx = (int)(S * _tcstol(pstr + 1, &pstr, 10));
 					ASSERT(pstr);
-					int cy = _tcstol(pstr + 1, &pstr, 10);
+					int cy = (int)(S * _tcstol(pstr + 1, &pstr, 10));
 					ASSERT(pstr);
 					if (bRight)
 					{
@@ -1051,10 +1055,6 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 							rcItem.bottom = rc.bottom;
 						}
 					}
-					rcItem.left *= S;
-					rcItem.top *= S;
-					rcItem.right *= S;
-					rcItem.bottom *= S;
 				}
 // 				else if( sItem == _T("dest") ) {
 // 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
@@ -1064,17 +1064,27 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 // 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 // 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
 // 				}
-                else if( sItem == _T("source") ) {
-                    rcBmpPart.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-                    rcBmpPart.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-                    rcBmpPart.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-                    rcBmpPart.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);  
+                else if( sItem == _T("source") ) 
+				{
+                    rcBmpPart.left = _tcstol(sValue.GetData(), &pstr, 10);
+					ASSERT(pstr);    
+                    rcBmpPart.top = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);    
+                    rcBmpPart.right = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);    
+                    rcBmpPart.bottom = _tcstol(pstr + 1, &pstr, 10);
+					ASSERT(pstr);  
                 }
-                else if( sItem == _T("corner") ) {
-                    rcCorner.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-                    rcCorner.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-                    rcCorner.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-                    rcCorner.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+                else if( sItem == _T("corner") ) 
+				{
+                    rcCorner.left = (LONG)(S * _tcstol(sValue.GetData(), &pstr, 10));
+					ASSERT(pstr);    
+                    rcCorner.top = (LONG)(S * _tcstol(pstr + 1, &pstr, 10)); 
+					ASSERT(pstr);    
+                    rcCorner.right = (LONG)(S * _tcstol(pstr + 1, &pstr, 10));
+					ASSERT(pstr);    
+                    rcCorner.bottom = (LONG)(S * _tcstol(pstr + 1, &pstr, 10));
+					ASSERT(pstr);
                 }
                 else if( sItem == _T("mask") ) {
                     if( sValue[0] == _T('#')) dwMask = _tcstoul(sValue.GetData() + 1, &pstr, 16);

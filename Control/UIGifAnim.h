@@ -29,9 +29,9 @@ namespace DuiLib
 		bool	IsGifBkAutoPlay() const;
 		void	SetAutoSize(bool bIsAuto = true );
 		bool	IsAutoSize() const;
-		void	PlayGifBk();
-		void	PauseGifBk();
-		void	StopGifBk();
+		void	PlayGif();
+		void	PauseGif();
+		void	StopGif();
 
 	private:
 		void	InitGifBkImage();

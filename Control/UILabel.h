@@ -11,7 +11,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CLabelUI : public CControlUI
+	class UILIB_API CLabelUI : public CContainerUI
 	{
 	public:
 		CLabelUI();

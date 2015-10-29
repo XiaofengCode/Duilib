@@ -2,3 +2,8 @@
 /Build
 /Bin
 /Lib
+*.suo
+/Debug
+/ipch/duilib-506f8d21/debug_sud/duilib-5f9be539.ipch
+/ipch/duilib-506f8d21/release_su/*.ipch
+/*.suo

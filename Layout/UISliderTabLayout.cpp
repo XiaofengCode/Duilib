@@ -101,8 +101,7 @@ namespace DuiLib {
 				return;
 			}
 		}
-		else 
-			CContainerUI::DoEvent(event);
+		CTabLayoutUI::DoEvent(event);
 	}
 
 	void CSliderTabLayoutUI::OnTimer( int nTimerID )
@@ -112,7 +111,7 @@ namespace DuiLib {
 
 	void CSliderTabLayoutUI::SetPos(RECT rc)
 	{
-		CControlUI::SetPos(rc);
+		CTabLayoutUI::SetPos(rc);
 
 		RECT rcInset = GetInset();
 		rc.left += rcInset.left;

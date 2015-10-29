@@ -1,7 +1,7 @@
 #pragma once
 namespace DuiLib{
 	class CControlUI;
-	class CGifImage
+	class UILIB_API CGifImage
 	{
 	public:
 		CGifImage();

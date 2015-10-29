@@ -29,12 +29,16 @@ namespace DuiLib
 		pItemButton		= new COptionUI();
 		pItemButton->SetManager(pManager, this);
 
-		double S = pManager->GetDpiScale();
+		double S = 1.0;
+		if (pManager)
+		{
+			S = pManager->GetDpiScale();
+		}
 
-		this->SetFixedHeight(S*18);
+		this->SetFixedHeight((int)(S * 18));
 		//this->SetFixedWidth(250);
 		pFolderButton->SetFixedWidth(GetFixedHeight());
-		pDottedLine->SetFixedWidth(S * 2);
+		pDottedLine->SetFixedWidth((int)(S * 2));
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
 
@@ -48,7 +52,7 @@ namespace DuiLib
 				return;
 
 			pDottedLine->SetVisible(_ParentNode->IsVisible());
-			pDottedLine->SetFixedWidth(_ParentNode->GetDottedLine()->GetFixedWidth() + S * 16);
+			pDottedLine->SetFixedWidth((int)(_ParentNode->GetDottedLine()->GetFixedWidth() + S * 16));
 			this->SetParentNode(_ParentNode);
 		}
 
@@ -518,7 +522,7 @@ namespace DuiLib
 	{
 		double S = GetScaleDpi();
 		_pTreeNodeUI->GetDottedLine()->SetVisible(true);
-		_pTreeNodeUI->GetDottedLine()->SetFixedWidth(pDottedLine->GetFixedWidth()+16*S);
+		_pTreeNodeUI->GetDottedLine()->SetFixedWidth((int)(pDottedLine->GetFixedWidth()+16*S));
 		_pTreeNodeUI->SetParentNode(this);
 		_pTreeNodeUI->GetItemButton()->SetGroup(pItemButton->GetGroup());
 		_pTreeNodeUI->SetTreeView(pTreeView);

@@ -22,7 +22,7 @@ namespace DuiLib
 	LPVOID CButtonUI::GetInterface(LPCTSTR pstrName)
 	{
 		if( _tcscmp(pstrName, DUI_CTR_BUTTON) == 0 ) return static_cast<CButtonUI*>(this);
-		return CLabelUI::GetInterface(pstrName);
+		return __super::GetInterface(pstrName);
 	}
 
 	UINT CButtonUI::GetControlFlags() const
@@ -34,7 +34,7 @@ namespace DuiLib
 	{
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
-			else CLabelUI::DoEvent(event);
+			else __super::DoEvent(event);
 			return;
 		}
 
@@ -108,12 +108,12 @@ namespace DuiLib
 			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 			return;
 		}
-		CLabelUI::DoEvent(event);
+		__super::DoEvent(event);
 	}
 
 	bool CButtonUI::Activate()
 	{
-		if( !CControlUI::Activate() ) return false;
+		if( !__super::Activate() ) return false;
 		if( m_pManager != NULL )
 		{
 			m_pManager->SendNotify(this, DUI_MSGTYPE_CLICK);
@@ -124,7 +124,7 @@ namespace DuiLib
 
 	void CButtonUI::SetEnabled(bool bEnable)
 	{
-		CControlUI::SetEnabled(bEnable);
+		__super::SetEnabled(bEnable);
 		if( !IsEnabled() ) {
 			m_uButtonState = 0;
 		}
@@ -290,7 +290,7 @@ namespace DuiLib
 	SIZE CButtonUI::EstimateSize(SIZE szAvailable)
 	{
 		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
-		return CControlUI::EstimateSize(szAvailable);
+		return __super::EstimateSize(szAvailable);
 	}
 
 	void CButtonUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -345,7 +345,7 @@ namespace DuiLib
 				m_uTextStyle |= DT_SINGLELINE;
 			}
 		}
-		else CLabelUI::SetAttribute(pstrName, pstrValue);
+		else __super::SetAttribute(pstrName, pstrValue);
 	}
 
 	void CButtonUI::PaintText(HDC hDC)

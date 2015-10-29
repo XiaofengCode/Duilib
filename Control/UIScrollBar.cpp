@@ -32,7 +32,7 @@ namespace DuiLib
 		if (m_cxyFixed.cx == DEFAULT_SCROLLBAR_SIZE && m_pManager)
 		{
 			double S = GetManager()->GetDpiScale();
-			m_cxyFixed.cx = DEFAULT_SCROLLBAR_SIZE*S;
+			m_cxyFixed.cx = (LONG)(DEFAULT_SCROLLBAR_SIZE * S);
 		}
 	}
 
@@ -838,9 +838,9 @@ namespace DuiLib
 		else m_uButton1State &= ~ UISTATE_DISABLED;
 
 		double S = 1.0;
-		if (GetManager())
+		if (m_pManager)
 		{
-			S = GetManager()->GetDpiScale();
+			S = m_pManager->GetDpiScale();
 		}
 		m_sImageModify.Empty();
 		m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), \
