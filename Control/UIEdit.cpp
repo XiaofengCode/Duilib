@@ -62,6 +62,7 @@ namespace DuiLib
 		Edit_LimitText(m_hWnd, m_pOwner->GetMaxChar());
 		if( m_pOwner->IsPasswordMode() ) Edit_SetPasswordChar(m_hWnd, m_pOwner->GetPasswordChar());
 		Edit_SetText(m_hWnd, m_pOwner->GetText());
+		Edit_SetSel(m_hWnd, m_pOwner->GetText().GetLength(), -1);
 		Edit_SetModify(m_hWnd, FALSE);
 		SendMessage(EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(0, 0));
 		Edit_Enable(m_hWnd, m_pOwner->IsEnabled() == true);
