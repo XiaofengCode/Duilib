@@ -200,7 +200,15 @@ namespace DuiLib{
 				hFile = ::CreateFile(CPaintManagerUI::GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 				if( hFile == INVALID_HANDLE_VALUE )
 				{
-					return _Failed(_T("LoadFromFile Error opening file"));
+					if (m_xml.LoadFromFile(lpszFile))
+					{
+						Parse();
+						return true;
+					}
+					else
+					{
+						return _Failed(_T("LoadFromFile open file failed"));
+					}
 				}
 			}
 		}
