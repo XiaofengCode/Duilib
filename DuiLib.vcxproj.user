@@ -4,4 +4,12 @@
     <LocalDebuggerCommand>F:\Tmp\xLibTest\Debug\xLibTest.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommand>C:\Research\LeapPDF\LeapPDF\Release\iCoolPDF.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Lib DebugU|Win32'">
+    <LocalDebuggerCommand>C:\Research\LeapPDF\LeapPDF\Debug\iCoolPDF.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

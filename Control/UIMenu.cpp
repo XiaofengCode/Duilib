@@ -648,6 +648,14 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
 SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 {
+	double S = m_pManager->GetDpiScale();
+
+	if (S != 1.0 && (m_cxyFixed.cx == ITEM_DEFAULT_WIDTH || m_cxyFixed.cy == ITEM_DEFAULT_HEIGHT))
+	{
+		m_cxyFixed.cx *= S;
+		m_cxyFixed.cy *= S;
+	}
+
 	SIZE cXY = {0};
 	for( int it = 0; it < GetCount(); it++ ) {
 		CControlUI* pControl = static_cast<CControlUI*>(GetItemAt(it));
@@ -681,7 +689,7 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 		else {
 			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle);
 		}
-		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20;
+		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20* S;
 		cXY.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
 	}
 
@@ -907,14 +915,16 @@ void CMenuElementUI::SetShowExplandIcon(bool bShow)
 
 void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
+	double S = m_pManager->GetDpiScale();
+
 	if( _tcsicmp(pstrName, _T("icon")) == 0){
 		SetIcon(pstrValue);
 	}
 	else if( _tcsicmp(pstrName, _T("iconsize")) == 0 ) {
 		LPTSTR pstr = NULL;
 		LONG cx = 0, cy = 0;
-		cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-		cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);   
+		cx = _tcstol(pstrValue, &pstr, 10)*S;  ASSERT(pstr);    
+		cy = _tcstol(pstr + 1, &pstr, 10)*S;    ASSERT(pstr);
 		SetIconSize(cx, cy);
 	}
 	else if( _tcsicmp(pstrName, _T("checkitem")) == 0 ) {		
@@ -941,14 +951,14 @@ void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if( _tcsicmp(pstrName, _T("linepadding")) == 0 ) {
 		RECT rcInset = { 0 };
 		LPTSTR pstr = NULL;
-		rcInset.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-		rcInset.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-		rcInset.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-		rcInset.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+		rcInset.left = _tcstol(pstrValue, &pstr, 10)*S;  ASSERT(pstr);
+		rcInset.top = _tcstol(pstr + 1, &pstr, 10)*S;    ASSERT(pstr);
+		rcInset.right = _tcstol(pstr + 1, &pstr, 10)*S;  ASSERT(pstr);
+		rcInset.bottom = _tcstol(pstr + 1, &pstr, 10)*S; ASSERT(pstr);
 		SetLinePadding(rcInset);
 	}
 	else if	( _tcsicmp(pstrName, _T("height")) == 0){
-		SetFixedHeight(_ttoi(pstrValue));
+		SetFixedHeight(_ttoi(pstrValue)*S);
 	}
 	else
 		CListContainerElementUI::SetAttribute(pstrName, pstrValue);

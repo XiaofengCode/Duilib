@@ -681,6 +681,8 @@ void CListUI::Scroll(int dx, int dy)
 
 void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
+	double S = m_pManager->GetDpiScale();
+
     if( _tcsicmp(pstrName, _T("header")) == 0 ) GetHeader()->SetVisible(_tcsicmp(pstrValue, _T("hidden")) != 0);
     else if( _tcsicmp(pstrName, _T("headerbkimage")) == 0 ) GetHeader()->SetBkImage(pstrValue);
     else if( _tcsicmp(pstrName, _T("scrollselect")) == 0 ) SetScrollSelect(_tcsicmp(pstrValue, _T("true")) == 0);
@@ -707,10 +709,10 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("itemtextpadding")) == 0 ) {
         RECT rcTextPadding = { 0 };
         LPTSTR pstr = NULL;
-        rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcTextPadding.left = _tcstol(pstrValue, &pstr, 10)*S;  ASSERT(pstr);    
+        rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10)*S;    ASSERT(pstr);
+        rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10)*S;  ASSERT(pstr);
+        rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10)*S; ASSERT(pstr);
         SetItemTextPadding(rcTextPadding);
     }
     else if( _tcsicmp(pstrName, _T("itemtextcolor")) == 0 ) {
