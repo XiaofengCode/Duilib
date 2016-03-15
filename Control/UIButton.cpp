@@ -350,15 +350,23 @@ namespace DuiLib
 
 	void CButtonUI::PaintText(HDC hDC)
 	{
-		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-		else m_uButtonState &= ~ UISTATE_FOCUSED;
-		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-		else m_uButtonState &= ~ UISTATE_DISABLED;
+		if( IsFocused() )
+			m_uButtonState |= UISTATE_FOCUSED;
+		else
+			m_uButtonState &= ~ UISTATE_FOCUSED;
 
-		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
-		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+		if( !IsEnabled() ) 
+			m_uButtonState |= UISTATE_DISABLED;
+		else
+			m_uButtonState &= ~ UISTATE_DISABLED;
 
-		if( m_sText.IsEmpty() ) return;
+		if( m_dwTextColor == 0 )
+			m_dwTextColor = m_pManager->GetDefaultFontColor();
+		if( m_dwDisabledTextColor == 0 )
+			m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+
+		if( m_sText.IsEmpty() )
+			return;
 		int nLinks = 0;
 		RECT rc = m_rcItem;
 		rc.left += m_rcTextPadding.left;

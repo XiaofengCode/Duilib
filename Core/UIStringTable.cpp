@@ -200,7 +200,7 @@ namespace DuiLib{
 				hFile = ::CreateFile(CPaintManagerUI::GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 				if( hFile == INVALID_HANDLE_VALUE )
 				{
-					return _Failed(_T("LoadFromFile Error opening file"));
+					return Load(lpszFile, 0, lpszLang);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ namespace DuiLib{
 
 	bool CDuiStringTable::_Failed( LPCTSTR pstrError, LPCTSTR pstrLocation /*= NULL*/ )
 	{
-		OutputDebugString(pstrLocation);
+		OutputDebugString(pstrError);
 		return false;
 	}
 
