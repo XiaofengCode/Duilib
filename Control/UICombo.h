@@ -87,8 +87,12 @@ public:
     void SetDisabledItemImage(LPCTSTR pStrImage);
 	DWORD GetItemLineColor() const;
     void SetItemLineColor(DWORD dwLineColor);
-    bool IsItemShowHtml();
-    void SetItemShowHtml(bool bShowHtml = true);
+	bool IsItemShowHtml();
+	void SetItemShowHtml(bool bShowHtml = true);
+	bool GetItemWndBkTrans();
+	void SetItemWndBkTrans(bool bBkTrans = true);
+	DWORD GetItemWndBkColor();
+	void SetItemWndBkColor(DWORD dwBkColor);
 
     SIZE EstimateSize(SIZE szAvailable);
     void SetPos(RECT rc);
@@ -115,6 +119,8 @@ protected:
     CDuiString m_sDisabledImage;
 
     TListInfoUI m_ListInfo;
+	bool m_bItemWndBkTrans;
+	DWORD m_dwItemWndBkColor;
 };
 
 } // namespace DuiLib
