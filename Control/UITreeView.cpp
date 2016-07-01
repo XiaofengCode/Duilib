@@ -48,6 +48,7 @@ namespace DuiLib
 		pDottedLine->SetFixedWidth((int)(S * 2));
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
+		pItemButton->SetAttribute(_T("valign"), _T("vcenter"));
 
 		pDottedLine->SetVisible(false);
 		pCheckBox->SetVisible(false);
@@ -540,7 +541,42 @@ namespace DuiLib
 		return GetParentNode()->GetTreeNodes().Find(this);
 	}
 
-	CTreeNodeUI* CTreeNodeUI::GetLastNode( )
+	DuiLib::CDuiString CTreeNodeUI::GetToolTip() const
+	{
+		return pItemButton->GetToolTip();
+	}
+
+	void CTreeNodeUI::SetToolTip(LPCTSTR pstrText)
+	{
+		pItemButton->SetToolTip(pstrText);
+	}
+
+	void CTreeNodeUI::SetToolTipWidth(int nWidth)
+	{
+		pItemButton->SetToolTipWidth(nWidth);
+	}
+
+	int CTreeNodeUI::GetToolTipWidth(void)
+	{
+		return pItemButton->GetToolTipWidth();
+	}
+
+	DuiLib::CControlUI* CTreeNodeUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
+	{
+		if (CControlUI::FindControl(Proc, pData, uFlags))
+		{
+			if (pFolderButton->FindControl(Proc, pData, uFlags))
+				return pFolderButton;
+			if (pCheckBox->FindControl(Proc, pData, uFlags))
+				return pCheckBox;
+			
+			return pItemButton;
+		}
+
+		return CListContainerElementUI::FindControl(Proc, pData, uFlags);
+	}
+
+	CTreeNodeUI* CTreeNodeUI::GetLastNode()
 	{
 		if(!IsHasChild())
 			return this;

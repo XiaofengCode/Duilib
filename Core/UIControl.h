@@ -32,6 +32,8 @@ public:
     virtual void SetText(LPCTSTR pstrText);
 
 	virtual	double GetScaleDpi();
+	virtual	void SetTextColor(DWORD dwTextColor);
+	virtual	DWORD GetTextColor() const;
 
     // 图形相关
     DWORD GetBkColor() const;
@@ -195,6 +197,7 @@ protected:
     bool m_bFloat;
     bool m_bSetPos; // 防止SetPos循环调用
     TRelativePosUI m_tRelativePos;
+	DWORD	m_dwTextColor;
 
     CDuiString m_sText;
     CDuiString m_sToolTip;

@@ -72,6 +72,14 @@ namespace DuiLib
 		int			 GetTreeIndex();
 		int			 GetNodeIndex();
 
+		// 鼠标提示
+		virtual CDuiString GetToolTip() const;
+		virtual void SetToolTip(LPCTSTR pstrText);
+		virtual void SetToolTipWidth(int nWidth);
+		virtual int	  GetToolTipWidth(void);	// 多行ToolTip单行最长宽度
+
+		CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
+
 	private:
 		CTreeNodeUI* GetLastNode();
 		CTreeNodeUI* CalLocation(CTreeNodeUI* _pTreeNodeUI);

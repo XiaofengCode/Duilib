@@ -23,7 +23,6 @@ namespace DuiLib
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;
 		void SetTextColor(DWORD dwTextColor);
-		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);
 		DWORD GetDisabledTextColor() const;
 		void SetFont(int index);
@@ -75,7 +74,7 @@ namespace DuiLib
 		bool		GetEnabledShadow();
 		
 	protected:
-		DWORD	m_dwTextColor;
+		//DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
 		int		m_iFont;
 		UINT	m_uTextStyle;

@@ -144,6 +144,7 @@ LRESULT CALLBACK CShadowUI::ParentProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPAR
 			{
 				::ShowWindow(pThis->m_hWnd, SW_HIDE);
 				pThis->m_Status &= ~SS_VISABLE;
+				pThis->m_bUpdate = true;
 			}
 			else if(pThis->m_Status & SS_PARENTVISIBLE)	// Parent maybe resized even if invisible
 			{

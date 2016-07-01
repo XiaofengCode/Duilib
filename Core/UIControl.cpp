@@ -27,7 +27,8 @@ m_dwDisabledBorderColor(0),
 m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
-m_nTooltipWidth(300)
+m_nTooltipWidth(300),
+m_dwTextColor(0)
 {
     m_cXY.cx = m_cXY.cy = 0;
     m_cxyFixed.cx = m_cxyFixed.cy = 0;
@@ -120,6 +121,16 @@ double CControlUI::GetScaleDpi()
 	}
 
 	return S;
+}
+
+void CControlUI::SetTextColor(DWORD dwTextColor)
+{
+	m_dwTextColor = dwTextColor;
+}
+
+DWORD CControlUI::GetTextColor() const
+{
+	return m_dwTextColor;
 }
 
 DWORD CControlUI::GetBkColor() const
@@ -916,7 +927,13 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("float")) == 0 ) SetFloat(_tcsicmp(pstrValue, _T("true")) == 0);
     else if( _tcsicmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcsicmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcsicmp(pstrValue, _T("true")) == 0);
-	else if( _tcsicmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);
+	else if (_tcsicmp(pstrName, _T("virtualwnd")) == 0) SetVirtualWnd(pstrValue);
+	else if (_tcsicmp(pstrName, _T("textcolor")) == 0) {
+		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetTextColor(clrColor);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
