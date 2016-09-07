@@ -199,7 +199,7 @@ void CComboWnd::Scroll(int dx, int dy)
 {
     if( dx == 0 && dy == 0 ) return;
     SIZE sz = m_pLayout->GetScrollPos();
-    m_pLayout->SetScrollPos(CSize(sz.cx + dx, sz.cy + dy));
+    m_pLayout->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy));
 }
 
 #if(_WIN32_WINNT >= 0x0501)
@@ -213,7 +213,7 @@ UINT CComboWnd::GetClassStyle() const
 
 CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
 {
-    m_szDropBox = CSize(0, 150);
+    m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 
     m_ListInfo.nColumns = 0;
@@ -506,7 +506,7 @@ void CComboUI::DoEvent(TEventUI& event)
 
 SIZE CComboUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
+    if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
     return CControlUI::EstimateSize(szAvailable);
 }
 

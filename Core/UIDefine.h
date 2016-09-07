@@ -48,6 +48,7 @@ union DuiMessageMapFunctions
 
 #define DUI_MSGTYPE_RETURN                 (_T("return"))
 #define DUI_MSGTYPE_SCROLL                 (_T("scroll"))
+#define DUI_MSGTYPE_ESCAPE                 (_T("escape"))
 
 #define DUI_MSGTYPE_DROPDOWN               (_T("dropdown"))
 #define DUI_MSGTYPE_SETFOCUS               (_T("setfocus"))

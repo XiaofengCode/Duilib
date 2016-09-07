@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <vector>
+#include <map>
+
 namespace DuiLib {
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -324,6 +327,12 @@ public:
     CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
     CStdPtrArray* GetSubControlsByClass();
 
+	int			FindControl(LPCTSTR pstrName, CStdPtrArray ctrls) const;
+	void		RemoveControl(LPCTSTR pstrName, CControlUI* pControl);
+	void		SetControlVisible(LPCTSTR pstrName, bool bVisible);
+	void		EnalbeControl(LPCTSTR pstrName, bool bEnable);
+	void		SelectControl(LPCTSTR pstrName, bool bSelect);
+
     static void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
 	static void Term();
@@ -406,7 +415,22 @@ private:
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;
-    CStdStringPtrMap m_mNameHash;
+	/*
+	struct lessDuiString
+	{	// functor for operator<
+		typedef CDuiString first_argument_type;
+		typedef CDuiString second_argument_type;
+		typedef bool result_type;
+
+		constexpr bool operator()(const CDuiString& _Left, const CDuiString& _Right) const
+		{	// apply operator< to operands
+			return _Left < _Right;
+		}
+	};
+	*/
+	typedef std::multimap<CDuiString, LPVOID> CMulMapStrToPtr;
+    //CStdStringPtrMap m_mNameHash;
+	CMulMapStrToPtr		m_mNameHash;
     CStdStringPtrMap m_mOptionGroup;
     //
     CPaintManagerUI* m_pParentResourcePM;

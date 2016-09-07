@@ -141,7 +141,8 @@ CPaintManagerUI::~CPaintManagerUI()
     // Delete the control-tree structures
     for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
     for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) delete static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
-    m_mNameHash.Resize(0);
+    //m_mNameHash.Resize(0);
+	m_mNameHash.clear();
     delete m_pRoot;
 
 	Gdiplus::GdiplusShutdown( m_gdiplusToken );	//  Ð¶ÔØGDI½Ó¿Ú
@@ -359,7 +360,7 @@ SIZE CPaintManagerUI::GetClientSize() const
 {
     RECT rcClient = { 0 };
     ::GetClientRect(m_hWndPaint, &rcClient);
-    return CSize(rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
+    return CDuiSize(rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
 }
 
 SIZE CPaintManagerUI::GetInitSize()
@@ -1355,7 +1356,8 @@ void CPaintManagerUI::ReapObjects(CControlUI* pControl)
     KillTimer(pControl);
     const CDuiString& sName = pControl->GetName();
     if( !sName.IsEmpty() ) {
-        if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
+        //if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
+		RemoveControl(sName, pControl);
     }
     for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
         TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
@@ -2293,7 +2295,94 @@ CControlUI* CPaintManagerUI::FindControl(POINT pt) const
 CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 {
     ASSERT(m_pRoot);
-    return static_cast<CControlUI*>(m_mNameHash.Find(pstrName));
+	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::const_iterator itor = items.first;
+	if (itor != items.second)
+	{		
+		return (CControlUI*)itor->second;
+	}
+
+	return NULL;
+}
+
+int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray ctrls) const
+{
+	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::const_iterator itor = items.first;
+	while (itor != items.second)
+	{
+		ctrls.Add(itor->second);
+
+		itor++;
+	}
+
+	return ctrls.GetSize();
+}
+
+void CPaintManagerUI::RemoveControl(LPCTSTR pstrName, CControlUI* pControl)
+{
+	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::const_iterator itor = items.first;
+	while (itor != items.second)
+	{
+		if (itor->second == pControl)
+		{
+			m_mNameHash.erase(itor);
+			return;
+		}
+
+		itor++;
+	}
+}
+
+void CPaintManagerUI::SetControlVisible(LPCTSTR pstrName, bool bVisible)
+{
+	CStdPtrArray ctrls;
+	if (FindControl(pstrName, ctrls) == 0)
+		return;
+	
+	for (int i = 0; i < ctrls.GetSize(); i++)
+	{
+		CControlUI* pCtrl = (CControlUI*)ctrls.GetAt(i);
+		if (pCtrl)
+		{
+			pCtrl->SetVisible(bVisible);
+		}
+	}
+}
+
+void CPaintManagerUI::EnalbeControl(LPCTSTR pstrName, bool bEnable)
+{
+	CStdPtrArray ctrls;
+	if (FindControl(pstrName, ctrls) == 0)
+		return;
+
+	for (int i = 0; i < ctrls.GetSize(); i++)
+	{
+		CControlUI* pCtrl = (CControlUI*)ctrls.GetAt(i);
+		if (pCtrl)
+		{
+			pCtrl->SetEnabled(bEnable);
+		}
+	}
+}
+
+void CPaintManagerUI::SelectControl(LPCTSTR pstrName, bool bSelect)
+{
+	CStdPtrArray ctrls;
+	if (FindControl(pstrName, ctrls) == 0)
+		return;
+
+	for (int i = 0; i < ctrls.GetSize(); i++)
+	{
+		CControlUI* pCtrl = (CControlUI*)ctrls.GetAt(i);
+		if (pCtrl)
+		{
+			COptionUI* pOption = (COptionUI*)pCtrl->GetInterface(DUI_CTR_OPTION);
+			if (pOption)
+				pOption->Selected(bSelect);
+		}
+	}
 }
 
 CControlUI* CPaintManagerUI::FindSubControlByPoint(CControlUI* pParent, POINT pt) const
@@ -2338,7 +2427,8 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThi
     const CDuiString& sName = pThis->GetName();
     if( sName.IsEmpty() ) return NULL;
     // Add this control to the hash list
-    pManager->m_mNameHash.Set(sName, pThis);
+    //pManager->m_mNameHash.Set(sName, pThis);
+	pManager->m_mNameHash.insert(std::make_pair(sName, pData));
     return NULL; // Attempt to add all controls
 }
 

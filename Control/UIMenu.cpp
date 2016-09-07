@@ -103,7 +103,7 @@ SIZE CMenuUI::EstimateSize(SIZE szAvailable)
 		if( cxFixed < sz.cx )
 			cxFixed = sz.cx;
     }
-    return CSize(cxFixed, cyFixed);
+    return CDuiSize(cxFixed, cyFixed);
 }
 
 void CMenuUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
