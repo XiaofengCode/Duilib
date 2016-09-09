@@ -2305,7 +2305,7 @@ CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 	return NULL;
 }
 
-int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray ctrls) const
+int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
 {
 	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
@@ -2428,7 +2428,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThi
     if( sName.IsEmpty() ) return NULL;
     // Add this control to the hash list
     //pManager->m_mNameHash.Set(sName, pThis);
-	pManager->m_mNameHash.insert(std::make_pair(sName, pData));
+	pManager->m_mNameHash.insert(std::make_pair(sName, pThis));
     return NULL; // Attempt to add all controls
 }
 

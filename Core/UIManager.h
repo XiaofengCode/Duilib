@@ -327,7 +327,7 @@ public:
     CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
     CStdPtrArray* GetSubControlsByClass();
 
-	int			FindControl(LPCTSTR pstrName, CStdPtrArray ctrls) const;
+	int			FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const;
 	void		RemoveControl(LPCTSTR pstrName, CControlUI* pControl);
 	void		SetControlVisible(LPCTSTR pstrName, bool bVisible);
 	void		EnalbeControl(LPCTSTR pstrName, bool bEnable);
