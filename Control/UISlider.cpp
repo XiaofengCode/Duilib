@@ -52,13 +52,13 @@ namespace DuiLib
 	RECT CSliderUI::GetThumbRect() const
 	{
 		if( m_bHorizontal ) {
-			int left = m_rcItem.left + (m_rcItem.right - m_rcItem.left - m_szThumb.cx) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
+			int left = m_rcItem.left + (LONGLONG)(m_rcItem.right - m_rcItem.left - m_szThumb.cx) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
 			int top = (m_rcItem.bottom + m_rcItem.top - m_szThumb.cy) / 2;
 			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
 		}
 		else {
 			int left = (m_rcItem.right + m_rcItem.left - m_szThumb.cx) / 2;
-			int top = m_rcItem.bottom - m_szThumb.cy - (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
+			int top = m_rcItem.bottom - m_szThumb.cy - (LONGLONG)(m_rcItem.bottom - m_rcItem.top - m_szThumb.cy) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
 			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
 		}
 	}
@@ -159,12 +159,12 @@ namespace DuiLib
 				if( m_bHorizontal ) {
 					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) nValue = m_nMax;
 					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) nValue = m_nMin;
-					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+					else nValue = m_nMin + (LONGLONG)(m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
 				}
 				else {
 					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) nValue = m_nMin;
 					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) nValue = m_nMax;
-					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+					else nValue = m_nMin + (LONGLONG)(m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
 				}
 				if(/*m_nValue !=nValue && 2014.7.28 redrain 这个注释很关键，是他导致了鼠标拖动滑块无法发出DUI_MSGTYPE_VALUECHANGED消息*/nValue>=m_nMin && nValue<=m_nMax)
 				{

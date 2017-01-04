@@ -814,8 +814,12 @@ namespace DuiLib
 	bool CTreeViewUI::RemoveAt( int iIndex )
 	{
 		CTreeNodeUI* pItem = (CTreeNodeUI*)GetItemAt(iIndex);
-		if(pItem->GetCountChild())
-			Remove(pItem);
+		if (!pItem)
+		{
+			return false;
+		}
+		//if(pItem->GetCountChild())
+		Remove(pItem);
 		return true;
 	}
 
@@ -867,6 +871,12 @@ namespace DuiLib
 			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
 			pItem->SetVisibleTag(!pFolder->GetCheck());
 			SetItemExpand(!pFolder->GetCheck(),pItem);
+
+			if (IsEnabled()) 
+			{
+				m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMDBCLICK, GetCurSel());
+			}
+
 			return true;
 		}
 		return false;

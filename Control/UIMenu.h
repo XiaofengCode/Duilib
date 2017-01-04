@@ -42,8 +42,15 @@ enum MenuItemDefaultInfo
 
 };
 
-#define WM_MENUCLICK WM_USER + 121  //用来接收按钮单击的消息
+#define WM_MENUCLICK	WM_USER + 121  //用来接收按钮单击的消息
+#define WM_MENUDESTORY	WM_USER + 122  //用来接收菜单销毁消息
 
+typedef struct  _DUIMENUITEMINFO
+{
+	CDuiString strName;
+	CDuiString strUserData;
+	BOOL bChecked;
+}DUIMENUITEMINFO, * LPDUIMENUITEMINFO;
 
 ///////////////////////////////////////////////
 class ReceiverImplBase;
@@ -237,22 +244,23 @@ public:
 	CMenuUI();
 	virtual ~CMenuUI();
 
-    LPCTSTR GetClass() const;
-    LPVOID GetInterface(LPCTSTR pstrName);
+	LPCTSTR GetClass() const;
+	LPVOID GetInterface(LPCTSTR pstrName);
 
 	virtual void DoEvent(TEventUI& event);
 
-    virtual bool Add(CControlUI* pControl);
-    virtual bool AddAt(CControlUI* pControl, int iIndex);
+	virtual bool Add(CControlUI* pControl);
+	virtual bool AddAt(CControlUI* pControl, int iIndex);
 
-    virtual int GetItemIndex(CControlUI* pControl) const;
-    virtual bool SetItemIndex(CControlUI* pControl, int iIndex);
-    virtual bool Remove(CControlUI* pControl);
+	virtual int GetItemIndex(CControlUI* pControl) const;
+	virtual bool SetItemIndex(CControlUI* pControl, int iIndex);
+	virtual bool Remove(CControlUI* pControl);
 
 	virtual SIZE EstimateSize(SIZE szAvailable);
 
-	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue) ;
+	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 };
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -282,7 +290,8 @@ public:
 	 */
     void Init(CMenuElementUI* pOwner, STRINGorID xml, POINT point,
 		CPaintManagerUI* pMainPaintManager, std::map<CDuiString,bool>* pMenuCheckInfo = NULL,
-		DWORD dwAlignment = eMenuAlignment_Left | eMenuAlignment_Top);
+		DWORD dwAlignment = eMenuAlignment_Left | eMenuAlignment_Top, IDialogBuilderAttrbuteCallback * pAttrbuteCallback = NULL);
+
     LPCTSTR GetWindowClassName() const;
     void OnFinalMessage(HWND hWnd);
 	void Notify(TNotifyUI& msg);
@@ -295,6 +304,15 @@ public:
 
 	BOOL Receive(ContextMenuParam param);
 
+	// 获取根菜单控件，用于动态添加子菜单
+	CMenuUI* GetMenuUI();
+
+	// 重新调整菜单的大小
+	void ResizeMenu();
+
+	// 重新调整子菜单的大小
+	void ResizeSubMenu();
+
 public:
 
 	POINT			m_BasedPoint;
@@ -303,6 +321,7 @@ public:
     CMenuElementUI* m_pOwner;
     CMenuUI*	m_pLayout;
 	DWORD		m_dwAlignment;	//菜单对齐方式
+	IDialogBuilderAttrbuteCallback * m_pAttrbuteCallback;
 };
 
 class CListContainerElementUI;

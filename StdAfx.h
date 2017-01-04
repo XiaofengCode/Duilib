@@ -8,6 +8,9 @@
 
 #pragma once
 
+#pragma warning(disable:4244)
+#pragma warning(disable:4251)
+
 #ifdef __GNUC__
 // 怎么都没找到min，max的头文件-_-
 #ifndef min
@@ -89,6 +92,7 @@ inline char* UnicodeToAnsi( const wchar_t * szStr )
 	WideCharToMultiByte( CP_ACP, 0, szStr, -1, pResult, nLen, NULL, NULL );
 	return pResult;
 }
+
 
 
 

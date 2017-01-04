@@ -225,9 +225,6 @@ public:
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CStdPtrArray* GetPlugins();
 
-	static void SetCurrentStringTableFolder(LPCTSTR pStrFolder);
-	static CDuiString GetCurrentStringTableFolder();
-
     bool UseParentResource(CPaintManagerUI* pm);
     CPaintManagerUI* GetParentResource() const;
 
@@ -459,7 +456,6 @@ private:
 
 	CDuiTrayIcon m_DuiTray;
 	CDuiString	m_sTitile;
-	static CDuiString m_pStrCurrentStringTableFolder;
 
 public:
 	static CDuiString m_pStrDefaultFontName;

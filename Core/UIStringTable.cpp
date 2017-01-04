@@ -143,8 +143,12 @@ namespace DuiLib{
 				}
 				strValue += cLetter;
 			}
+
 			CDuiString* pString = new CDuiString(strValue);
 			m_mapStringHash.Set(node.GetName(), pString);
+
+			delete[]szBuf;
+			szBuf = NULL;
 		}
 	}
 

@@ -57,7 +57,6 @@ short CPaintManagerUI::m_L = 100;
 CStdPtrArray CPaintManagerUI::m_aPreMessages;
 CStdPtrArray CPaintManagerUI::m_aPlugins;
 const UINT kCaretTimerID = 0xF1;
-CDuiString CPaintManagerUI::m_pStrCurrentStringTableFolder;
 
 CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
@@ -2288,6 +2287,11 @@ CControlUI* CPaintManagerUI::GetRoot() const
 
 CControlUI* CPaintManagerUI::FindControl(POINT pt) const
 {
+	if (!m_pRoot)
+	{
+		return NULL;
+	}
+
     ASSERT(m_pRoot);
     return m_pRoot->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
 }
@@ -2599,14 +2603,5 @@ void CPaintManagerUI::SetWindowTitile( LPCTSTR lpTitle )
 	}
 }
 
-void CPaintManagerUI::SetCurrentStringTableFolder( LPCTSTR pStrFolder )
-{
-	m_pStrCurrentStringTableFolder = pStrFolder;
-}
-
-DuiLib::CDuiString CPaintManagerUI::GetCurrentStringTableFolder()
-{
-	return m_pStrCurrentStringTableFolder;
-}
 
 } // namespace DuiLib
