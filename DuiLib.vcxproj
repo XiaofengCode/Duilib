@@ -523,15 +523,14 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_UNICODE;UNICODE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>
       </StringPooling>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>.\Build\Release_su/DuiLib.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -564,6 +563,10 @@
     <ClCompile Include="Control\UIProgressButton.cpp" />
     <ClCompile Include="Core\UIStringTable.cpp" />
     <ClCompile Include="Core\UITimer.cpp" />
+    <CustomBuild Include="gitinfo.cpp">
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">D:\myprojects\PlatSDK\SDK\Include.YIMA\autoinfo.py</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">xx</Outputs>
+    </CustomBuild>
     <ClCompile Include="Layout\UISliderTabLayout.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

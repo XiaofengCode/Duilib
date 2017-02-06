@@ -51,6 +51,45 @@
 #include "UIlib.h"
 
 
+#ifndef _AUTO_INFO_H_
+#define _AUTO_INFO_H_
+
+#define AUTO_INFO_COMMIT	1
+#define AUTO_INFO_VERSION	2
+typedef struct
+{
+	DWORD dwType; // AUTO_INFO_xxxx
+	CHAR szValue[64];
+	BYTE byUnused[28];
+}AUTO_INFO_ITEM;
+
+typedef struct
+{
+	CHAR byAutoVersion[16];
+	BYTE byCount;
+	BYTE byUnused[3];
+}AUTO_INFO_HEAD;
+
+#endif // _AUTO_INFO_H_
+
+struct
+{
+	AUTO_INFO_HEAD head;
+	AUTO_INFO_ITEM item[1];
+}g_AutoInfo = {
+	{
+		"AUTO_VERSION_V1",
+		1,
+		""
+	},
+	{
+		AUTO_INFO_COMMIT,
+#include "gitcommit.log"
+		,
+	}
+};
+
+
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID /*lpReserved*/)
 {
     switch( dwReason ) {

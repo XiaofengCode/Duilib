@@ -788,7 +788,7 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
     if( m_pOwner == NULL ) return;
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
-    DWORD iTextColor = pInfo->dwTextColor;
+	DWORD iTextColor = GetTextColor();
     if( (m_uButtonState & UISTATE_HOT) != 0 ) {
         iTextColor = pInfo->dwHotTextColor;
     }
