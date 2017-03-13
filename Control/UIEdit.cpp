@@ -18,15 +18,17 @@ namespace DuiLib
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		bool IsFocus(){return m_bFocused;}
 
 	protected:
 		CEditUI* m_pOwner;
 		HBRUSH m_hBkBrush;
 		bool m_bInit;
+		bool m_bFocused;
 	};
 
 
-	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL), m_bInit(false)
+	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL), m_bInit(false), m_bFocused(false)
 	{
 	}
 
@@ -74,6 +76,7 @@ namespace DuiLib
 		::SetWindowLong(GetHWND(), GWL_STYLE, styleValue);
 		::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
 		::SetFocus(m_hWnd);
+		m_bFocused = true;
 		m_bInit = true;    
 	}
 
@@ -130,6 +133,11 @@ namespace DuiLib
 			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
 
 		}
+		else if (uMsg == WM_KEYDOWN)
+		{
+			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_BUTTONDOWN, wParam);
+			bHandled = FALSE;
+		}
 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
@@ -157,6 +165,7 @@ namespace DuiLib
 	{
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		PostMessage(WM_CLOSE);
+		m_bFocused = false;
 		return lRes;
 	}
 
@@ -229,6 +238,10 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_SETFOCUS && IsEnabled() ) 
 		{
+			if (!IsEnabled())
+			{
+				return;
+			}
 			if( m_pWindow ) return;
 			m_pWindow = new CEditWnd();
 			ASSERT(m_pWindow);
@@ -554,7 +567,7 @@ namespace DuiLib
 
 	void CEditUI::PaintStatusImage(HDC hDC)
 	{
-		if( IsFocused() )
+		if( IsFocused() && m_pWindow && m_pWindow->IsFocus() )
 		{
 			RECT rcParent = GetPos();
 			CRenderEngine::DrawColor(hDC, rcParent, 0xFFFFFFFF);

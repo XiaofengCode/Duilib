@@ -385,6 +385,10 @@ namespace DuiLib
 
 	int CDuiString::GetLength() const
 	{ 
+		if (!m_pstr)
+		{
+			return 0;
+		}
 		return (int) _tcslen(m_pstr); 
 	}
 

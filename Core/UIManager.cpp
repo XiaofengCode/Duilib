@@ -100,7 +100,7 @@ m_bUseGdiplusText(false)
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     lf.lfCharSet = DEFAULT_CHARSET;
 
-	if (CPaintManagerUI::m_pStrDefaultFontName.GetLength()>0)
+	if (m_pStrDefaultFontName.GetLength()>0)
 	{
 		_tcscpy_s(lf.lfFaceName, LF_FACESIZE, CPaintManagerUI::m_pStrDefaultFontName.GetData());
 	}

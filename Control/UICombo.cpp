@@ -101,7 +101,7 @@ void CComboWnd::OnFinalMessage(HWND hWnd)
 
 LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    if( uMsg == WM_CREATE ) {
+	if( uMsg == WM_CREATE ) {
         m_pm.Init(m_hWnd);
         // The trick is to add the items to the new container. Their owner gets
         // reassigned by this operation - which is why it is important to reassign
@@ -114,7 +114,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_pLayout->ApplyAttributeList(pDefaultAttributes);
         }
         m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
-        m_pLayout->SetBkColor(0xFFFFFFFF);
+        m_pLayout->SetBkColor(m_pOwner->GetItemWndBkColor());
         m_pLayout->SetBorderColor(0xFFC6C7D2);
         m_pLayout->SetBorderSize(1);
         m_pLayout->SetAutoDestroy(false);
@@ -122,7 +122,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pLayout->ApplyAttributeList(m_pOwner->GetDropBoxAttributeList());
         for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
             m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
-        }
+		}
+		m_pm.SetBackgroundTransparent(m_pOwner->GetItemWndBkTrans());
         m_pm.AttachDialog(m_pLayout);
         m_pm.AddNotifier(this);
         return 0;
@@ -233,6 +234,8 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.bMultiExpandable = false;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+	m_bItemWndBkTrans = false;
+	m_dwItemWndBkColor = 0xFFFFFFFF;
 }
 
 LPCTSTR CComboUI::GetClass() const
@@ -803,6 +806,26 @@ void CComboUI::SetItemShowHtml(bool bShowHtml)
     Invalidate();
 }
 
+bool CComboUI::GetItemWndBkTrans()
+{
+	return m_bItemWndBkTrans;
+}
+
+void CComboUI::SetItemWndBkTrans(bool bBkTrans /*= true*/)
+{
+	m_bItemWndBkTrans = bBkTrans;
+}
+
+DWORD CComboUI::GetItemWndBkColor()
+{
+	return m_dwItemWndBkColor;
+}
+
+void CComboUI::SetItemWndBkColor(DWORD dwBkColor)
+{
+	m_dwItemWndBkColor = dwBkColor;
+}
+
 void CComboUI::SetPos(RECT rc)
 {
     // Put all elements out of sight
@@ -936,7 +959,14 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
         SetItemLineColor(clrColor);
     }
-    else if( _tcsicmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
+	else if( _tcsicmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
+	else if( _tcsicmp(pstrName, _T("itemwndbkbktrans")) == 0 ) SetItemWndBkTrans(_tcsicmp(pstrValue, _T("true")) == 0);
+	else if( _tcsicmp(pstrName, _T("itemwndbkcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetItemWndBkColor(clrColor);
+	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
