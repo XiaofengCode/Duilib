@@ -364,7 +364,33 @@ private:
     HBITMAP m_hbmpOffscreen;
     HBITMAP m_hbmpBackground;
     HWND m_hwndTooltip;
-    TOOLINFO m_ToolTip;
+
+	/*
+	typedef struct tagTOOLINFOA {
+		UINT cbSize;
+		UINT uFlags;
+		HWND hwnd;
+		UINT_PTR uId;
+		RECT rect;
+		HINSTANCE hinst;
+		LPSTR lpszText;
+		#if (_WIN32_IE >= 0x0300)
+		LPARAM lParam;
+		#endif
+		#if (_WIN32_WINNT >= 0x0501)
+		void *lpReserved;
+		#endif
+	} TTTOOLINFOA, NEAR *PTOOLINFOA, *LPTTTOOLINFOA;
+
+	TOOLINFO在不同的版本中的定义不同，如果库中定义的_WIN32_WINNT小于0x0501，
+	应用程序中定义的大于等于0x0501，就会出现错误,
+	因此采用共用体占位，共用体的大小不要小于sizeof(TTTOOLINFO)就行了
+	*/
+	union
+    {
+		TOOLINFO m_ToolTip;
+		BYTE byReserved[64];
+	};
     bool m_bShowUpdateRect;
 	bool m_bIsRestore;
 	//redrain
@@ -458,7 +484,7 @@ private:
 	CDuiString	m_sTitile;
 
 public:
-	static CDuiString m_pStrDefaultFontName;
+	CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;
 	CDuiStringTable m_StringTable;
 };

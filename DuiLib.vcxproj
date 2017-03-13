@@ -68,7 +68,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -566,6 +566,8 @@
     <CustomBuild Include="gitinfo.cpp">
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">D:\myprojects\PlatSDK\SDK\Include.YIMA\autoinfo.py</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseU|Win32'">xx</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Static Lib ReleaseU|Win32'">autoinfo.py Uilib.cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Static Lib ReleaseU|Win32'">x</Outputs>
     </CustomBuild>
     <ClCompile Include="Layout\UISliderTabLayout.cpp" />
     <ClCompile Include="StdAfx.cpp">
