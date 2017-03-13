@@ -367,7 +367,15 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
         HZIP hz = NULL;
         if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
         else hz = OpenZip((void*)sFile.GetData(), 0, 2);
-        if( hz == NULL ) return _Failed(_T("Error opening zip file"));
+		if (hz == NULL)
+		{
+			sFile = CPaintManagerUI::GetResourceZip();
+			if (CPaintManagerUI::IsCachedResourceZip()) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+			else hz = OpenZip((void*)sFile.GetData(), 0, 2);
+			if (hz == NULL)
+				return _Failed(_T("Error opening zip file"));
+		}
+
         ZIPENTRY ze; 
         int i; 
         if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 ) return _Failed(_T("Could not find ziped file"));

@@ -676,11 +676,13 @@ void CListUI::Scroll(int dx, int dy)
 {
     if( dx == 0 && dy == 0 ) return;
     SIZE sz = m_pList->GetScrollPos();
-    m_pList->SetScrollPos(CSize(sz.cx + dx, sz.cy + dy));
+    m_pList->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy));
 }
 
 void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
+	double S = m_pManager->GetDpiScale();
+
     if( _tcsicmp(pstrName, _T("header")) == 0 ) GetHeader()->SetVisible(_tcsicmp(pstrValue, _T("hidden")) != 0);
     else if( _tcsicmp(pstrName, _T("headerbkimage")) == 0 ) GetHeader()->SetBkImage(pstrValue);
     else if( _tcsicmp(pstrName, _T("scrollselect")) == 0 ) SetScrollSelect(_tcsicmp(pstrValue, _T("true")) == 0);
@@ -707,10 +709,10 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("itemtextpadding")) == 0 ) {
         RECT rcTextPadding = { 0 };
         LPTSTR pstr = NULL;
-        rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcTextPadding.left = _tcstol(pstrValue, &pstr, 10)*S;  ASSERT(pstr);    
+        rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10)*S;    ASSERT(pstr);
+        rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10)*S;  ASSERT(pstr);
+        rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10)*S; ASSERT(pstr);
         SetItemTextPadding(rcTextPadding);
     }
     else if( _tcsicmp(pstrName, _T("itemtextcolor")) == 0 ) {
@@ -1048,7 +1050,7 @@ void CListBodyUI::SetPos(RECT rc)
     if( m_pOwner ) {
         CListHeaderUI* pHeader = m_pOwner->GetHeader();
         if( pHeader != NULL && pHeader->GetCount() > 0 ) {
-            cxNeeded = MAX(0, pHeader->EstimateSize(CSize(rc.right - rc.left, rc.bottom - rc.top)).cx);
+            cxNeeded = MAX(0, pHeader->EstimateSize(CDuiSize(rc.right - rc.left, rc.bottom - rc.top)).cx);
 			if ( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible())
 			{
 				RECT rcHeader = pHeader->GetPos();
@@ -1643,7 +1645,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
 
 SIZE CListHeaderItemUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 14);
+    if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 14);
     return CContainerUI::EstimateSize(szAvailable);
 }
 
@@ -2027,7 +2029,7 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
 
 SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_pOwner == NULL ) return CSize(0, 0);
+    if( m_pOwner == NULL ) return CDuiSize(0, 0);
 
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     SIZE cXY = m_cxyFixed;

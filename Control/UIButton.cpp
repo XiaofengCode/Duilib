@@ -93,16 +93,24 @@ namespace DuiLib
 			if( IsEnabled() ) {
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
+
+				if (m_pManager != NULL)
+				{
+					m_pManager->SendNotify(this, DUI_MSGTYPE_MOUSEENTER, event.wParam, event.lParam, true);
+				}
 			}
-			// return;
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
 			if( IsEnabled() ) {
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
+
+				if (m_pManager != NULL)
+				{
+					m_pManager->SendNotify(this, DUI_MSGTYPE_MOUSELEAVE, event.wParam, event.lParam, true);
+				}
 			}
-			// return;
 		}
 		if( event.Type == UIEVENT_SETCURSOR ) {
 			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
@@ -289,7 +297,7 @@ namespace DuiLib
 
 	SIZE CButtonUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
 		return __super::EstimateSize(szAvailable);
 	}
 

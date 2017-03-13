@@ -8,6 +8,9 @@
 
 #pragma once
 
+#pragma warning(disable:4244)
+#pragma warning(disable:4251)
+
 #ifdef __GNUC__
 // 怎么都没找到min，max的头文件-_-
 #ifndef min
@@ -49,7 +52,7 @@
 
 // Required for VS 2008 (fails on XP and Win2000 without this fix)
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_WINNT_WINXP//0x0500
+#define _WIN32_WINNT _WIN32_WINNT_WINBLUE//0x0500
 #endif
 
 #include "./UIlib.h"
@@ -89,6 +92,7 @@ inline char* UnicodeToAnsi( const wchar_t * szStr )
 	WideCharToMultiByte( CP_ACP, 0, szStr, -1, pResult, nLen, NULL, NULL );
 	return pResult;
 }
+
 
 
 

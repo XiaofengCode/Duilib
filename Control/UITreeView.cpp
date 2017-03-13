@@ -14,6 +14,10 @@ namespace DuiLib
 		pTreeView		= NULL;
 		m_bIsVisable	= false;
 		m_bIsCheckBox	= false;
+		m_bExpanded		= false;
+
+		m_bExpanding = false;
+
 		pParentTreeNode	= NULL;
 
 		SetManager(pManager, NULL, true);
@@ -28,6 +32,8 @@ namespace DuiLib
 		pCheckBox->SetManager(pManager, this);
 		pItemButton		= new COptionUI();
 		pItemButton->SetManager(pManager, this);
+		pOverFolderButton = new CLabelUI();
+		pOverFolderButton->SetManager(pManager, this);		
 
 		double S = 1.0;
 		if (pManager)
@@ -38,9 +44,11 @@ namespace DuiLib
 		this->SetFixedHeight((int)(S * 18));
 		//this->SetFixedWidth(250);
 		pFolderButton->SetFixedWidth(GetFixedHeight());
+		pOverFolderButton->SetFixedWidth(GetFixedHeight());
 		pDottedLine->SetFixedWidth((int)(S * 2));
 		pCheckBox->SetFixedWidth(GetFixedHeight());
 		pItemButton->SetAttribute(_T("align"),_T("left"));
+		pItemButton->SetAttribute(_T("valign"), _T("vcenter"));
 
 		pDottedLine->SetVisible(false);
 		pCheckBox->SetVisible(false);
@@ -58,6 +66,7 @@ namespace DuiLib
 
 		pHoriz->Add(pDottedLine);
 		pHoriz->Add(pFolderButton);
+		pHoriz->Add(pOverFolderButton);
 		pHoriz->Add(pCheckBox);
 		pHoriz->Add(pItemButton);
 		Add(pHoriz);
@@ -320,7 +329,43 @@ namespace DuiLib
 		return RemoveAt((CTreeNodeUI*)pControl);
 	}
 
-	bool CTreeNodeUI::RemoveAt( CTreeNodeUI* _pTreeNodeUI )
+	bool CTreeNodeUI::IsExpanded() const
+	{
+		return m_bExpanded;
+	}
+
+	bool CTreeNodeUI::Expand(bool bExpand /*= true*/)
+	{		
+		if (m_bExpanding)
+			return false;
+
+		m_bExpanding = true;
+
+		m_bExpanded = bExpand;
+
+		if (GetCountChild() > 0)
+		{
+			int nCount = GetCountChild();
+			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			{
+				CTreeNodeUI* pItem = GetChildNode(nIndex);
+				pItem->SetVisible(bExpand);
+
+				pItem->Expand(bExpand);
+			}
+		}
+
+		if (GetFolderButton()->IsVisible())
+		{
+			GetFolderButton()->Selected(bExpand);
+		}
+
+		m_bExpanding = false;
+
+		return true;
+	}
+
+	bool CTreeNodeUI::RemoveAt(CTreeNodeUI* _pTreeNodeUI)
 	{
 		int nIndex = mTreeNodes.Find(_pTreeNodeUI);
 		CTreeNodeUI* pNode = static_cast<CTreeNodeUI*>(mTreeNodes.GetAt(nIndex));
@@ -454,6 +499,7 @@ namespace DuiLib
 	void CTreeNodeUI::SetVisibleFolderBtn( bool _IsVisibled )
 	{
 		pFolderButton->SetVisible(_IsVisibled);
+		pOverFolderButton->SetVisible(!_IsVisibled);
 	}
 
 	bool CTreeNodeUI::GetVisibleFolderBtn()
@@ -495,7 +541,42 @@ namespace DuiLib
 		return GetParentNode()->GetTreeNodes().Find(this);
 	}
 
-	CTreeNodeUI* CTreeNodeUI::GetLastNode( )
+	DuiLib::CDuiString CTreeNodeUI::GetToolTip() const
+	{
+		return pItemButton->GetToolTip();
+	}
+
+	void CTreeNodeUI::SetToolTip(LPCTSTR pstrText)
+	{
+		pItemButton->SetToolTip(pstrText);
+	}
+
+	void CTreeNodeUI::SetToolTipWidth(int nWidth)
+	{
+		pItemButton->SetToolTipWidth(nWidth);
+	}
+
+	int CTreeNodeUI::GetToolTipWidth(void)
+	{
+		return pItemButton->GetToolTipWidth();
+	}
+
+	DuiLib::CControlUI* CTreeNodeUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
+	{
+		if (CControlUI::FindControl(Proc, pData, uFlags))
+		{
+			if (pFolderButton->FindControl(Proc, pData, uFlags))
+				return pFolderButton;
+			if (pCheckBox->FindControl(Proc, pData, uFlags))
+				return pCheckBox;
+			
+			return pItemButton;
+		}
+
+		return CListContainerElementUI::FindControl(Proc, pData, uFlags);
+	}
+
+	CTreeNodeUI* CTreeNodeUI::GetLastNode()
 	{
 		if(!IsHasChild())
 			return this;
@@ -733,8 +814,12 @@ namespace DuiLib
 	bool CTreeViewUI::RemoveAt( int iIndex )
 	{
 		CTreeNodeUI* pItem = (CTreeNodeUI*)GetItemAt(iIndex);
-		if(pItem->GetCountChild())
-			Remove(pItem);
+		if (!pItem)
+		{
+			return false;
+		}
+		//if(pItem->GetCountChild())
+		Remove(pItem);
 		return true;
 	}
 
@@ -768,8 +853,10 @@ namespace DuiLib
 		{
 			CCheckBoxUI* pFolder = (CCheckBoxUI*)pMsg->pSender;
 			CTreeNodeUI* pItem = (CTreeNodeUI*)pFolder->GetParent()->GetParent();
-			pItem->SetVisibleTag(!pFolder->GetCheck());
-			SetItemExpand(!pFolder->GetCheck(),pItem);
+
+			pItem->SetVisibleTag(pFolder->GetCheck());
+			SetItemExpand(pFolder->GetCheck(),pItem);
+			
 			return true;
 		}
 		return true;
@@ -782,9 +869,14 @@ namespace DuiLib
 		{
 			CTreeNodeUI* pItem		= static_cast<CTreeNodeUI*>(pMsg->pSender);
 			CCheckBoxUI* pFolder	= pItem->GetFolderButton();
-			pFolder->Selected(!pFolder->IsSelected());
 			pItem->SetVisibleTag(!pFolder->GetCheck());
 			SetItemExpand(!pFolder->GetCheck(),pItem);
+
+			if (IsEnabled()) 
+			{
+				m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMDBCLICK, GetCurSel());
+			}
+
 			return true;
 		}
 		return false;
@@ -829,17 +921,10 @@ namespace DuiLib
 	{
 		if(_TreeNode)
 		{
-			if(_TreeNode->GetCountChild() > 0)
+			if ((_TreeNode->IsExpanded() && !_Expanded) ||
+				(!_TreeNode->IsExpanded() && _Expanded))
 			{
-				int nCount = _TreeNode->GetCountChild();
-				for(int nIndex = 0;nIndex < nCount;nIndex++)
-				{
-					CTreeNodeUI* pItem = _TreeNode->GetChildNode(nIndex);
-					pItem->SetVisible(_Expanded);
-
-					if(pItem->GetCountChild() && !pItem->GetFolderButton()->IsSelected())
-						SetItemExpand(_Expanded,pItem);
-				}
+				_TreeNode->Expand(_Expanded);
 			}
 		}
 		else
@@ -851,9 +936,11 @@ namespace DuiLib
 				CTreeNodeUI* pItem = (CTreeNodeUI*)GetItemAt(nIndex);
 
 				pItem->SetVisible(_Expanded);
-
-				if(pItem->GetCountChild() && !pItem->GetFolderButton()->IsSelected())
-					SetItemExpand(_Expanded,pItem);
+				if ((pItem->IsExpanded() && !_Expanded) ||
+					(!pItem->IsExpanded() && _Expanded))
+				{
+					pItem->Expand(_Expanded);
+				}
 
 				nIndex++;
 			}

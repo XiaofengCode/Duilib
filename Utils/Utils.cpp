@@ -36,24 +36,24 @@ namespace DuiLib
 	//
 	//
 
-	CSize::CSize()
+	CDuiSize::CDuiSize()
 	{
 		cx = cy = 0;
 	}
 
-	CSize::CSize(const SIZE& src)
+	CDuiSize::CDuiSize(const SIZE& src)
 	{
 		cx = src.cx;
 		cy = src.cy;
 	}
 
-	CSize::CSize(const RECT rc)
+	CDuiSize::CDuiSize(const RECT rc)
 	{
 		cx = rc.right - rc.left;
 		cy = rc.bottom - rc.top;
 	}
 
-	CSize::CSize(int _cx, int _cy)
+	CDuiSize::CDuiSize(int _cx, int _cy)
 	{
 		cx = _cx;
 		cy = _cy;
@@ -1005,12 +1005,12 @@ namespace DuiLib
 	//
 	//
 
-	CWaitCursor::CWaitCursor()
+	CDuiWaitCursor::CDuiWaitCursor()
 	{
 		m_hOrigCursor = ::SetCursor(::LoadCursor(NULL, IDC_WAIT));
 	}
 
-	CWaitCursor::~CWaitCursor()
+	CDuiWaitCursor::~CDuiWaitCursor()
 	{
 		::SetCursor(m_hOrigCursor);
 	}

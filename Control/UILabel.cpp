@@ -15,7 +15,7 @@ namespace DuiLib
 	//	return Color(255, r, g, b);
 	//}
 
-	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), m_dwTextColor(0), 
+	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), 		
 		m_dwDisabledTextColor(0),
 		m_iFont(-1),
 		m_bShowHtml(false),
@@ -78,13 +78,9 @@ namespace DuiLib
 
 	void CLabelUI::SetTextColor(DWORD dwTextColor)
 	{
-		m_dwTextColor = dwTextColor;
-		Invalidate();
-	}
+		CContainerUI::SetTextColor(dwTextColor);
 
-	DWORD CLabelUI::GetTextColor() const
-	{
-		return m_dwTextColor;
+		Invalidate();
 	}
 
 	void CLabelUI::SetDisabledTextColor(DWORD dwTextColor)
@@ -143,7 +139,7 @@ namespace DuiLib
 			m_cxyFixed.cx = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
 		}
 
-		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
 		return CContainerUI::EstimateSize(szAvailable);
 	}
 
@@ -210,12 +206,6 @@ namespace DuiLib
 			else m_uTextStyle &= ~DT_END_ELLIPSIS;
 		}    
 		else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-		else if( _tcsicmp(pstrName, _T("textcolor")) == 0 ) {
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetTextColor(clrColor);
-		}
 		else if( _tcsicmp(pstrName, _T("disabledtextcolor")) == 0 ) 
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);

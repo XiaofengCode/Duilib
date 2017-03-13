@@ -10,9 +10,13 @@ namespace DuiLib
 	class CCheckBoxUI;
 	class CLabelUI;
 	class COptionUI;
+	class CDialogBuilder;
 
 	class UILIB_API CTreeNodeUI : public CListContainerElementUI
 	{
+		friend class CTreeViewUI;
+		friend class CDialogBuilder;
+
 	public:
 		CTreeNodeUI(CTreeNodeUI* _ParentNode = NULL, CPaintManagerUI* pManager = NULL);
 		~CTreeNodeUI(void);
@@ -27,6 +31,9 @@ namespace DuiLib
 		bool	Add(CControlUI* _pTreeNodeUI);
 		bool	AddAt(CControlUI* pControl, int iIndex);
 		bool	Remove(CControlUI* pControl);
+
+		bool	IsExpanded() const;
+		bool	Expand(bool bExpand = true);
 
 		void	SetVisibleTag(bool _IsVisible);
 		bool	GetVisibleTag();
@@ -65,10 +72,19 @@ namespace DuiLib
 		int			 GetTreeIndex();
 		int			 GetNodeIndex();
 
+		// 鼠标提示
+		virtual CDuiString GetToolTip() const;
+		virtual void SetToolTip(LPCTSTR pstrText);
+		virtual void SetToolTipWidth(int nWidth);
+		virtual int	  GetToolTipWidth(void);	// 多行ToolTip单行最长宽度
+
+		CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
+
 	private:
 		CTreeNodeUI* GetLastNode();
 		CTreeNodeUI* CalLocation(CTreeNodeUI* _pTreeNodeUI);
-	public:
+
+	protected:
 		CHorizontalLayoutUI*	GetTreeNodeHoriznotal() const {return pHoriz;};
 		CCheckBoxUI*			GetFolderButton() const {return pFolderButton;};
 		CLabelUI*				GetDottedLine() const {return pDottedLine;};
@@ -76,13 +92,19 @@ namespace DuiLib
 		COptionUI*				GetItemButton() const {return pItemButton;};
 
 	private:
+		// Status
 		long	m_iTreeLavel;
 		bool	m_bIsVisable;
 		bool	m_bIsCheckBox;
+		bool	m_bExpanded;
 		DWORD	m_dwItemTextColor;
 		DWORD	m_dwItemHotTextColor;
 		DWORD	m_dwSelItemTextColor;
 		DWORD	m_dwSelItemHotTextColor;
+
+		// Temp
+		bool	m_bExpanding;
+
 
 		CTreeViewUI*			pTreeView;
 		CHorizontalLayoutUI*	pHoriz;
@@ -90,6 +112,7 @@ namespace DuiLib
 		CLabelUI*				pDottedLine;
 		CCheckBoxUI*			pCheckBox;
 		COptionUI*				pItemButton;
+		CLabelUI*				pOverFolderButton;
 
 		CTreeNodeUI*			pParentTreeNode;
 

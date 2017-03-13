@@ -70,20 +70,30 @@ namespace DuiLib
 		if( m_bSelected ) m_uButtonState |= UISTATE_SELECTED;
 		else m_uButtonState &= ~UISTATE_SELECTED;
 
-		if( m_pManager != NULL ) {
-			if( !m_sGroupName.IsEmpty() ) {
-				if( m_bSelected ) {
+		if( m_pManager != NULL ) 
+		{
+			if( !m_sGroupName.IsEmpty() ) 
+			{
+				if( m_bSelected ) 
+				{
 					CStdPtrArray* aOptionGroup = m_pManager->GetOptionGroup(m_sGroupName);
-					for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
+					for( int i = 0; i < aOptionGroup->GetSize(); i++ ) 
+					{
 						COptionUI* pControl = static_cast<COptionUI*>(aOptionGroup->GetAt(i));
-						if( pControl != this ) {
+						if( pControl != this ) 
+						{
 							pControl->Selected(false);
 						}
 					}
 					m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 				}
+				else
+				{
+					m_pManager->SendNotify(this, DUI_MSGTYPE_UNSELECTED);
+				}
 			}
-			else {
+			else 
+			{
 				m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 			}
 		}
@@ -187,7 +197,7 @@ namespace DuiLib
 
 	SIZE COptionUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
 		return CButtonUI::EstimateSize(szAvailable);
 	}
 

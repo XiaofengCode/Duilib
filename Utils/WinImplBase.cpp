@@ -302,6 +302,7 @@ namespace DuiLib
 		LRESULT lRes = CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		if( ::IsZoomed(*this) != bZoomed )
 		{
+			/*
 			CControlUI* pbtnMax     = static_cast<CControlUI*>(m_PaintManager.FindControl(_T("btn_MaxSize")));       // 最大化按钮
 			CControlUI* pbtnRestore = static_cast<CControlUI*>(m_PaintManager.FindControl(_T("btn_ResetSize")));   // 还原按钮
 
@@ -311,6 +312,10 @@ namespace DuiLib
 				pbtnMax->SetVisible(TRUE == bZoomed);       // 此处用表达式是为了避免编译器BOOL转换的警告
 				pbtnRestore->SetVisible(FALSE == bZoomed);
 			}
+			*/
+
+			m_PaintManager.SetControlVisible(_T("btn_MaxSize"), (TRUE == bZoomed));
+			m_PaintManager.SetControlVisible(_T("btn_ResetSize"), (FALSE == bZoomed));
 
 		}
 #else
