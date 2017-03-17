@@ -132,6 +132,7 @@ m_bUseGdiplusText(false)
     ::ZeroMemory(&m_rcCaption, sizeof(m_rcCaption));
 	::ZeroMemory(&m_rtCaret, sizeof(m_rtCaret));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
+	m_pMapNameToCtrl = new CMulMapStrToPtr();
 }
 
 CPaintManagerUI::~CPaintManagerUI()
@@ -140,7 +141,7 @@ CPaintManagerUI::~CPaintManagerUI()
     for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
     for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) delete static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
     //m_mNameHash.Resize(0);
-	m_mNameHash.clear();
+	m_pMapNameToCtrl->clear();
     delete m_pRoot;
 
 	Gdiplus::GdiplusShutdown( m_gdiplusToken );	//  Ð¶ÔØGDI½Ó¿Ú
@@ -161,6 +162,7 @@ CPaintManagerUI::~CPaintManagerUI()
     if( m_hbmpBackground != NULL ) ::DeleteObject(m_hbmpBackground);
     if( m_hDcPaint != NULL ) ::ReleaseDC(m_hWndPaint, m_hDcPaint);
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
+	delete m_pMapNameToCtrl;
 }
 
 void CPaintManagerUI::Init(HWND hWnd)
@@ -2298,7 +2300,7 @@ CControlUI* CPaintManagerUI::FindControl(POINT pt) const
 CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 {
     ASSERT(m_pRoot);
-	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	if (itor != items.second)
 	{		
@@ -2310,7 +2312,7 @@ CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 
 int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
 {
-	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	while (itor != items.second)
 	{
@@ -2324,13 +2326,13 @@ int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
 
 void CPaintManagerUI::RemoveControl(LPCTSTR pstrName, CControlUI* pControl)
 {
-	CMulMapStrToPtr::_Paircc items = m_mNameHash.equal_range(pstrName);
+	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	while (itor != items.second)
 	{
 		if (itor->second == pControl)
 		{
-			m_mNameHash.erase(itor);
+			m_pMapNameToCtrl->erase(itor);
 			return;
 		}
 
@@ -2431,7 +2433,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThi
     if( sName.IsEmpty() ) return NULL;
     // Add this control to the hash list
     //pManager->m_mNameHash.Set(sName, pThis);
-	pManager->m_mNameHash.insert(std::make_pair(sName, pThis));
+	pManager->m_pMapNameToCtrl->insert(std::make_pair(sName, pThis));
     return NULL; // Attempt to add all controls
 }
 

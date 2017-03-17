@@ -453,7 +453,7 @@ private:
 	*/
 	typedef std::multimap<CDuiString, LPVOID> CMulMapStrToPtr;
     //CStdStringPtrMap m_mNameHash;
-	CMulMapStrToPtr		m_mNameHash;
+	CMulMapStrToPtr*	m_pMapNameToCtrl;
     CStdStringPtrMap m_mOptionGroup;
     //
     CPaintManagerUI* m_pParentResourcePM;

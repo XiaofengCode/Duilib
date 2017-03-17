@@ -456,29 +456,68 @@ namespace DuiLib
 		BOOL bHandled = TRUE;
 		switch (uMsg)
 		{
-		case WM_CREATE:			lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
-		case WM_CLOSE:			lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-		case WM_DESTROY:		lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
+		case WM_CREATE:
+			lRes = OnCreate(uMsg, wParam, lParam, bHandled); 
+			break;
+		case WM_CLOSE:
+			lRes = OnClose(uMsg, wParam, lParam, bHandled); 
+			break;
+		case WM_DESTROY:
+			lRes = OnDestroy(uMsg, wParam, lParam, bHandled);
+			break;
 #if defined(WIN32) && !defined(UNDER_CE)
-		case WM_NCACTIVATE:		lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCCALCSIZE:		lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCPAINT:		lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
+		case WM_NCACTIVATE:
+			lRes = OnNcActivate(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_NCCALCSIZE:
+			lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_NCPAINT:
+			lRes = OnNcPaint(uMsg, wParam, lParam, bHandled);
+			break;
 		case WM_NCHITTEST:
-			lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
-		case WM_GETMINMAXINFO:	lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
-		case WM_MOUSEWHEEL:		lRes = OnMouseWheel(uMsg, wParam, lParam, bHandled); break;
+			lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_GETMINMAXINFO:
+			lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_MOUSEWHEEL:
+			lRes = OnMouseWheel(uMsg, wParam, lParam, bHandled);
+			break;
 #endif
-		case WM_SIZE:			lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_CHAR:		lRes = OnChar(uMsg, wParam, lParam, bHandled); break;
-		case WM_SYSCOMMAND:		lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
-		case WM_KEYDOWN:		lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
-		case WM_KILLFOCUS:		lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
-		case WM_SETFOCUS:		lRes = OnSetFocus(uMsg, wParam, lParam, bHandled); break;
-		case WM_LBUTTONUP:		lRes = OnLButtonUp(uMsg, wParam, lParam, bHandled); break;
-		case WM_LBUTTONDOWN:	lRes = OnLButtonDown(uMsg, wParam, lParam, bHandled); break;
-		case WM_MOUSEMOVE:		lRes = OnMouseMove(uMsg, wParam, lParam, bHandled); break;
-		case WM_MOUSEHOVER:	lRes = OnMouseHover(uMsg, wParam, lParam, bHandled); break;
-		default:				bHandled = FALSE; break;
+		case WM_SIZE:
+			lRes = OnSize(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_CHAR:
+			lRes = OnChar(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_SYSCOMMAND:
+			lRes = OnSysCommand(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_KEYDOWN:
+			lRes = OnKeyDown(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_KILLFOCUS:
+			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_SETFOCUS:
+			lRes = OnSetFocus(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_LBUTTONUP:
+			lRes = OnLButtonUp(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_LBUTTONDOWN:
+			lRes = OnLButtonDown(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_MOUSEMOVE:
+			lRes = OnMouseMove(uMsg, wParam, lParam, bHandled);
+			break;
+		case WM_MOUSEHOVER:
+			lRes = OnMouseHover(uMsg, wParam, lParam, bHandled);
+			break;
+		default:
+			bHandled = FALSE;
+			break;
 		}
 		if (bHandled) return lRes;
 

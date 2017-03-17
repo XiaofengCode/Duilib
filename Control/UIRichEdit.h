@@ -146,8 +146,9 @@ public:
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 	void SetTipText(LPCTSTR pstrText);
-	void CRichEditUI::SetDisabledTextColor(DWORD dwTextColor);
-	DWORD CRichEditUI::GetDisabledTextColor() const;
+	void SetDisabledTextColor(DWORD dwTextColor);
+	DWORD GetDisabledTextColor() const;
+	void SetRtfFile(LPCTSTR lpszFileName);
 protected:
     CTxtWinHost* m_pTwh;
     bool m_bVScrollBarFixing;
