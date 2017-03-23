@@ -3,19 +3,19 @@
 
 #pragma once
 #include <ShellAPI.h>
-
+#define WM_DUI_TRAYICON_MESSAGE			(WM_USER + 'TM')
 namespace DuiLib
 {
 	class IDuiTimer;
-	class UILIB_API CDuiTrayIcon
+	class UILIB_API CDuiTrayIconUI : public CControlUI
 	{
 	public:
-		CDuiTrayIcon(void);
-		~CDuiTrayIcon(void);
+		CDuiTrayIconUI(void);
+		~CDuiTrayIconUI(void);
 
 	public:
-		void CreateTrayIcon( HWND _RecvHwnd,UINT _IconIDResource,LPCTSTR _ToolTipText = NULL,UINT _Message = NULL/*(UIEVENT_TRAYICON)*/);
-		void CreateTrayIcon( HWND _RecvHwnd,LPCTSTR _IconPath,LPCTSTR _ToolTipText = NULL,UINT _Message =0/*= UIEVENT_TRAYICON*/);
+		void CreateTrayIcon( CPaintManagerUI* pManager, UINT _IconIDResource, LPCTSTR _ToolTipText = NULL, UINT _Message = 0);
+		void CreateTrayIcon( CPaintManagerUI* pManager, LPCTSTR _IconPath, LPCTSTR _ToolTipText = NULL, UINT _Message =0);
 		void DeleteTrayIcon();
 		bool SetTooltipText(LPCTSTR _ToolTipText);
 		bool SetTooltipText(UINT _IDResource);
@@ -41,8 +41,8 @@ namespace DuiLib
 		bool m_bEnabled;
 		bool m_bVisible;
 		bool m_bTwinkling;
-		HWND m_hWnd;
-		UINT m_uMessage;
+		//HWND m_hWnd;
+		CPaintManagerUI* m_pManager;
 		HICON m_hIcon;
 		IDuiTimer* pIDuiTimer;
 		NOTIFYICONDATA	m_trayData;

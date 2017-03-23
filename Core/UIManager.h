@@ -12,6 +12,7 @@ namespace DuiLib {
 
 class CControlUI;
 class CRichEditUI;
+class CDuiTrayIconUI;
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -338,7 +339,7 @@ public:
     bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 	void UsedVirtualWnd(bool bUsed);
 
-	CDuiTrayIcon& GetTrayObject(){return m_DuiTray;}
+	CDuiTrayIconUI* GetTrayObject(){return m_pDuiTray;}
 	void SetWindowTitile(LPCTSTR lpTitle);
 	CDuiStringTable& GetStringTable(){return m_StringTable;}
 private:
@@ -480,7 +481,7 @@ private:
     static CStdPtrArray m_aPreMessages;
     static CStdPtrArray m_aPlugins;
 
-	CDuiTrayIcon m_DuiTray;
+	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
 
 public:

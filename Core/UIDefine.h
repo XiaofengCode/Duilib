@@ -52,11 +52,12 @@ union DuiMessageMapFunctions
 
 #define DUI_MSGTYPE_DROPDOWN               (_T("dropdown"))
 #define DUI_MSGTYPE_SETFOCUS               (_T("setfocus"))
+#define DUI_MSGTYPE_TABSELECT              (_T("tabselect"))
 
 #define DUI_MSGTYPE_KILLFOCUS              (_T("killfocus"))
 #define DUI_MSGTYPE_ITEMCLICK 		   	   (_T("itemclick"))
 #define DUI_MSGTYPE_ITEMRCLICK 			   (_T("itemrclick"))
-#define DUI_MSGTYPE_TABSELECT              (_T("tabselect"))
+#define DUI_MSGTYPE_UNSELECTED	 		   (_T("unselected"))
 
 #define DUI_MSGTYPE_ITEMSELECT 		   	   (_T("itemselect"))
 #define DUI_MSGTYPE_ITEMEXPAND             (_T("itemexpand"))
@@ -73,10 +74,12 @@ union DuiMessageMapFunctions
 #define DUI_MSGTYPE_ITEMCOLLAPSE           (_T("itemcollapse"))
 #define DUI_MSGTYPE_ITEMACTIVATE           (_T("itemactivate"))
 #define DUI_MSGTYPE_VALUECHANGED           (_T("valuechanged"))
+#define DUI_MSGTYPE_SELECTCHANGED 		   (_T("selectchanged"))
+
+#define DUI_MSGTYPE_TRAYICONNOTIFY	       (_T("trayiconnotify"))
+
 #define DUI_MSGTYPE_VALUECHANGED_MOVE      (_T("movevaluechanged"))
 
-#define DUI_MSGTYPE_SELECTCHANGED 		   (_T("selectchanged"))
-#define DUI_MSGTYPE_UNSELECTED	 		   (_T("unselected"))
 
 //////////////////////////////////////////////////////////////////////////
 

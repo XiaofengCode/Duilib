@@ -133,6 +133,7 @@ m_bUseGdiplusText(false)
 	::ZeroMemory(&m_rtCaret, sizeof(m_rtCaret));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
 	m_pMapNameToCtrl = new CMulMapStrToPtr();
+	m_pDuiTray = new CDuiTrayIconUI();
 }
 
 CPaintManagerUI::~CPaintManagerUI()
@@ -163,6 +164,7 @@ CPaintManagerUI::~CPaintManagerUI()
     if( m_hDcPaint != NULL ) ::ReleaseDC(m_hWndPaint, m_hDcPaint);
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
 	delete m_pMapNameToCtrl;
+	delete m_pDuiTray;
 }
 
 void CPaintManagerUI::Init(HWND hWnd)

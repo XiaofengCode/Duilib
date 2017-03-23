@@ -245,13 +245,13 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					else if(_tcsicmp(pstrName, _T("trayiconid")) == 0 )
 					{
 						if(_ttoi(pstrValue) > 0)
-							pManager->GetTrayObject().CreateTrayIcon(pManager->GetPaintWindow(),_ttoi(pstrValue));
+							pManager->GetTrayObject()->CreateTrayIcon(pManager, _ttoi(pstrValue));
 						else
-							pManager->GetTrayObject().CreateTrayIcon(pManager->GetPaintWindow(),pstrValue);
+							pManager->GetTrayObject()->CreateTrayIcon(pManager, pstrValue);
 					}
 					else if(_tcsicmp(pstrName, _T("traytiptext")) == 0 )
 					{
-						pManager->GetTrayObject().SetTooltipText(pstrValue);
+						pManager->GetTrayObject()->SetTooltipText(pstrValue);
 					}
 					else if(_tcsicmp(pstrName, _T("titile")) == 0 )
 					{

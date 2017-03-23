@@ -515,6 +515,10 @@ namespace DuiLib
 		case WM_MOUSEHOVER:
 			lRes = OnMouseHover(uMsg, wParam, lParam, bHandled);
 			break;
+		case WM_DUI_TRAYICON_MESSAGE:
+			m_PaintManager.SendNotify(m_PaintManager.GetTrayObject(), DUI_MSGTYPE_TRAYICONNOTIFY, wParam, lParam);
+			lRes = 0;
+			break;
 		default:
 			bHandled = FALSE;
 			break;

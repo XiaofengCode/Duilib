@@ -4,75 +4,81 @@
 namespace DuiLib
 {
 
-	CDuiTrayIcon::CDuiTrayIcon(void)
+	CDuiTrayIconUI::CDuiTrayIconUI(void)
 	{
 		memset(&m_trayData, 0, sizeof(m_trayData));
 		m_bEnabled		= false;
 		m_bVisible		= false;
 		m_bTwinkling	= false;
-		m_hWnd			= NULL;
+		//m_hWnd			= NULL;
+		m_pManager		= NULL;
 		pIDuiTimer		= NULL;
-		m_uMessage		= UIEVENT_TRAYICON;
 	}
 
 
-	CDuiTrayIcon::~CDuiTrayIcon(void)
+	CDuiTrayIconUI::~CDuiTrayIconUI(void)
 	{
 		DeleteTrayIcon();
 	}
 
-	void CDuiTrayIcon::CreateTrayIcon( HWND _RecvHwnd,UINT _IconIDResource,LPCTSTR _ToolTipText /*= NULL*/,UINT _Message /*= UIEVENT_TRAYICON*/)
+	void CDuiTrayIconUI::CreateTrayIcon( CPaintManagerUI* pManager,UINT uIconIDResource,LPCTSTR lpszToolTipText /*= NULL*/,UINT dwMessage)
 	{
-		if(_Message == NULL)
-			_Message = UIEVENT_TRAYICON;
-
-		if(!_RecvHwnd || _IconIDResource <= 0 || _Message < 0)
+		HWND hWnd = pManager->GetPaintWindow();
+		if(!hWnd || !uIconIDResource )
 			return;
 
-		m_hIcon = LoadIcon(CPaintManagerUI::GetInstance(),MAKEINTRESOURCE(_IconIDResource));
+		if (!dwMessage)
+		{
+			dwMessage = WM_DUI_TRAYICON_MESSAGE;
+		}
+		m_hIcon = LoadIcon(CPaintManagerUI::GetInstance(),MAKEINTRESOURCE(uIconIDResource));
 
 		m_trayData.cbSize = sizeof(NOTIFYICONDATA);
-		m_trayData.hWnd	 = _RecvHwnd;
-		m_trayData.uID	 = _IconIDResource;
+		m_trayData.hWnd	 = hWnd;
+		m_trayData.uID	 = uIconIDResource;
 		m_trayData.hIcon = m_hIcon;
 		m_trayData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-		m_trayData.uCallbackMessage = _Message;
-		if(_ToolTipText)
-			_tcscpy(m_trayData.szTip,_ToolTipText);
+		m_trayData.uCallbackMessage = dwMessage;
+		if(lpszToolTipText)
+			_tcscpy(m_trayData.szTip,lpszToolTipText);
 
 		Shell_NotifyIcon(NIM_ADD,&m_trayData);
 		m_bEnabled = true;
+		m_pManager = pManager;
 	}
 
-	void CDuiTrayIcon::CreateTrayIcon( HWND _RecvHwnd,LPCTSTR _IconPath,LPCTSTR _ToolTipText /*= NULL*/,UINT _Message /*= UIEVENT_TRAYICON*/)
+	void CDuiTrayIconUI::CreateTrayIcon( CPaintManagerUI* pManager,LPCTSTR lpszIconPath,LPCTSTR lpszToolTipText /*= NULL*/,UINT dwMessage )
 	{
-		if(_Message == NULL)
-			_Message = UIEVENT_TRAYICON;
-
-		if(!_RecvHwnd || !_IconPath || _Message < 0)
+		HWND hWnd = pManager->GetPaintWindow();
+		if(!hWnd || !lpszIconPath )
 			return;
-		
+
+		if (!dwMessage)
+		{
+			dwMessage = WM_DUI_TRAYICON_MESSAGE;
+		}
 		m_hIcon = (HICON)LoadImage(
 			NULL,    //handle of the instance that contains //the image
-			_IconPath,//name or identifier of image
+			lpszIconPath,//name or identifier of image
 			IMAGE_ICON,//type of image-can also be IMAGE_CURSOR or MAGE_ICON
 			0,0,//desired width and height
 			LR_LOADFROMFILE);//load flags
 
 		m_trayData.cbSize = sizeof(NOTIFYICONDATA);
-		m_trayData.hWnd	 = _RecvHwnd;
+		m_trayData.hWnd	 = hWnd;
 		m_trayData.uID	 = 0;
 		m_trayData.hIcon = m_hIcon;
 		m_trayData.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-		m_trayData.uCallbackMessage = _Message;
-		if(_ToolTipText)
-			_tcscpy(m_trayData.szTip,_ToolTipText);
+		m_trayData.uCallbackMessage = dwMessage;
+		if(lpszToolTipText)
+			_tcscpy(m_trayData.szTip,lpszToolTipText);
 
-		Shell_NotifyIcon(NIM_ADD,&m_trayData);
+		Shell_NotifyIcon(NIM_ADD, &m_trayData);
 		m_bEnabled = true;
+		m_pManager = pManager;
 	}
 
-	void CDuiTrayIcon::DeleteTrayIcon()
+	void CDuiTrayIconUI::DeleteTrayIcon()
 	{
 		if(pIDuiTimer)
 			StopTwinkling();
@@ -81,11 +87,11 @@ namespace DuiLib
 		m_bEnabled		= false;
 		m_bVisible		= false;
 		m_bTwinkling	= false;
-		m_hWnd			= NULL;
-		m_uMessage		= UIEVENT_TRAYICON;
+		//m_hWnd			= NULL;
+		m_pManager		= NULL;
 	}
 
-	bool CDuiTrayIcon::SetTooltipText( LPCTSTR _ToolTipText )
+	bool CDuiTrayIconUI::SetTooltipText( LPCTSTR _ToolTipText )
 	{
 		if(_ToolTipText)
 			_tcscpy(m_trayData.szTip,_ToolTipText);
@@ -95,7 +101,7 @@ namespace DuiLib
 		return Shell_NotifyIcon(NIM_MODIFY, &m_trayData) == TRUE;
 	}
 
-	bool CDuiTrayIcon::SetTooltipText( UINT _IDResource )
+	bool CDuiTrayIconUI::SetTooltipText( UINT _IDResource )
 	{
 		TCHAR mbuf[64];
 		LoadString(CPaintManagerUI::GetInstance(), _IDResource, mbuf, 64);
@@ -103,12 +109,12 @@ namespace DuiLib
 		return SetTooltipText(mbuf);
 	}
 
-	CDuiString CDuiTrayIcon::GetTooltipText() const
+	CDuiString CDuiTrayIconUI::GetTooltipText() const
 	{
 		return m_trayData.szTip;
 	}
 
-	bool CDuiTrayIcon::SetIcon( HICON _Hicon )
+	bool CDuiTrayIconUI::SetIcon( HICON _Hicon )
 	{
 		if(_Hicon)
 			m_hIcon = _Hicon;
@@ -122,26 +128,26 @@ namespace DuiLib
 		return false;
 	}
 
-	bool CDuiTrayIcon::SetIcon( LPCTSTR _IconFile )
+	bool CDuiTrayIconUI::SetIcon( LPCTSTR _IconFile )
 	{
 		HICON hIcon = LoadIcon(CPaintManagerUI::GetInstance(),_IconFile);
 		return SetIcon(hIcon);
 	}
 
-	bool CDuiTrayIcon::SetIcon( UINT _IDResource )
+	bool CDuiTrayIconUI::SetIcon( UINT _IDResource )
 	{
 		HICON hIcon = LoadIcon(CPaintManagerUI::GetInstance(),MAKEINTRESOURCE(_IDResource));
 		return SetIcon(hIcon);
 	}
 
-	HICON CDuiTrayIcon::GetIcon() const
+	HICON CDuiTrayIconUI::GetIcon() const
 	{
 		HICON hIcon = NULL;
 		hIcon = m_trayData.hIcon;
 		return hIcon;
 	}
 
-	void CDuiTrayIcon::SetHideIcon()
+	void CDuiTrayIconUI::SetHideIcon()
 	{
 		if (IsVisible()) {
 			SetIcon((HICON)NULL);
@@ -149,7 +155,7 @@ namespace DuiLib
 		}
 	}
 
-	void CDuiTrayIcon::SetShowIcon()
+	void CDuiTrayIconUI::SetShowIcon()
 	{
 		if (!IsVisible()) {
 			SetIcon(m_hIcon);
@@ -157,25 +163,25 @@ namespace DuiLib
 		}
 	}
 
-	void CDuiTrayIcon::RemoveIcon()
+	void CDuiTrayIconUI::RemoveIcon()
 	{
 		m_trayData.uFlags = 0;
 		Shell_NotifyIcon(NIM_DELETE, &m_trayData);
 		m_bEnabled = FALSE;
 	}
 
-	bool CDuiTrayIcon::StartTwinkling()
+	bool CDuiTrayIconUI::StartTwinkling()
 	{
 		if(m_bTwinkling || !m_bEnabled || pIDuiTimer)
 			return false;
 
-		pIDuiTimer = MakeDuiTimer(this,&CDuiTrayIcon::OnTimer,400);
+		pIDuiTimer = MakeDuiTimer(this,&CDuiTrayIconUI::OnTimer,400);
 		pIDuiTimer->SetDuiTimer();
 		m_bTwinkling = true;
 		return true;
 	}
 
-	void CDuiTrayIcon::StopTwinkling()
+	void CDuiTrayIconUI::StopTwinkling()
 	{
 		if(pIDuiTimer){
 			pIDuiTimer->KillDuiTimer();
@@ -186,12 +192,12 @@ namespace DuiLib
 		SetShowIcon();
 	}
 
-	void CDuiTrayIcon::OnTimer( IDuiTimer* pTimer )
+	void CDuiTrayIconUI::OnTimer( IDuiTimer* pTimer )
 	{
 		IsVisible()?SetHideIcon():SetShowIcon();
 	}
 
-	bool CDuiTrayIcon::ShowMessage(LPCTSTR lpMsg, LPCTSTR lpTitle, UINT uTimeout)
+	bool CDuiTrayIconUI::ShowMessage(LPCTSTR lpMsg, LPCTSTR lpTitle, UINT uTimeout)
 	{
 		if (!m_bEnabled) return false;
 		m_trayData.uFlags = NIF_INFO;
