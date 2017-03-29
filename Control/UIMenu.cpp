@@ -433,6 +433,23 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 			rc.top = rc.bottom - nHeight;
 		}
 
+
+		nWidth = rc.GetWidth();
+		nHeight = rc.GetHeight();
+
+		if (rc.right > rcWork.right)
+		{
+			rc.right = rcWork.right;
+			rc.left = rc.right - nWidth;
+		}
+
+		if (rc.bottom > rcWork.bottom)
+		{
+			rc.bottom = rcWork.bottom;
+			rc.top = rc.bottom - nHeight;
+		}
+
+
 		SetForegroundWindow(m_hWnd);
 		MoveWindow(m_hWnd, rc.left, rc.top, rc.GetWidth(), rc.GetHeight(), FALSE);
 		SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top,
