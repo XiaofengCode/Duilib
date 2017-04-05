@@ -12,3 +12,5 @@
 /ipch/duilibpreview-4ed54a45/*.ipch
 /gitcommit.log
 /gitinfo.log
+/*.log
+/ipch/duilib-506f8d21/debug/*.ipch
