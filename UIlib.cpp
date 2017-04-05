@@ -51,11 +51,15 @@
 #include "UIlib.h"
 
 
+#define GIT_MODULE_NAME "Duilib"
+
 #ifndef _AUTO_INFO_H_
 #define _AUTO_INFO_H_
 
 #define AUTO_INFO_COMMIT	1
 #define AUTO_INFO_VERSION	2
+#define AUTO_INFO_BRANCH	3
+#define AUTO_INFO_MODULE	4
 typedef struct
 {
 	DWORD dwType; // AUTO_INFO_xxxx
@@ -75,20 +79,30 @@ typedef struct
 struct
 {
 	AUTO_INFO_HEAD head;
-	AUTO_INFO_ITEM item[1];
+	AUTO_INFO_ITEM item[3];
 }g_AutoInfo = {
 	{
 		"AUTO_VERSION_V1",
-		1,
+		3,
 		""
 	},
 	{
-		AUTO_INFO_COMMIT,
+		{
+			AUTO_INFO_MODULE,
+			GIT_MODULE_NAME,
+		},
+		{
+			AUTO_INFO_COMMIT,
 #include "gitcommit.log"
-		,
+			,
+		},
+		{
+			AUTO_INFO_BRANCH,
+#include "gitbranch.log"
+			,
+		}
 	}
 };
-
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID /*lpReserved*/)
 {
