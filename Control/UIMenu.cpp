@@ -437,16 +437,16 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 		nWidth = rc.GetWidth();
 		nHeight = rc.GetHeight();
 
-		if (rc.right > rcWork.right)
-		{
-			rc.right = rcWork.right;
-			rc.left = rc.right - nWidth;
-		}
-
 		if (rc.bottom > rcWork.bottom)
 		{
-			rc.bottom = rcWork.bottom;
+			rc.bottom = point.y;
 			rc.top = rc.bottom - nHeight;
+		}
+
+		if (rc.right > rcWork.right)
+		{
+			rc.right = point.x;
+			rc.left = rc.right - nWidth;
 		}
 
 
@@ -512,6 +512,22 @@ void CMenuWnd::ResizeMenu()
 		rc.top = rc.bottom - nHeight;
 	}
 
+
+	nWidth = rc.GetWidth();
+	nHeight = rc.GetHeight();
+
+	if (rc.bottom > rcWork.bottom)
+	{
+		rc.bottom = point.y;
+		rc.top = rc.bottom - nHeight;
+	}
+
+	if (rc.right > rcWork.right)
+	{
+		rc.right = point.x;
+		rc.left = rc.right - nWidth;
+	}
+
 	SetForegroundWindow(m_hWnd);
 	MoveWindow(m_hWnd, rc.left, rc.top, rc.GetWidth(), rc.GetHeight(), FALSE);
 	SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top,
@@ -521,6 +537,11 @@ void CMenuWnd::ResizeMenu()
 
 void CMenuWnd::ResizeSubMenu()
 {
+	if (!m_pOwner)
+	{
+		return;
+	}
+
 	// Position the popup window in absolute space
 	RECT rcOwner = m_pOwner->GetPos();
 	RECT rc = rcOwner;
@@ -833,7 +854,7 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
 SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 {
-	double S = m_pManager->GetDpiScale();
+	double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
 
 	if (S != 1.0 && (m_cxyFixed.cx == ITEM_DEFAULT_WIDTH || m_cxyFixed.cy == ITEM_DEFAULT_HEIGHT))
 	{
@@ -1108,7 +1129,7 @@ void CMenuElementUI::SetShowExplandIcon(bool bShow)
 
 void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	double S = m_pManager ? m_pManager->GetDpiScale() : 1;
+	double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
 
 	if( _tcsicmp(pstrName, _T("icon")) == 0){
 		SetIcon(pstrValue);

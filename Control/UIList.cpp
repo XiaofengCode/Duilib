@@ -681,7 +681,7 @@ void CListUI::Scroll(int dx, int dy)
 
 void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	double S = m_pManager->GetDpiScale();
+	double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
 
     if( _tcsicmp(pstrName, _T("header")) == 0 ) GetHeader()->SetVisible(_tcsicmp(pstrValue, _T("hidden")) != 0);
     else if( _tcsicmp(pstrName, _T("headerbkimage")) == 0 ) GetHeader()->SetBkImage(pstrValue);
