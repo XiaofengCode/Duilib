@@ -104,6 +104,7 @@ public:
     virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
+	CStdPtrArray & GetItems(){ return m_items; };
 
 protected:
     virtual void SetFloatPos(int iIndex);
