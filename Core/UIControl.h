@@ -223,6 +223,7 @@ protected:
 
 	//Gif
 	CGifImage		m_gifBk;
+	int  m_nWidthScale;
 };
 
 } // namespace DuiLib

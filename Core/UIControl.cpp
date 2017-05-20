@@ -41,6 +41,8 @@ m_dwTextColor(0)
     ::ZeroMemory(&m_rcPaint, sizeof(RECT));
 	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
     ::ZeroMemory(&m_tRelativePos, sizeof(TRelativePosUI));
+
+	m_nWidthScale = 0;
 }
 
 CControlUI::~CControlUI()
@@ -934,6 +936,10 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 		SetTextColor(clrColor);
 	}
+	else if (_tcsicmp(pstrName, _T("widthscale")) == 0)
+	{
+		m_nWidthScale = _ttoi(pstrValue);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
@@ -993,6 +999,34 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
+	if (m_nWidthScale != 0)
+	{
+		CContainerUI * pParentUI = (CContainerUI *)GetParent();
+		if (pParentUI)
+		{
+			RECT rc = pParentUI->GetPos();
+			int nPaddingX = 0;
+			for (int it1 = 0; it1 < pParentUI->GetItems().GetSize(); it1++)
+			{
+				CControlUI* pControl = static_cast<CControlUI*>(pParentUI->GetItems()[it1]);
+				if (!pControl)
+				{
+					continue;
+				}
+
+				RECT rcPadding = pControl->GetPadding();
+
+				nPaddingX += rcPadding.left + rcPadding.right;
+			
+			}
+
+			SIZE si = m_cxyFixed;
+			si.cx = m_nWidthScale * (rc.right - rc.left - nPaddingX) / 100;
+
+			return si;
+		}
+	}
+
     return m_cxyFixed;
 }
 
