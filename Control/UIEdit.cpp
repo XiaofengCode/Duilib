@@ -119,19 +119,26 @@ namespace DuiLib
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		if( uMsg == WM_KILLFOCUS ) lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
-		else if( uMsg == OCM_COMMAND ) {
-			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
+		if( uMsg == WM_KILLFOCUS )
+		{
+			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
+		}
+		else if( uMsg == OCM_COMMAND )
+		{
+			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE )
+			{
+				lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+			}
+			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE )
+			{
 				RECT rcClient;
 				::GetClientRect(m_hWnd, &rcClient);
 				::InvalidateRect(m_hWnd, &rcClient, FALSE);
 			}
 		}
-		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ){
-
+		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN )
+		{
 			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
-
 		}
 		else if (uMsg == WM_KEYDOWN)
 		{

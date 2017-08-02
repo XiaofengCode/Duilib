@@ -72,6 +72,10 @@ void CShadowUI::Create(CPaintManagerUI* pPaintManager)
 	HWND hParentWnd = m_pManager->GetPaintWindow();
 	// Add parent window - shadow pair to the map
 	_ASSERT(GetShadowMap().find(hParentWnd) == GetShadowMap().end());	// Only one shadow for each window
+	if (GetShadowMap().find(hParentWnd) != GetShadowMap().end())
+	{
+		return;
+	}
 	GetShadowMap()[hParentWnd] = this;
 
 	// Determine the initial show state of shadow according to parent window's state

@@ -404,7 +404,8 @@ namespace DuiLib
 		if (pRoot==NULL)
 		{
 			MessageBox(NULL,_T("Failed to load resources file!"),_T("Duilib"),MB_OK|MB_ICONERROR);
-			ExitProcess(1);
+			//ExitProcess(1);
+			Close(0);
 			return 0;
 		}
 		m_PaintManager.AttachDialog(pRoot);

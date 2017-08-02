@@ -200,10 +200,7 @@ void CMenuWnd::Notify(TNotifyUI& msg)
 {
 	if( CMenuWnd::GetGlobalContextMenuObserver().GetManager() != NULL) 
 	{
-		if( msg.sType == _T("click") || msg.sType == _T("valuechanged") ) 
-		{
-			CMenuWnd::GetGlobalContextMenuObserver().GetManager()->SendNotify(msg, false);
-		}
+		CMenuWnd::GetGlobalContextMenuObserver().GetManager()->SendNotify(msg, msg.bAsync);
 	}
 
 }
