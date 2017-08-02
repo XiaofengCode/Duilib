@@ -960,6 +960,10 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 		SetTextColor(clrColor);
 	}
+	else if (_tcsicmp(pstrName, _T("style")) == 0)
+	{
+		SetStyle(pstrValue);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
@@ -1240,6 +1244,37 @@ void CControlUI::SetBorderStyle( int nStyle )
 void CControlUI::OnTimer( UINT_PTR idEvent )
 {
 	m_gifBk.OnTimer(idEvent);
+}
+
+CDuiString CControlUI::GetStyle()
+{
+	return m_strStyle;
+}
+
+void CControlUI::SetStyle(LPCTSTR lpszStyle)
+{
+	m_strStyle = lpszStyle;
+	CDuiString strStyle;
+	for (int i = 0; lpszStyle[i]; ++i)
+	{
+		if (lpszStyle[i] == ' ' || lpszStyle[i] == '\t' || lpszStyle[i] == ',' || lpszStyle[i] == ';')
+		{
+			if (strStyle.GetLength())
+			{
+				LPCTSTR lpszAttrs = m_pManager->GetDefaultAttributeList(strStyle);
+				ApplyAttributeList(lpszAttrs);
+				strStyle.Empty();
+			}
+			continue;
+		}
+		strStyle += lpszStyle[i];
+	}
+	if (strStyle.GetLength())
+	{
+		LPCTSTR lpszAttrs = m_pManager->GetDefaultAttributeList(strStyle);
+		ApplyAttributeList(lpszAttrs);
+		strStyle.Empty();
+	}
 }
 
 } // namespace DuiLib

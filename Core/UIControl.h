@@ -168,6 +168,8 @@ public:
 	CDuiString GetVirtualWnd() const;
  	virtual void  OnTimer( UINT_PTR idEvent );
 
+	virtual CDuiString GetStyle();
+	virtual void SetStyle(LPCTSTR lpszStyle);
 public:
     CEventSource OnInit;
     CEventSource OnDestroy;
@@ -225,6 +227,7 @@ protected:
 	CGifImage		m_gifBk;
 	int  m_nWidthScale;
 	int  m_nHeightScale;
+	CDuiString	m_strStyle;
 };
 
 } // namespace DuiLib

@@ -65,6 +65,7 @@ namespace DuiLib{
 	//×ªÒå×Ö·û
 	void CDuiStringTable::Parse()
 	{
+		m_mapStringHash.RemoveAll();
 		CMarkupNode root = m_xml.GetRoot();
 		if (!root.IsValid())
 		{
@@ -240,8 +241,16 @@ namespace DuiLib{
 			}
 		}
 		DWORD dwSize = ::GetFileSize(hFile, NULL);
-		if( dwSize == 0 ) return _Failed(_T("LoadFromFile File is empty"));
-		if ( dwSize > 4096*1024 ) return _Failed(_T("LoadFromFile File too large"));
+		if( dwSize == 0 )
+		{
+			CloseHandle(hFile);
+			return _Failed(_T("LoadFromFile File is empty"));
+		}
+		if ( dwSize > 4096*1024 )
+		{
+			CloseHandle(hFile);
+			return _Failed(_T("LoadFromFile File too large"));
+		}
 
 		DWORD dwRead = 0;
 		BYTE* pByte = new BYTE[ dwSize ];
