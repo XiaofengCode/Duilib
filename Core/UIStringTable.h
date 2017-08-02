@@ -2,7 +2,8 @@
 #include "Core/UIMarkup.h"
 namespace DuiLib{
 
-#define STRINGID_ID		_T("@IDS_")
+#define STRINGID_ID			_T("@IDS_")
+#define STRINGID_ID_2		_T("#IDS_")
 
 
 	class UILIB_API CDuiStringTable

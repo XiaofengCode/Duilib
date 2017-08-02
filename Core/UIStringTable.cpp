@@ -160,12 +160,43 @@ namespace DuiLib{
 		{
 			return NULL;
 		}
+		
+		int nPos = pString->Find(STRINGID_ID_2);
+		while (nPos != -1)
+		{
+			int nPos2 = pString->Find(_T("#"), nPos + 3);
+			if (nPos2 != -1)
+			{
+				LPCTSTR lpsz = GetString(pString->Mid(nPos + 1, nPos2 - nPos - 1));
+				if (lpsz)
+				{
+					pString->Replace(pString->Mid(nPos, nPos2 - nPos + 1), lpsz);
+				}
+			}
+			nPos = pString->Find(STRINGID_ID_2, nPos + 3);			
+		}
+
+		nPos = pString->Find(STRINGID_ID);
+		while (nPos != -1)
+		{
+			int nPos2 = pString->Find(_T("@"), nPos + 3);
+			if (nPos2 != -1)
+			{
+				LPCTSTR lpsz = GetString(pString->Mid(nPos + 1, nPos2 - nPos - 1));
+				if (lpsz)
+				{
+					pString->Replace(pString->Mid(nPos, nPos2 - nPos + 1), lpsz);
+				}
+			}
+			nPos = pString->Find(STRINGID_ID_2, nPos + 3);			
+		}
 		return *pString;
 	}
 
 	LPCTSTR CDuiStringTable::FormatString( LPCTSTR lpszSource )
 	{
-		if (_tcsncmp(lpszSource, STRINGID_ID, _tcslen(STRINGID_ID)) == 0)
+		if (_tcsncmp(lpszSource, STRINGID_ID, _tcslen(STRINGID_ID)) == 0 ||
+			_tcsncmp(lpszSource, STRINGID_ID_2, _tcslen(STRINGID_ID_2)) == 0)
 		{
 			LPCTSTR lpszString = GetString(lpszSource + 1);
 			if (lpszString)

@@ -24,6 +24,7 @@ typedef struct tagTNotifyUI
 	POINT ptMouse;
 	WPARAM wParam;
 	LPARAM lParam;
+	bool bAsync;
 } TNotifyUI;
 
 class CNotifyPump;

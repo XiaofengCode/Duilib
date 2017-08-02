@@ -1000,7 +1000,7 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 					ASSERT(pstr);
 					if (y < 0)
 					{
-						bRight = true;
+						bBottom = true;
 					}
 					else if (y == 0)
 					{
@@ -1273,8 +1273,11 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 {
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 	if( pstrText == NULL || pManager == NULL ) return;
-	
-	if ( pManager->IsBackgroundTransparent() || pManager->IsUseGdiplusText())
+	if ((dwTextColor & 0x00FFFFFF) == 0)
+	{
+		dwTextColor |= 0x00010101;
+	}
+	if ( /*pManager->IsBackgroundTransparent() ||*/ pManager->IsUseGdiplusText())
 	{
 		Gdiplus::Graphics graphics( hDC );
 		graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);

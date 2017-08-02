@@ -1283,6 +1283,15 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             return true;
         }
         break;
+	case WM_MENUCLICK:
+		{
+			LPDUIMENUITEMINFO lpInfo = (LPDUIMENUITEMINFO)wParam;
+			if (lpInfo)
+			{
+				delete lpInfo;
+			}
+		}
+		break;
     default:
         break;
     }
@@ -1738,6 +1747,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
 {
     Msg.ptMouse = m_ptLastMousePos;
     Msg.dwTimestamp = ::GetTickCount();
+	Msg.bAsync = bAsync;
 	if( m_bUsedVirtualWnd )
 	{
 		Msg.sVirtualWnd = Msg.pSender->GetVirtualWnd();
