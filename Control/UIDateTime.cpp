@@ -90,14 +90,14 @@ namespace DuiLib
 		{
 			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
 		}
-		else if (uMsg == WM_KEYUP && (wParam == VK_DELETE || wParam == VK_BACK))
-		{
-			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-			m_pOwner->m_nDTUpdateFlag = DT_DELETE;
-			m_pOwner->UpdateText();
-			PostMessage(WM_CLOSE);
-			return lRes;
-		}
+// 		else if (uMsg == WM_KEYUP && (wParam == VK_DELETE || wParam == VK_BACK))
+// 		{
+// 			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+// 			m_pOwner->m_nDTUpdateFlag = DT_DELETE;
+// 			m_pOwner->UpdateText();
+// 			PostMessage(WM_CLOSE);
+// 			return lRes;
+// 		}
 		else if (uMsg == WM_KEYUP && wParam == VK_ESCAPE)
 		{
 			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
