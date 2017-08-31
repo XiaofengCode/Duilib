@@ -126,6 +126,8 @@ public:
 
 	bool IsDelayedDestroy() const;
 	void SetDelayedDestroy(bool bDelayed);
+	bool IsAutoDestroy() const;
+	void SetAutoDestroy(bool bAuto = true);
     int GetChildPadding() const;
     void SetChildPadding(int iPadding);
 

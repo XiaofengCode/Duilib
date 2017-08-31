@@ -100,9 +100,11 @@ namespace DuiLib
 		if( pControl == NULL) return false;
 
 		for( int it = 0; it < m_items.GetSize(); it++ ) {
-			if( static_cast<CControlUI*>(m_items[it]) == pControl ) {
+			if( static_cast<CControlUI*>(m_items[it]) == pControl )
+			{
 				NeedUpdate();
-				if( m_bAutoDestroy ) {
+				if( IsAutoDestroy() )
+				{
 					if( m_bDelayedDestroy && m_pManager ) m_pManager->AddDelayedCleanup(pControl);             
 					else delete pControl;
 				}
@@ -124,9 +126,11 @@ namespace DuiLib
 
 	void CContainerUI::RemoveAll()
 	{
-		for( int it = 0; m_bAutoDestroy && it < m_items.GetSize(); it++ ) {
-			if( m_bDelayedDestroy && m_pManager ) m_pManager->AddDelayedCleanup(static_cast<CControlUI*>(m_items[it]));             
-			else delete static_cast<CControlUI*>(m_items[it]);
+		for( int it = 0; IsAutoDestroy() && it < m_items.GetSize(); it++ ) {
+			if( m_bDelayedDestroy && m_pManager )
+				m_pManager->AddDelayedCleanup(static_cast<CControlUI*>(m_items[it]));             
+			else
+				delete static_cast<CControlUI*>(m_items[it]);
 		}
 		m_items.Empty();
 		NeedUpdate();

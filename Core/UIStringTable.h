@@ -10,12 +10,14 @@ namespace DuiLib{
 	{
 	public:
 		CDuiStringTable();
+		~CDuiStringTable();
 		bool Load(STRINGorID xml, LPCTSTR type, LPCTSTR lpszLang);
 		bool LoadFromFile(LPCTSTR lpszFile, LPCTSTR lpszLang);
 		LPCTSTR GetString(LPCTSTR lpszID);
 		LPCTSTR FormatString(LPCTSTR lpszSource);
 		static LPCTSTR FormatString(CPaintManagerUI* pManager, LPCTSTR lpszSource);
 		bool IsValid();
+		void Clear();
 	private:
 		bool _Failed(LPCTSTR pstrError, LPCTSTR pstrLocation = NULL);
 		void Parse();

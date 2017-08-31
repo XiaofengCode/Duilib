@@ -47,6 +47,7 @@ namespace DuiLib{
 
 	void CGifImage::InitImage(CControlUI* pParent, LPCTSTR lpszImage)
 	{
+		DeleteImage();
 		m_pParent = pParent;
 		m_sImagePath = lpszImage;
 		if (m_sImagePath.IsEmpty())
@@ -65,6 +66,7 @@ namespace DuiLib{
 		if (nSize == 0)
 		{
 			DeleteImage();
+			delete  pDimensionIDs;
 			return;
 		}
 
@@ -113,7 +115,8 @@ namespace DuiLib{
 		do 
 		{
 			CDuiString sFile = CPaintManagerUI::GetResourcePath();
-			if( CPaintManagerUI::GetResourceZip().IsEmpty() ) {
+			if( CPaintManagerUI::GetResourceZip().IsEmpty() )
+			{
 				sFile += pstrGifPath;
 				HANDLE hFile = ::CreateFile(sFile.GetData(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
 					FILE_ATTRIBUTE_NORMAL, NULL);
@@ -132,11 +135,14 @@ namespace DuiLib{
 					break;
 				}
 			}
-			else {
+			else
+			{
 				sFile += CPaintManagerUI::GetResourceZip();
 				HZIP hz = NULL;
-				if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
-				else hz = OpenZip((void*)sFile.GetData(), 0, 2);
+				if( CPaintManagerUI::IsCachedResourceZip() )
+					hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+				else
+					hz = OpenZip((void*)sFile.GetData(), 0, 2);
 				if( hz == NULL ) break;
 				ZIPENTRY ze; 
 				int i; 
@@ -227,19 +233,18 @@ namespace DuiLib{
 
 	Gdiplus::Image* CGifImage::LoadGifFromMemory( LPVOID pBuf,size_t dwSize )
 	{
-
 		HGLOBAL hMem = ::GlobalAlloc(GMEM_FIXED, dwSize);
 		BYTE* pMem = (BYTE*)::GlobalLock(hMem);
 
 		memcpy(pMem, pBuf, dwSize);
+		::GlobalUnlock(hMem);
 
 		IStream* pStm = NULL;
 		::CreateStreamOnHGlobal(hMem, TRUE, &pStm);
 		Gdiplus::Image *pImg = Gdiplus::Image::FromStream(pStm);
+		pStm->Release();
 		if(!pImg || pImg->GetLastStatus() != Gdiplus::Ok)
 		{
-			pStm->Release();
-			::GlobalUnlock(hMem);
 			return 0;
 		}
 		return pImg;

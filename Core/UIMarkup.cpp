@@ -339,13 +339,17 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 {
     Release();
     CDuiString sFile = CPaintManagerUI::GetResourcePath();
-    if( CPaintManagerUI::GetResourceZip().IsEmpty() ) {
+    if( CPaintManagerUI::GetResourceZip().IsEmpty() )
+	{
         sFile += pstrFilename;
         HANDLE hFile = ::CreateFile(sFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if( hFile == INVALID_HANDLE_VALUE ) return _Failed(_T("Error opening file"));
+        if( hFile == INVALID_HANDLE_VALUE )
+			return _Failed(_T("Error opening file"));
         DWORD dwSize = ::GetFileSize(hFile, NULL);
-        if( dwSize == 0 ) return _Failed(_T("File is empty"));
-        if ( dwSize > 4096*1024 ) return _Failed(_T("File too large"));
+        if( dwSize == 0 )
+			return _Failed(_T("File is empty"));
+        if ( dwSize > 4096*1024 )
+			return _Failed(_T("File too large"));
 
         DWORD dwRead = 0;
         BYTE* pByte = new BYTE[ dwSize ];

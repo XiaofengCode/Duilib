@@ -414,6 +414,16 @@ void CListUI::SetDelayedDestroy(bool bDelayed)
 	m_pList->SetDelayedDestroy(bDelayed);
 }
 
+bool CListUI::IsAutoDestroy() const
+{
+	return m_pList->IsAutoDestroy();
+}
+
+void CListUI::SetAutoDestroy(bool bAuto)
+{
+	m_pList->SetAutoDestroy(bAuto);
+}
+
 int CListUI::GetChildPadding() const
 {
     return m_pList->GetChildPadding();

@@ -286,6 +286,42 @@ namespace DuiLib
 		}
 	};
 
+	class CCriticalSection
+	{
+	public:
+		CCriticalSection()
+		{
+			InitializeCriticalSection(&m_CriticalSection);
+		}
+		~CCriticalSection()
+		{
+			DeleteCriticalSection(&m_CriticalSection);
+		}
+		void Enter()
+		{
+			EnterCriticalSection(&m_CriticalSection);
+		}
+		void Leave()
+		{
+			LeaveCriticalSection(&m_CriticalSection);
+		}
+		CRITICAL_SECTION m_CriticalSection;
+
+	};
+
+	class CAutoCriticalSection
+	{
+	public:
+		CAutoCriticalSection(CCriticalSection& sec) : m_sec(sec)
+		{
+			m_sec.Enter();
+		}
+		~CAutoCriticalSection()
+		{
+			m_sec.Leave();
+		}
+		CCriticalSection& m_sec;
+	};
 }// namespace DuiLib
 
 #endif // __UTILS_H__

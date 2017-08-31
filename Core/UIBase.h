@@ -62,6 +62,7 @@ class UILIB_API CWindowWnd
 {
 public:
     CWindowWnd();
+	~CWindowWnd();
 
     HWND GetHWND() const;
     operator HWND() const;

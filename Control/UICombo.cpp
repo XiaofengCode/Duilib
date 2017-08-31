@@ -120,7 +120,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pLayout->SetAutoDestroy(false);
         m_pLayout->EnableScrollBar();
         m_pLayout->ApplyAttributeList(m_pOwner->GetDropBoxAttributeList());
-        for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
+        for( int i = 0; i < m_pOwner->GetCount(); i++ )
+		{
             m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
 		}
 		m_pm.SetBackgroundTransparent(m_pOwner->GetItemWndBkTrans());

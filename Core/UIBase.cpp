@@ -217,6 +217,15 @@ CWindowWnd::CWindowWnd() : m_hWnd(NULL), m_OldWndProc(::DefWindowProc), m_bSubcl
 {
 }
 
+CWindowWnd::~CWindowWnd()
+{
+	if (m_hWnd && IsWindow(m_hWnd))
+	{
+		DestroyWindow(m_hWnd);
+		m_hWnd = NULL;
+	}
+}
+
 HWND CWindowWnd::GetHWND() const 
 { 
     return m_hWnd; 

@@ -851,16 +851,19 @@ namespace DuiLib
 
 	void CStdStringPtrMap::RemoveAll()
 	{
-		this->Resize(m_nBuckets);
+		Resize(m_nBuckets);
 	}
 
 	void CStdStringPtrMap::Resize(int nSize)
 	{
-		if( m_aT ) {
+		if( m_aT )
+		{
 			int len = m_nBuckets;
-			while( len-- ) {
+			while( len-- )
+			{
 				TITEM* pItem = m_aT[len];
-				while( pItem ) {
+				while( pItem )
+				{
 					TITEM* pKill = pItem;
 					pItem = pItem->pNext;
 					delete pKill;
@@ -881,13 +884,18 @@ namespace DuiLib
 
 	LPVOID CStdStringPtrMap::Find(LPCTSTR key, bool optimize) const
 	{
-		if( m_nBuckets == 0 || GetSize() == 0 ) return NULL;
+		if( m_nBuckets == 0 || GetSize() == 0 )
+			return NULL;
 
 		UINT slot = HashKey(key) % m_nBuckets;
-		for( TITEM* pItem = m_aT[slot]; pItem; pItem = pItem->pNext ) {
-			if( pItem->Key == key ) {
-				if (optimize && pItem != m_aT[slot]) {
-					if (pItem->pNext) {
+		for( TITEM* pItem = m_aT[slot]; pItem; pItem = pItem->pNext )
+		{
+			if( pItem->Key == key )
+			{
+				if (optimize && pItem != m_aT[slot])
+				{
+					if (pItem->pNext)
+					{
 						pItem->pNext->pPrev = pItem->pPrev;
 					}
 					pItem->pPrev->pNext = pItem->pNext;
@@ -980,7 +988,7 @@ namespace DuiLib
 
 	LPCTSTR CStdStringPtrMap::GetAt(int iIndex) const
 	{
-		if( m_nBuckets == 0 || GetSize() == 0 ) return false;
+		if( m_nBuckets == 0 || GetSize() == 0 ) return NULL;
 
 		int pos = 0;
 		int len = m_nBuckets;
@@ -1014,5 +1022,5 @@ namespace DuiLib
 	{
 		::SetCursor(m_hOrigCursor);
 	}
-
+	
 } // namespace DuiLib

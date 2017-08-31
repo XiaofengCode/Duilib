@@ -227,12 +227,16 @@ void CMenuWnd::OnFinalMessage(HWND hWnd)
 	}
 
 	RemoveObserver();
-	if( m_pOwner != NULL ) {
-		for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
-			if( static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)->GetInterface(_T("MenuElement"))) != NULL ) {
-				(static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)))->SetOwner(m_pOwner->GetParent());
-				(static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)))->SetVisible(false);
-				(static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)->GetInterface(_T("MenuElement"))))->SetInternVisible(false);
+	if( m_pOwner != NULL )
+	{
+		for( int i = 0; i < m_pOwner->GetCount(); i++ )
+		{
+			CMenuElementUI* pItem = static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)->GetInterface(_T("MenuElement")));
+			if( pItem )
+			{
+				pItem->SetOwner(m_pOwner->GetParent());
+				pItem->SetVisible(false);
+				pItem->SetInternVisible(false);
 			}
 		}
 		m_pOwner->m_pWindow = NULL;
@@ -266,10 +270,14 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 		}
 		m_pLayout->SetAutoDestroy(false);
 
-		for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
-			if(m_pOwner->GetItemAt(i)->GetInterface(_T("MenuElement")) != NULL ){
-				(static_cast<CMenuElementUI*>(m_pOwner->GetItemAt(i)))->SetOwner(m_pLayout);
-				m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
+		for( int i = 0; i < m_pOwner->GetCount(); i++ )
+		{
+			CControlUI* pCtrl = m_pOwner->GetItemAt(i);
+			if(pCtrl->GetInterface(_T("MenuElement")) != NULL )
+			{
+				(static_cast<CMenuElementUI*>(pCtrl))->SetOwner(m_pLayout);
+				if (m_pLayout->Add(pCtrl))
+					continue;
 			}
 		}
 
@@ -745,7 +753,8 @@ m_bShowExplandIcon(false)
 }
 
 CMenuElementUI::~CMenuElementUI()
-{}
+{
+}
 
 LPCTSTR CMenuElementUI::GetClass() const
 {
@@ -1037,7 +1046,7 @@ void CMenuElementUI::CreateMenuWnd()
 	param.wParam = 2;
 	CMenuWnd::GetGlobalContextMenuObserver().RBroadcast(param);
 
-	m_pWindow->Init(static_cast<CMenuElementUI*>(this), _T(""), CDuiPoint(), NULL);
+	m_pWindow->Init(this, _T(""), CDuiPoint(), NULL);
 }
 
 void CMenuElementUI::SetLineType()

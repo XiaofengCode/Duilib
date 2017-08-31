@@ -3,10 +3,15 @@
 
 namespace DuiLib{
 
-	CDuiStringTable::CDuiStringTable():m_mapStringHash(16)
+	CDuiStringTable::CDuiStringTable():m_mapStringHash(16), m_pstrtype(NULL)
 	{
 	}
 
+
+	CDuiStringTable::~CDuiStringTable()
+	{
+		Clear();
+	}
 
 	bool CDuiStringTable::Load( STRINGorID xml, LPCTSTR type, LPCTSTR lpszLang )
 	{
@@ -65,7 +70,7 @@ namespace DuiLib{
 	//×ªÒå×Ö·û
 	void CDuiStringTable::Parse()
 	{
-		m_mapStringHash.RemoveAll();
+		Clear();
 		CMarkupNode root = m_xml.GetRoot();
 		if (!root.IsValid())
 		{
@@ -87,6 +92,7 @@ namespace DuiLib{
 				root = node;
 			}
 		}
+
 		for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) 
 		{
 			CDuiString strValue = node.GetValue();
@@ -146,6 +152,15 @@ namespace DuiLib{
 			}
 
 			CDuiString* pString = new CDuiString(strValue);
+			CDuiString* pOld = (CDuiString*)m_mapStringHash.Find(node.GetName());
+			if (pOld)
+			{
+				CDuiString sDbg(_T("Warning: Same string ID <"));
+				sDbg += strValue;
+				sDbg += _T(">\r\n");
+				OutputDebugString(sDbg);
+				delete pOld;
+			}
 			m_mapStringHash.Set(node.GetName(), pString);
 
 			delete[]szBuf;
@@ -281,6 +296,24 @@ namespace DuiLib{
 	bool CDuiStringTable::IsValid()
 	{
 		return m_xml.IsValid();
+	}
+
+	void CDuiStringTable::Clear()
+	{
+		for (int i = 0; i < m_mapStringHash.GetSize(); i++)
+		{
+			LPCTSTR lpszKey = m_mapStringHash.GetAt(i);
+			if (!lpszKey)
+			{
+				continue;
+			}
+			CDuiString* pString = (CDuiString*)m_mapStringHash.Find(lpszKey);
+			if (pString)
+			{
+				delete pString;
+			}
+		}
+		m_mapStringHash.RemoveAll();
 	}
 
 }
