@@ -1060,7 +1060,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 //
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
-    m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
+    m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
 	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0)
 {
@@ -1161,16 +1161,17 @@ void CRichEditUI::SetWordWrap(bool bWordWrap)
     if( m_pTwh ) m_pTwh->SetWordWrap(bWordWrap);
 }
 
-int CRichEditUI::GetFont()
+LPCTSTR CRichEditUI::GetFont()
 {
-    return m_iFont;
+    return m_sFont;
 }
 
-void CRichEditUI::SetFont(int index)
+void CRichEditUI::SetFont(LPCTSTR lpszFontID)
 {
-    m_iFont = index;
-    if( m_pTwh ) {
-        m_pTwh->SetFont(GetManager()->GetFont(m_iFont));
+    m_sFont = lpszFontID;
+    if( m_pTwh )
+	{
+        m_pTwh->SetFont(GetManager()->GetFont(m_sFont));
     }
 }
 
@@ -2397,7 +2398,7 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
             m_lTwhStyle |= ES_RIGHT;
         }
     }
-    else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+    else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
     else if( _tcsicmp(pstrName, _T("textcolor")) == 0 ) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);

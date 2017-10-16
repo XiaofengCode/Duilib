@@ -110,12 +110,14 @@ namespace DuiLib
 		rcText.left += m_rcTextPadding.left;
 		rcText.right -= m_rcTextPadding.right;
 
-		if( m_bShowHtml ) {   
+		if( m_bShowHtml )
+		{
 			int nLinks = 0;
 			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
 		}
-		else {
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_iFont, DT_CALCRECT | m_uTextStyle);
+		else
+		{
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_sFont, DT_CALCRECT | m_uTextStyle);
 		}
 		SIZE cXY = {rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right,
 			rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom};
@@ -152,7 +154,7 @@ namespace DuiLib
 				m_rcLinks, m_sLinks, m_nLinks, m_uTextStyle);
 			else
 				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-				m_iFont, m_uTextStyle);
+				m_sFont, m_uTextStyle);
 		}
 		else {
 			if( m_bShowHtml )
@@ -160,7 +162,7 @@ namespace DuiLib
 				m_rcLinks, m_sLinks, m_nLinks, m_uTextStyle);
 			else
 				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
-				m_iFont, m_uTextStyle);
+				m_sFont, m_uTextStyle);
 		}
 	}
 }

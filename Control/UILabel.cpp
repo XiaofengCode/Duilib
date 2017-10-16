@@ -17,7 +17,6 @@ namespace DuiLib
 
 	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), 		
 		m_dwDisabledTextColor(0),
-		m_iFont(-1),
 		m_bShowHtml(false),
 
 		m_EnableEffect(false),
@@ -94,15 +93,15 @@ namespace DuiLib
 		return m_dwDisabledTextColor;
 	}
 
-	void CLabelUI::SetFont(int index)
+	void CLabelUI::SetFont(LPCTSTR lpszFontID)
 	{
-		m_iFont = index;
+		m_sFont = lpszFontID;
 		Invalidate();
 	}
 
-	int CLabelUI::GetFont() const
+	LPCTSTR CLabelUI::GetFont() const
 	{
-		return m_iFont;
+		return m_sFont;
 	}
 
 	RECT CLabelUI::GetTextPadding() const
@@ -134,12 +133,14 @@ namespace DuiLib
 		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : m_cxyFixed.cx, 9999 };
 		rcText.left += m_rcTextPadding.left;
 		rcText.right -= m_rcTextPadding.right;
-		if( m_bShowHtml ) {   
+		if( m_bShowHtml )
+		{
 			int nLinks = 0;
 			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
 		}
-		else {
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_iFont, DT_CALCRECT | m_uTextStyle);
+		else
+		{
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_sFont, DT_CALCRECT | m_uTextStyle);
 		}
 		if (m_bAutoCalcWidth)
 		{
@@ -214,7 +215,7 @@ namespace DuiLib
 			if( _tcsicmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
 			else m_uTextStyle &= ~DT_END_ELLIPSIS;
 		}    
-		else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
 		else if( _tcsicmp(pstrName, _T("disabledtextcolor")) == 0 ) 
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -295,6 +296,10 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("autocalcwidth")) == 0 ) {
 			SetAutoCalcWidth(_tcsicmp(pstrValue, _T("true")) == 0);
 		}
+		else if( _tcsicmp(pstrName, _T("width")) == 0 ) {
+			CContainerUI::SetAttribute(pstrName, pstrValue);
+			m_bAutoCalcWidth = false;
+		}
 		else CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -319,7 +324,7 @@ namespace DuiLib
 					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
 				else
 					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-					m_iFont, DT_SINGLELINE | m_uTextStyle);
+					m_sFont, DT_SINGLELINE | m_uTextStyle);
 			}
 			else {
 				if( m_bShowHtml )
@@ -327,7 +332,7 @@ namespace DuiLib
 					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
 				else
 					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
-					m_iFont, DT_SINGLELINE | m_uTextStyle);
+					m_sFont, DT_SINGLELINE | m_uTextStyle);
 			}
 		}
 		else

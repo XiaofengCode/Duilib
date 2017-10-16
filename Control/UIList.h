@@ -19,7 +19,7 @@ typedef struct tagTListInfoUI
 {
     int nColumns;
     RECT rcColumn[UILIST_MAX_COLUMNS];
-    int nFont;
+    CDuiString sFont;
     UINT uTextStyle;
     RECT rcTextPadding;
     DWORD dwTextColor;
@@ -277,7 +277,7 @@ public:
     void SetTextColor(DWORD dwTextColor);
 	void SetTextPadding(RECT rc);
 	RECT GetTextPadding() const;
-    void SetFont(int index);
+	void SetFont(LPCTSTR lpszFontID);
     bool IsShowHtml();
     void SetShowHtml(bool bShowHtml = true);
     LPCTSTR GetNormalImage() const;
@@ -308,7 +308,7 @@ protected:
     UINT m_uButtonState;
     int m_iSepWidth;
     DWORD m_dwTextColor;
-    int m_iFont;
+    CDuiString m_sFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;

@@ -31,8 +31,8 @@ public:
     void SetReadOnly(bool bReadOnly = true);
     bool GetWordWrap();
     void SetWordWrap(bool bWordWrap = true);
-    int GetFont();
-    void SetFont(int index);
+    LPCTSTR GetFont();
+    void SetFont(LPCTSTR lpszFontID);
     void SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
 	void SetEnabled(bool bEnabled);
     LONG GetWinStyle();
@@ -159,7 +159,7 @@ protected:
     bool m_bReadOnly;
     bool m_bWordWrap;
     DWORD m_dwTextColor;
-    int m_iFont;
+    CDuiString m_sFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
 	bool m_bInited;

@@ -25,8 +25,8 @@ namespace DuiLib
 		void SetTextColor(DWORD dwTextColor);
 		void SetDisabledTextColor(DWORD dwTextColor);
 		DWORD GetDisabledTextColor() const;
-		void SetFont(int index);
-		int GetFont() const;
+		void SetFont(LPCTSTR lpszFontID);
+		LPCTSTR GetFont() const;
 		RECT GetTextPadding() const;
 		void SetTextPadding(RECT rc);
 		bool IsShowHtml();
@@ -76,7 +76,7 @@ namespace DuiLib
 	protected:
 		//DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
-		int		m_iFont;
+		CDuiString m_sFont;
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;

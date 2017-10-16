@@ -219,7 +219,7 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 
     m_ListInfo.nColumns = 0;
-    m_ListInfo.nFont = -1;
+    m_ListInfo.sFont = -1;
     m_ListInfo.uTextStyle = DT_VCENTER;
     m_ListInfo.dwTextColor = 0xFF000000;
     m_ListInfo.dwBkColor = 0;
@@ -633,7 +633,7 @@ TListInfoUI* CComboUI::GetListInfo()
 
 void CComboUI::SetItemFont(int index)
 {
-    m_ListInfo.nFont = index;
+    m_ListInfo.sFont = index;
     Invalidate();
 }
 
@@ -873,7 +873,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		ASSERT(pstr);
 		SetDropBoxSize(szDropBoxSize);
 	}
-    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);
+    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.sFont = _ttoi(pstrValue);
     else if( _tcsicmp(pstrName, _T("itemalign")) == 0 ) {
         if( _tcsstr(pstrValue, _T("left")) != NULL ) {
             m_ListInfo.uTextStyle &= ~(DT_CENTER | DT_RIGHT);

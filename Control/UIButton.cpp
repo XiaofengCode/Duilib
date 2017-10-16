@@ -396,7 +396,7 @@ namespace DuiLib
 			NULL, NULL, nLinks, m_uTextStyle);
 		else
 			CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, clrColor, \
-			m_iFont, m_uTextStyle);
+			m_sFont, m_uTextStyle);
 	}
 
 	void CButtonUI::PaintStatusImage(HDC hDC)

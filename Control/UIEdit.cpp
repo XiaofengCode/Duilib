@@ -54,9 +54,9 @@ namespace DuiLib
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 		HFONT hFont=NULL;
-		int iFontIndex=m_pOwner->GetFont();
-		if (iFontIndex!=-1)
-			hFont=m_pOwner->GetManager()->GetFont(iFontIndex);
+		LPCTSTR lpszFontIndex=m_pOwner->GetFont();
+		if (lpszFontIndex != NULL)
+			hFont=m_pOwner->GetManager()->GetFont(lpszFontIndex);
 		if (hFont==NULL)
 			hFont=m_pOwner->GetManager()->GetDefaultFontInfo()->hFont;
 
@@ -643,11 +643,11 @@ namespace DuiLib
 		rc.bottom -= m_rcTextPadding.bottom;
 		if( IsEnabled() ) {
 			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, mCurTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
+				m_sFont, DT_SINGLELINE | m_uTextStyle);
 		}
 		else {
 			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
+				m_sFont, DT_SINGLELINE | m_uTextStyle);
 		}
 	}
 }

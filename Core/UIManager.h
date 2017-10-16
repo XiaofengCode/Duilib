@@ -242,18 +242,17 @@ public:
     TFontInfo* GetDefaultFontInfo();
     void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     DWORD GetCustomFontCount() const;
-    HFONT AddFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bCheckExist = false);
-    HFONT AddFontAt(int index, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    HFONT GetFont(int index);
+    HFONT AddFont(LPCTSTR pStrFontID, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bCheckExist = false);
+    HFONT AddFontAt(int index, LPCTSTR pStrFontID, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
+    HFONT GetFont(LPCTSTR lpszFontID);
     HFONT GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     bool FindFont(HFONT hFont);
     bool FindFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     int GetFontIndex(HFONT hFont);
     int GetFontIndex(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     bool RemoveFont(HFONT hFont);
-    bool RemoveFontAt(int index);
     void RemoveAllFonts();
-    TFontInfo* GetFontInfo(int index);
+    TFontInfo* GetFontInfo(LPCTSTR lpszFontID);
     TFontInfo* GetFontInfo(HFONT hFont);
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
@@ -464,7 +463,8 @@ private:
     DWORD m_dwDefaultLinkHoverFontColor;
     DWORD m_dwDefaultSelectedBkColor;
     TFontInfo m_DefaultFontInfo;
-    CStdPtrArray m_aCustomFonts;
+	CStdStringPtrMap m_mapFont;
+    //CStdPtrArray m_aCustomFonts;
 
     CStdStringPtrMap m_mImageHash;
     CStdStringPtrMap m_DefaultAttrHash;

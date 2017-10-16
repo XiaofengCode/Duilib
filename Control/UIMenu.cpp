@@ -854,7 +854,7 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
         NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
-        pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+        pInfo->sFont, DT_SINGLELINE | pInfo->uTextStyle);
 }
 
 
@@ -898,8 +898,9 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 			int nLinks = 0;
 			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, NULL, NULL, nLinks, DT_CALCRECT | pInfo->uTextStyle);
 		}
-		else {
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle);
+		else
+		{
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->sFont, DT_CALCRECT | pInfo->uTextStyle);
 		}
 		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20* S;
 		cXY.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;

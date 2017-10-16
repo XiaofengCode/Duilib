@@ -15,7 +15,7 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     CVerticalLayoutUI::Add(m_pList);
 
     m_ListInfo.nColumns = 0;
-    m_ListInfo.nFont = -1;
+    m_ListInfo.sFont = -1;
     m_ListInfo.uTextStyle = DT_VCENTER; // m_uTextStyle(DT_VCENTER | DT_END_ELLIPSIS)
     m_ListInfo.dwTextColor = 0xFF000000;
     m_ListInfo.dwBkColor = 0;
@@ -436,7 +436,7 @@ void CListUI::SetChildPadding(int iPadding)
 
 void CListUI::SetItemFont(int index)
 {
-    m_ListInfo.nFont = index;
+    m_ListInfo.sFont = index;
     NeedUpdate();
 }
 
@@ -697,7 +697,7 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("headerbkimage")) == 0 ) GetHeader()->SetBkImage(pstrValue);
     else if( _tcsicmp(pstrName, _T("scrollselect")) == 0 ) SetScrollSelect(_tcsicmp(pstrValue, _T("true")) == 0);
     else if( _tcsicmp(pstrName, _T("multiexpanding")) == 0 ) SetMultiExpanding(_tcsicmp(pstrValue, _T("true")) == 0);
-    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);
+    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.sFont = pstrValue;
     else if( _tcsicmp(pstrName, _T("itemalign")) == 0 ) {
         if( _tcsstr(pstrValue, _T("left")) != NULL ) {
             m_ListInfo.uTextStyle &= ~(DT_CENTER | DT_RIGHT);
@@ -1331,7 +1331,7 @@ bool CListHeaderUI::IsScaleHeader() const
 //
 
 CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_uButtonState(0), m_iSepWidth(4),
-m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_dwTextColor(0), m_iFont(-1), m_bShowHtml(false),m_nScale(0)
+m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_dwTextColor(0), m_bShowHtml(false),m_nScale(0)
 {
 	SetTextPadding(CDuiRect(2, 0, 2, 0));
     ptLastMouse.x = ptLastMouse.y = 0;
@@ -1417,9 +1417,9 @@ void CListHeaderItemUI::SetTextPadding(RECT rc)
 	Invalidate();
 }
 
-void CListHeaderItemUI::SetFont(int index)
+void CListHeaderItemUI::SetFont(LPCTSTR lpszFontID)
 {
-    m_iFont = index;
+    m_sFont = lpszFontID;
 }
 
 bool CListHeaderItemUI::IsShowHtml()
@@ -1522,7 +1522,7 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         if( _tcsicmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
         else m_uTextStyle &= ~DT_END_ELLIPSIS;
     }    
-    else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+    else if( _tcsicmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
     else if( _tcsicmp(pstrName, _T("textcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
         LPTSTR pstr = NULL;
@@ -1723,7 +1723,7 @@ void CListHeaderItemUI::PaintText(HDC hDC)
         NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
-        m_iFont, DT_SINGLELINE | m_uTextStyle);
+        m_sFont, DT_SINGLELINE | m_uTextStyle);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2044,7 +2044,7 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     SIZE cXY = m_cxyFixed;
     if( cXY.cy == 0 && m_pManager != NULL ) {
-        cXY.cy = m_pManager->GetFontInfo(pInfo->nFont)->tm.tmHeight + 8;
+        cXY.cy = m_pManager->GetFontInfo(pInfo->sFont)->tm.tmHeight + 8;
         cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
     }
 
@@ -2054,8 +2054,9 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
             int nLinks = 0;
             CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
         }
-        else {
-            CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->nFont, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+        else
+		{
+            CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->sFont, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
         }
         cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right;        
     }
@@ -2098,7 +2099,7 @@ void CListLabelElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
         NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
-        pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+        pInfo->sFont, DT_SINGLELINE | pInfo->uTextStyle);
 }
 
 
@@ -2228,7 +2229,7 @@ SIZE CListTextElementUI::EstimateSize(SIZE szAvailable)
 
     SIZE cXY = m_cxyFixed;
     if( cXY.cy == 0 && m_pManager != NULL ) {
-        cXY.cy = m_pManager->GetFontInfo(pInfo->nFont)->tm.tmHeight + 8;
+        cXY.cy = m_pManager->GetFontInfo(pInfo->sFont)->tm.tmHeight + 8;
         if( pInfo ) cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
     }
 
@@ -2272,7 +2273,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
                 &m_rcLinks[m_nLinks], &m_sLinks[m_nLinks], nLinks, DT_SINGLELINE | pInfo->uTextStyle);
         else
             CRenderEngine::DrawText(hDC, m_pManager, rcItem, strText.GetData(), iTextColor, \
-            pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+            pInfo->sFont, DT_SINGLELINE | pInfo->uTextStyle);
 
         m_nLinks += nLinks;
         nLinks = lengthof(m_rcLinks) - m_nLinks; 
