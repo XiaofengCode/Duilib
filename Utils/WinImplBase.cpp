@@ -155,6 +155,8 @@ namespace DuiLib
 		vctStaticName.push_back(_T("tablayoutui"));
 		vctStaticName.push_back(_T("childlayoutui"));
 		vctStaticName.push_back(_T("dialoglayoutui"));
+		vctStaticName.push_back(_T("slidertablayoutui"));
+		vctStaticName.push_back(_T("tilelayoutui"));
 
 		std::vector<CDuiString>::iterator it = std::find(vctStaticName.begin(), vctStaticName.end(), strClassName);
 		if (vctStaticName.end() != it)

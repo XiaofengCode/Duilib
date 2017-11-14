@@ -49,8 +49,9 @@ namespace DuiLib
 		if( _tcsicmp(pstrName, _T("itemsize")) == 0 ) {
 			SIZE szItem = { 0 };
 			LPTSTR pstr = NULL;
-			szItem.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			szItem.cy = _tcstol(pstr + 1, &pstr, 10);   ASSERT(pstr);     
+			double S = m_pManager->GetDpiScale();
+			szItem.cx = _tcstol(pstrValue, &pstr, 10) * S;  ASSERT(pstr);    
+			szItem.cy = _tcstol(pstr + 1, &pstr, 10) * S;   ASSERT(pstr);     
 			SetItemSize(szItem);
 		}
 		else if( _tcsicmp(pstrName, _T("columns")) == 0 ) SetColumns(_ttoi(pstrValue));
