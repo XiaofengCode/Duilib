@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DuiLib2015", "DuiLib2015.vcxproj", "{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		DebugU|x86 = DebugU|x86
+		Release|x86 = Release|x86
+		ReleaseU|x86 = ReleaseU|x86
+		Static Lib Debug|x86 = Static Lib Debug|x86
+		Static Lib DebugU|x86 = Static Lib DebugU|x86
+		Static Lib Release|x86 = Static Lib Release|x86
+		Static Lib ReleaseU|x86 = Static Lib ReleaseU|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Debug|x86.ActiveCfg = Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Debug|x86.Build.0 = Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.DebugU|x86.ActiveCfg = DebugU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.DebugU|x86.Build.0 = DebugU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Release|x86.ActiveCfg = Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Release|x86.Build.0 = Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.ReleaseU|x86.ActiveCfg = ReleaseU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.ReleaseU|x86.Build.0 = ReleaseU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib Debug|x86.ActiveCfg = Static Lib Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib Debug|x86.Build.0 = Static Lib Debug|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib DebugU|x86.ActiveCfg = Static Lib DebugU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib DebugU|x86.Build.0 = Static Lib DebugU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib Release|x86.ActiveCfg = Static Lib Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib Release|x86.Build.0 = Static Lib Release|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib ReleaseU|x86.ActiveCfg = Static Lib ReleaseU|Win32
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.Static Lib ReleaseU|x86.Build.0 = Static Lib ReleaseU|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
