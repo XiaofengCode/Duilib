@@ -24,7 +24,9 @@ namespace DuiLib
 	public:
 		WindowImplBase(){};
 		virtual ~WindowImplBase(){};
-		virtual void InitWindow(){};
+		virtual void InitWindow(){}
+		virtual void OnLoadSkinFailed();
+		virtual void OnLoadSkinFinished(){}
 		virtual void OnFinalMessage( HWND hWnd );
 		virtual void Notify(TNotifyUI& msg);
 

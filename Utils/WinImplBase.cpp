@@ -15,7 +15,7 @@ namespace DuiLib
 		DUI_ON_MSGTYPE(DUI_MSGTYPE_CLICK,OnClick)
 		DUI_END_MESSAGE_MAP()
 
-		void WindowImplBase::OnFinalMessage( HWND hWnd )
+	void WindowImplBase::OnFinalMessage( HWND hWnd )
 	{
 		m_PaintManager.RemovePreMessageFilter(this);
 		m_PaintManager.RemoveNotifier(this);
@@ -405,11 +405,11 @@ namespace DuiLib
 		ASSERT(pRoot);
 		if (pRoot==NULL)
 		{
-			MessageBox(NULL,_T("Failed to load resources file!"),_T("Duilib"),MB_OK|MB_ICONERROR);
-			//ExitProcess(1);
-			Close(0);
+			OnLoadSkinFailed();
 			return 0;
 		}
+		OnLoadSkinFinished();
+
 		m_PaintManager.AttachDialog(pRoot);
 		m_PaintManager.AddNotifier(this);
 
@@ -619,5 +619,13 @@ namespace DuiLib
 	{
 		return m_PaintManager.m_StringTable.GetString(lpszID);
 	}
+
+	void WindowImplBase::OnLoadSkinFailed()
+	{
+		MessageBox(NULL,_T("Failed to load resources file!"),_T("Duilib"),MB_OK|MB_ICONERROR);
+		//ExitProcess(1);
+		Close(0);
+	}
+
 
 }

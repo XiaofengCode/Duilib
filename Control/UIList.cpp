@@ -661,7 +661,7 @@ int CListUI::GetExpandedItem() const
 
 void CListUI::EnsureVisible(int iIndex)
 {
-    if( m_iCurSel < 0 ) return;
+    if( iIndex < 0 ) return;
     RECT rcItem = m_pList->GetItemAt(iIndex)->GetPos();
     RECT rcList = m_pList->GetPos();
     RECT rcListInset = m_pList->GetInset();
@@ -1996,19 +1996,21 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
         return;
     }
 
-	if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
-	{
-		if( IsEnabled() ){
-			//           m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
-			Select();
-			Invalidate();
-		}
-		return;
-	}
-	if( event.Type == UIEVENT_BUTTONUP ) 
+// 	if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
+// 	{
+// 		if( IsEnabled() ){
+// 			//           m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
+// 			Select();
+// 			Invalidate();
+// 		}
+// 		return;
+// 	}
+	if( event.Type == UIEVENT_BUTTONUP || event.Type == UIEVENT_CONTEXTMENU) 
 	{
 		if( IsEnabled() ){
 			m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
+			Select();
+			Invalidate();
 		}
 		return;
 	}
