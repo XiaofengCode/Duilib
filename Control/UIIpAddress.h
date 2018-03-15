@@ -34,7 +34,7 @@ namespace DuiLib
 	protected:
 		DWORD	m_dwIP;
 		bool       m_bReadOnly;
-		int		m_nIPUpdateFlag;
+		//int		m_nIPUpdateFlag;
 
 		CIPAddressWnd* m_pWindow;
 	};

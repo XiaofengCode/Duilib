@@ -238,16 +238,16 @@ namespace DuiLib
 			return;
 		}
 
-		if( event.Type == UIEVENT_SETFOCUS ) 
-		{
-			m_bFocused = true;
-			return;
-		}
-		if( event.Type == UIEVENT_KILLFOCUS ) 
-		{
-			m_bFocused = false;
-			return;
-		}
+// 		if( event.Type == UIEVENT_SETFOCUS ) 
+// 		{
+// 			m_bFocused = true;
+// 			return;
+// 		}
+// 		if( event.Type == UIEVENT_KILLFOCUS ) 
+// 		{
+// 			m_bFocused = false;
+// 			return;
+// 		}
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() && m_pVerticalScrollBar->IsEnabled() )
 		{
 			if( event.Type == UIEVENT_KEYDOWN ) 

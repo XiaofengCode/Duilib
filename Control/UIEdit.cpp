@@ -50,7 +50,7 @@ namespace DuiLib
 		else
 		{
 			uStyle = WS_CHILD | ES_AUTOHSCROLL;
-		}	
+		}
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 		HFONT hFont=NULL;

@@ -15,10 +15,10 @@ DWORD GetDefaultIpAddress()
 namespace DuiLib
 {
 	//CDateTimeUI::m_nDTUpdateFlag
-#define IP_NONE   0
-#define IP_UPDATE 1
-#define IP_DELETE 2
-#define IP_KEEP   3
+// #define IP_NONE   0
+// #define IP_UPDATE 1
+// #define IP_DELETE 2
+// #define IP_KEEP   3
 
 	class CIPAddressWnd : public CWindowWnd
 	{
@@ -49,21 +49,47 @@ namespace DuiLib
 	void CIPAddressWnd::Init(CIPAddressUI* pOwner)
 	{
 		m_pOwner = pOwner;
-		m_pOwner->m_nIPUpdateFlag = IP_NONE;
+//		m_pOwner->m_nIPUpdateFlag = IP_NONE;
 
-		if (m_hWnd == NULL)
+		RECT rcPos = CalPos();
+		if(m_pOwner->GetManager()->IsBackgroundTransparent())
 		{
-			INITCOMMONCONTROLSEX   CommCtrl;
-			CommCtrl.dwSize=sizeof(CommCtrl);
-			CommCtrl.dwICC=ICC_INTERNET_CLASSES;//指定Class
-			if(InitCommonControlsEx(&CommCtrl))
-			{
-				RECT rcPos = CalPos();
-				UINT uStyle = WS_CHILD | WS_TABSTOP | WS_GROUP;
-				Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
-			}
-			SetWindowFont(m_hWnd, m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->hFont, TRUE);
+			RECT rcWnd={0};
+			::GetWindowRect(m_pOwner->GetManager()->GetPaintWindow(), &rcWnd);
+			rcPos.left += rcWnd.left;
+			rcPos.right += rcWnd.left;
+			rcPos.top += rcWnd.top;
+			rcPos.bottom += rcWnd.top;
 		}
+		if (m_hWnd == NULL || !IsWindow(m_hWnd))
+		{
+			UINT uStyle = 0;
+			if(m_pOwner->GetManager()->IsBackgroundTransparent())
+			{
+				uStyle = WS_POPUP | WS_VISIBLE;
+			}
+			else
+			{
+				uStyle = WS_CHILD;
+			}
+
+// 			INITCOMMONCONTROLSEX   CommCtrl;
+// 			CommCtrl.dwSize=sizeof(CommCtrl);
+// 			CommCtrl.dwICC=ICC_INTERNET_CLASSES;//指定Class
+// 			if(InitCommonControlsEx(&CommCtrl))
+// 			{
+// 				RECT rcPos = CalPos();
+// 				UINT uStyle = WS_CHILD | WS_TABSTOP | WS_GROUP;
+// 			}
+// 			CDuiString sDbg;
+// 			sDbg.Format(_T("%d, %d, %d, %d"), rcPos.left, rcPos.top, rcPos.right, rcPos.bottom);
+// 			MessageBox(0, sDbg, 0, 0);
+			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
+		}
+		MoveWindow(m_hWnd, rcPos.left, rcPos.top, rcPos.right - rcPos.left, rcPos.bottom - rcPos.top, false);
+		LPCTSTR lpszFontIndex=m_pOwner->GetFont();
+		HFONT hFont=m_pOwner->GetManager()->GetFont(lpszFontIndex);
+		SetWindowFont(m_hWnd, hFont, TRUE);
 
 		if (m_pOwner->GetText().IsEmpty())
 			m_pOwner->m_dwIP = GetDefaultIpAddress();
@@ -71,6 +97,7 @@ namespace DuiLib
 		::SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&m_pOwner->m_dwIP));
 		//::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
 		::ShowWindow(m_hWnd, SW_SHOW);
+		//RedrawWindow(m_hWnd, NULL, NULL, 0);
 		::SetFocus(m_hWnd);
 		
 
@@ -111,22 +138,10 @@ namespace DuiLib
 			return 0;
 			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
 		}
-// 		else if (uMsg == WM_SETFOCUS)
-// 		{
-// 			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-// 		}
-		else if (uMsg == WM_KEYUP && (wParam == VK_DELETE || wParam == VK_BACK))
-		{
-			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-			m_pOwner->m_nIPUpdateFlag = IP_DELETE;
-			m_pOwner->UpdateText();
-			PostMessage(WM_CLOSE);
-			return lRes;
-		}
 		else if (uMsg == WM_KEYUP && wParam == VK_ESCAPE)
 		{
 			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-			m_pOwner->m_nIPUpdateFlag = IP_KEEP;
+//			m_pOwner->m_nIPUpdateFlag = IP_KEEP;
 			PostMessage(WM_CLOSE);
 			return lRes;
 		}
@@ -179,18 +194,18 @@ namespace DuiLib
 		}
 
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-		if (m_pOwner->m_nIPUpdateFlag == IP_NONE)
+//		if (m_pOwner->m_nIPUpdateFlag == IP_NONE)
 		{
 			//Windows控件的IP地址和Socket使用的相反，所以要根据字符串转换一下
 			char szIp[32] = {0};
 			::SendMessageA(m_hWnd, WM_GETTEXT, sizeof(szIp), (LPARAM)szIp);
 			m_pOwner->m_dwIP = inet_addr(szIp);
 			//::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&m_pOwner->m_dwIP);
-			m_pOwner->m_nIPUpdateFlag = IP_UPDATE;
+//			m_pOwner->m_nIPUpdateFlag = IP_UPDATE;
 			m_pOwner->UpdateText();
 		}
 		::ShowWindow(m_hWnd, SW_HIDE);
-			//PostMessage(WM_CLOSE);
+		//PostMessage(WM_CLOSE);
 		return lRes;
 	}
 
@@ -216,14 +231,14 @@ namespace DuiLib
 		m_dwIP = GetDefaultIpAddress();
 		m_bReadOnly = false;
 		m_pWindow = NULL;
-		m_nIPUpdateFlag=IP_UPDATE;
-		UpdateText();		// add by:daviyang35 初始化界面时显示时间
-		m_nIPUpdateFlag = IP_NONE;
+//		m_nIPUpdateFlag=IP_UPDATE;
+		UpdateText();
+//		m_nIPUpdateFlag = IP_NONE;
 	}
 
 	LPCTSTR CIPAddressUI::GetClass() const
 	{
-		return _T("DateTimeUI");
+		return _T("IPAddressUI");
 	}
 
 	LPVOID CIPAddressUI::GetInterface(LPCTSTR pstrName)
@@ -256,9 +271,9 @@ namespace DuiLib
 
 	void CIPAddressUI::UpdateText()
 	{
-		if (m_nIPUpdateFlag == IP_DELETE)
-			SetText(_T(""));
-		else if (m_nIPUpdateFlag == IP_UPDATE)
+// 		if (m_nIPUpdateFlag == IP_DELETE)
+// 			SetText(_T(""));
+// 		else if (m_nIPUpdateFlag == IP_UPDATE)
 		{
 			TCHAR szIP[MAX_PATH] = {0};
 			in_addr addr;

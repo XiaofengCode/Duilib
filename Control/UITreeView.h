@@ -78,7 +78,7 @@ namespace DuiLib
 		virtual void SetToolTipWidth(int nWidth);
 		virtual int	  GetToolTipWidth(void);	// 多行ToolTip单行最长宽度
 
-		CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
+		//CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 
 	private:
 		CTreeNodeUI* GetLastNode();

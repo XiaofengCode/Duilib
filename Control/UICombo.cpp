@@ -505,7 +505,7 @@ void CComboUI::DoEvent(TEventUI& event)
         }
         return;
     }
-    CControlUI::DoEvent(event);
+    CContainerUI::DoEvent(event);
 }
 
 SIZE CComboUI::EstimateSize(SIZE szAvailable)

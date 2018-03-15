@@ -548,6 +548,10 @@ namespace DuiLib
 
 	void CTreeNodeUI::SetToolTip(LPCTSTR pstrText)
 	{
+		for (int i = 0; i < GetCount(); i++)
+		{
+			GetItemAt(i)->SetToolTip(pstrText);
+		}
 		pItemButton->SetToolTip(pstrText);
 	}
 
@@ -561,20 +565,20 @@ namespace DuiLib
 		return pItemButton->GetToolTipWidth();
 	}
 
-	DuiLib::CControlUI* CTreeNodeUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
-	{
-		if (CControlUI::FindControl(Proc, pData, uFlags))
-		{
-			if (pFolderButton->FindControl(Proc, pData, uFlags))
-				return pFolderButton;
-			if (pCheckBox->FindControl(Proc, pData, uFlags))
-				return pCheckBox;
-			
-			return pItemButton;
-		}
-
-		return CListContainerElementUI::FindControl(Proc, pData, uFlags);
-	}
+// 	DuiLib::CControlUI* CTreeNodeUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
+// 	{
+// 		if (CControlUI::FindControl(Proc, pData, uFlags))
+// 		{
+// 			if (pFolderButton->FindControl(Proc, pData, uFlags))
+// 				return pFolderButton;
+// 			if (pCheckBox->FindControl(Proc, pData, uFlags))
+// 				return pCheckBox;
+// 			
+// 			return pItemButton;
+// 		}
+// 
+// 		return CListContainerElementUI::FindControl(Proc, pData, uFlags);
+// 	}
 
 	CTreeNodeUI* CTreeNodeUI::GetLastNode()
 	{

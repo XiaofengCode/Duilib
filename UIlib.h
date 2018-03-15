@@ -126,3 +126,35 @@
 #include "Control/UIMenu.h"
 #include "Layout/UISliderTabLayout.h"
 #include "Control/UIIpAddress.h"
+
+#ifdef LINK_DUILIB
+#	ifdef DUILIB_DLL
+#		define DUILIB_TYPE
+#	else
+#		define DUILIB_TYPE	"s"
+#	endif
+
+#	ifdef _DEBUG
+		#define DUILIB_CFG	"d"
+#	else
+#		define DUILIB_CFG
+#	endif
+
+#	ifdef _UNICODE
+#		define DUILIB_CODE	"u"
+#	else
+#		define DUILIB_CODE
+#	endif
+
+#	ifdef _WIN64
+#		define DUILIB_PLAT	"64"
+#	else
+#		define DUILIB_PLAT
+#	endif
+
+#	define DUILIB_NAME	"Duilib_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT ".lib"
+
+#	pragma message("Link duilib name:"DUILIB_NAME)
+#	pragma comment(lib, DUILIB_NAME)
+	
+#endif
