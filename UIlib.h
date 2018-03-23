@@ -127,6 +127,8 @@
 #include "Layout/UISliderTabLayout.h"
 #include "Control/UIIpAddress.h"
 
+#define _STR_HELP(R)  #R  
+#define STR_MACRO(R)  _STR_HELP(R)  
 #ifdef LINK_DUILIB
 #	ifdef DUILIB_DLL
 #		define DUILIB_TYPE
@@ -152,9 +154,30 @@
 #		define DUILIB_PLAT
 #	endif
 
-#	define DUILIB_NAME	"Duilib_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT ".lib"
+#	if _MSC_VER >= 1910
+#		define MSC_VERSION	"2017"
+#	elif _MSC_VER >= 1900
+#		define MSC_VERSION	"2015"
+#	elif _MSC_VER >= 1800
+#		define MSC_VERSION	"2013"
+#	elif _MSC_VER >= 1700
+#		define MSC_VERSION	"2012"
+#	elif _MSC_VER >= 1600
+#		define MSC_VERSION	"2010"
+#	endif
 
-#	pragma message("Link duilib name:"DUILIB_NAME)
+#	ifdef _MD
+#		define RT_LINK_TYPE
+#	else
+#		define RT_LINK_TYPE	"_MT"
+#	endif
+
+#
+
+#	define DUILIB_NAME	"Duilib" MSC_VERSION "_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT RT_LINK_TYPE ".lib"
+
+#	pragma message("Link duilib name:" DUILIB_NAME)
 #	pragma comment(lib, DUILIB_NAME)
 	
 #endif
+#pragma message("MSC version:" STR_MACRO(_MSC_VER))
