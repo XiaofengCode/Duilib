@@ -166,7 +166,7 @@
 #		define MSC_VERSION	"2010"
 #	endif
 
-#	ifdef _MD
+#	if defined(_DLL) && defined(_MT)
 #		define RT_LINK_TYPE
 #	else
 #		define RT_LINK_TYPE	"_MT"
