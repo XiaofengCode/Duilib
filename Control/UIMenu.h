@@ -373,6 +373,7 @@ protected:
 	bool		m_bCheckItem;
 
 	bool		m_bShowExplandIcon;
+	UINT		m_uTextStyle;
 };
 
 } // namespace DuiLib

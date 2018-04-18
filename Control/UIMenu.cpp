@@ -740,7 +740,8 @@ m_pWindow(NULL),
 m_bDrawLine(false),
 m_dwLineColor(DEFAULT_LINE_COLOR),
 m_bCheckItem(false),
-m_bShowExplandIcon(false)
+m_bShowExplandIcon(false),
+m_uTextStyle(DT_LEFT|DT_VCENTER)
 {
 	m_cxyFixed.cy = ITEM_DEFAULT_HEIGHT;
 	m_cxyFixed.cx = ITEM_DEFAULT_WIDTH;
@@ -849,19 +850,28 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     rcText.top += pInfo->rcTextPadding.top;
     rcText.bottom -= pInfo->rcTextPadding.bottom;
 
+	UINT uTextStyle = DT_SINGLELINE | pInfo->uTextStyle;
+	if (m_uTextStyle != (DT_LEFT|DT_VCENTER))
+	{
+		uTextStyle = DT_SINGLELINE | m_uTextStyle;
+	}
     if( pInfo->bShowHtml )
         CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, iTextColor, \
-        NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
+        NULL, NULL, nLinks, uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
-        pInfo->sFont, DT_SINGLELINE | pInfo->uTextStyle);
+        pInfo->sFont, uTextStyle);
 }
 
 
 SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 {
 	double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
-
+	if (!m_pOwner)
+	{
+		szAvailable.cx = szAvailable.cy = -1;
+		return szAvailable;
+	}
 	if (S != 1.0 && (m_cxyFixed.cx == ITEM_DEFAULT_WIDTH || m_cxyFixed.cy == ITEM_DEFAULT_HEIGHT))
 	{
 		m_cxyFixed.cx *= S;
@@ -872,10 +882,13 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 	for( int it = 0; it < GetCount(); it++ ) {
 		CControlUI* pControl = static_cast<CControlUI*>(GetItemAt(it));
 		if( !pControl->IsVisible() ) continue;
-		SIZE sz = pControl->EstimateSize(szAvailable);
-		cXY.cy += sz.cy;
-		if( cXY.cx < sz.cx )
-			cXY.cx = sz.cx;
+		if (pControl->GetInterface(_T("MenuElement")) == NULL)
+		{
+			SIZE sz = pControl->EstimateSize(szAvailable);
+			cXY.cy += sz.cy;
+			if( cXY.cx < sz.cx )
+				cXY.cx = sz.cx;
+		}
 	}
 	if(cXY.cy == 0) {
 		TListInfoUI* pInfo = m_pOwner->GetListInfo();
@@ -1180,6 +1193,34 @@ void CMenuElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
 	else if	( _tcsicmp(pstrName, _T("height")) == 0){
 		SetFixedHeight(_ttoi(pstrValue)*S);
+	}
+	else if( _tcsicmp(pstrName, _T("align")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+			m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
+			m_uTextStyle |= DT_LEFT;
+		}
+		if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_RIGHT );
+			m_uTextStyle |= DT_CENTER;
+		}
+		if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
+			m_uTextStyle |= DT_RIGHT;
+		}
+	}
+	else if( _tcsicmp(pstrName, _T("valign")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("top")) != NULL ) {
+			m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
+			m_uTextStyle |= (DT_TOP | DT_SINGLELINE);
+		}
+		if( _tcsstr(pstrValue, _T("vcenter")) != NULL ) {
+			m_uTextStyle &= ~(DT_TOP | DT_BOTTOM );            
+			m_uTextStyle |= (DT_VCENTER | DT_SINGLELINE);
+		}
+		if( _tcsstr(pstrValue, _T("bottom")) != NULL ) {
+			m_uTextStyle &= ~(DT_TOP | DT_VCENTER);
+			m_uTextStyle |= (DT_BOTTOM | DT_SINGLELINE);
+		}
 	}
 	else
 		CListContainerElementUI::SetAttribute(pstrName, pstrValue);
