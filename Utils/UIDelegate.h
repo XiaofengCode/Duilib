@@ -85,7 +85,7 @@ public:
     bool operator() (void* param);
 
 protected:
-    CStdPtrArray m_aDelegates;
+    CDuiPtrArray m_aDelegates;
 };
 
 } // namespace DuiLib

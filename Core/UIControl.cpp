@@ -28,7 +28,8 @@ m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
 m_nTooltipWidth(300),
-m_dwTextColor(0)
+m_dwTextColor(0),
+m_gifBk(m_pManager)
 {
     m_cXY.cx = m_cXY.cy = 0;
     m_cxyFixed.cx = m_cxyFixed.cy = 0;
@@ -699,7 +700,7 @@ DWORD CControlUI::GetAdjustColor(DWORD dwColor)
 {
     if( !m_bColorHSL ) return dwColor;
     short H, S, L;
-    CPaintManagerUI::GetHSL(&H, &S, &L);
+	m_pManager->GetHSL(&H, &S, &L);
     return CRenderEngine::AdjustColor(dwColor, H, S, L);
 }
 
@@ -723,7 +724,7 @@ void CControlUI::DoEvent(TEventUI& event)
 {
     if( event.Type == UIEVENT_SETCURSOR )
     {
-        ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW)));
+        ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
         return;
     }
     if( event.Type == UIEVENT_SETFOCUS ) 

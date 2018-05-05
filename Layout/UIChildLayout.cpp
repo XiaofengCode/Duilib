@@ -12,7 +12,7 @@ namespace DuiLib
 	{
 		if (!m_pstrXMLFile.IsEmpty())
 		{
-			CDialogBuilder builder;
+			CDialogBuilder builder(m_pManager);
 			CContainerUI* pChildWindow = static_cast<CContainerUI*>(builder.Create(m_pstrXMLFile.GetData(), (UINT)0, NULL, m_pManager));
 			if (pChildWindow)
 			{

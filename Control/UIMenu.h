@@ -312,7 +312,6 @@ public:
 
 	// 重新调整子菜单的大小
 	void ResizeSubMenu();
-
 public:
 
 	POINT			m_BasedPoint;

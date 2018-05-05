@@ -414,7 +414,7 @@ protected:
     CDuiString m_sLinks[MAX_LINK];
     int m_nHoverLink;
     IListUI* m_pOwner;
-    CStdPtrArray m_aTexts;
+    CDuiPtrArray m_aTexts;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////

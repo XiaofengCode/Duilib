@@ -231,8 +231,8 @@ namespace DuiLib
 
 		do 
 		{
-			CDuiString sFile = CPaintManagerUI::GetResourcePath();
-			if( CPaintManagerUI::GetResourceZip().IsEmpty() ) {
+			CDuiString sFile = m_pManager->GetResourcePath();
+			if(m_pManager->GetResourceZip().IsEmpty() ) {
 				sFile += pstrGifPath;
 				HANDLE hFile = ::CreateFile(sFile.GetData(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
 					FILE_ATTRIBUTE_NORMAL, NULL);
@@ -252,9 +252,9 @@ namespace DuiLib
 				}
 			}
 			else {
-				sFile += CPaintManagerUI::GetResourceZip();
+				sFile += m_pManager->GetResourceZip();
 				HZIP hz = NULL;
-				if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+				if(m_pManager->IsCachedResourceZip() ) hz = (HZIP)m_pManager->GetResourceZipHandle();
 				else hz = OpenZip((void*)sFile.GetData(), 0, 2);
 				if( hz == NULL ) break;
 				ZIPENTRY ze; 
@@ -267,10 +267,10 @@ namespace DuiLib
 				if( res != 0x00000000 && res != 0x00000600) {
 					delete[] pData;
 					pData = NULL;
-					if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+					if( !m_pManager->IsCachedResourceZip() ) CloseZip(hz);
 					break;
 				}
-				if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+				if( !m_pManager->IsCachedResourceZip() ) CloseZip(hz);
 			}
 
 		} while (0);

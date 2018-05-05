@@ -84,7 +84,7 @@ namespace DuiLib
 // 			CDuiString sDbg;
 // 			sDbg.Format(_T("%d, %d, %d, %d"), rcPos.left, rcPos.top, rcPos.right, rcPos.bottom);
 // 			MessageBox(0, sDbg, 0, 0);
-			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
+			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos, m_pOwner->m_pManager->GetInstance());
 		}
 		MoveWindow(m_hWnd, rcPos.left, rcPos.top, rcPos.right - rcPos.left, rcPos.bottom - rcPos.top, false);
 		LPCTSTR lpszFontIndex=m_pOwner->GetFont();
@@ -293,7 +293,7 @@ namespace DuiLib
 
 		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
 		{
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
+			::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
 			return;
 		}
 		if( event.Type == UIEVENT_WINDOWSIZE )

@@ -43,21 +43,28 @@ typedef struct tagTIMERINFO
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-HPEN m_hUpdateRectPen = NULL;
-HINSTANCE CPaintManagerUI::m_hInstance = NULL;
-HINSTANCE CPaintManagerUI::m_hResourceInstance = NULL;
-CDuiString CPaintManagerUI::m_pStrResourcePath;
-CDuiString CPaintManagerUI::m_pStrResourceZip;
-bool CPaintManagerUI::m_bCachedResourceZip = false;
-HANDLE CPaintManagerUI::m_hResourceZip = NULL;
-short CPaintManagerUI::m_H = 180;
-short CPaintManagerUI::m_S = 100;
-short CPaintManagerUI::m_L = 100;
-CStdPtrArray CPaintManagerUI::m_aPreMessages;
-CStdPtrArray CPaintManagerUI::m_aPlugins;
+// HINSTANCE CPaintManagerUI::m_hInstance = NULL;
+// HINSTANCE CPaintManagerUI::m_hResourceInstance = NULL;
+// CDuiString CPaintManagerUI::m_pStrResourcePath;
+// CDuiString CPaintManagerUI::m_pStrResourceZip;
+// bool CPaintManagerUI::m_bCachedResourceZip = false;
+// HANDLE CPaintManagerUI::m_hResourceZip = NULL;
+// short CPaintManagerUI::m_H = 180;
+// short CPaintManagerUI::m_S = 100;
+// short CPaintManagerUI::m_L = 100;
+CDuiPtrArray CPaintManagerUI::m_aPreMessages;
+// CStdPtrArray CPaintManagerUI::m_aPlugins;
 const UINT kCaretTimerID = 0xF1;
 
 CPaintManagerUI::CPaintManagerUI() :
+m_hUpdateRectPen(NULL),
+m_hInstance(NULL),
+m_hResourceInstance(NULL),
+m_bCachedResourceZip(false),
+m_hResourceZip(NULL),
+m_H(180),
+m_S(100),
+m_L(100),
 m_hWndPaint(NULL),
 m_hDcPaint(NULL),
 m_hDcOffscreen(NULL),
@@ -87,7 +94,8 @@ m_pBmpBackgroundBits(NULL),
 m_bCaretActive(false),
 m_bCaretShowing(false),
 m_currentCaretObject(NULL),
-m_bUseGdiplusText(false)
+m_bUseGdiplusText(false),
+m_StringTable(this)
 {
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
@@ -328,7 +336,7 @@ bool CPaintManagerUI::LoadPlugin(LPCTSTR pstrModuleName)
     return false;
 }
 
-CStdPtrArray* CPaintManagerUI::GetPlugins()
+CDuiPtrArray* CPaintManagerUI::GetPlugins()
 {
     return &m_aPlugins;
 }
@@ -1380,7 +1388,7 @@ bool CPaintManagerUI::AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl
 {
     LPVOID lp = m_mOptionGroup.Find(pStrGroupName);
     if( lp ) {
-        CStdPtrArray* aOptionGroup = static_cast<CStdPtrArray*>(lp);
+        CDuiPtrArray* aOptionGroup = static_cast<CDuiPtrArray*>(lp);
         for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
             if( static_cast<CControlUI*>(aOptionGroup->GetAt(i)) == pControl ) {
                 return false;
@@ -1389,17 +1397,17 @@ bool CPaintManagerUI::AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl
         aOptionGroup->Add(pControl);
     }
     else {
-        CStdPtrArray* aOptionGroup = new CStdPtrArray(6);
+        CDuiPtrArray* aOptionGroup = new CDuiPtrArray(6);
         aOptionGroup->Add(pControl);
         m_mOptionGroup.Insert(pStrGroupName, aOptionGroup);
     }
     return true;
 }
 
-CStdPtrArray* CPaintManagerUI::GetOptionGroup(LPCTSTR pStrGroupName)
+CDuiPtrArray* CPaintManagerUI::GetOptionGroup(LPCTSTR pStrGroupName)
 {
     LPVOID lp = m_mOptionGroup.Find(pStrGroupName);
-    if( lp ) return static_cast<CStdPtrArray*>(lp);
+    if( lp ) return static_cast<CDuiPtrArray*>(lp);
     return NULL;
 }
 
@@ -1407,7 +1415,7 @@ void CPaintManagerUI::RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pCont
 {
 	LPVOID lp = m_mOptionGroup.Find(pStrGroupName);
 	if( lp ) {
-		CStdPtrArray* aOptionGroup = static_cast<CStdPtrArray*>(lp);
+		CDuiPtrArray* aOptionGroup = static_cast<CDuiPtrArray*>(lp);
 		if( aOptionGroup == NULL ) return;
 		for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
 			if( static_cast<CControlUI*>(aOptionGroup->GetAt(i)) == pControl ) {
@@ -1424,10 +1432,10 @@ void CPaintManagerUI::RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pCont
 
 void CPaintManagerUI::RemoveAllOptionGroups()
 {
-	CStdPtrArray* aOptionGroup;
+	CDuiPtrArray* aOptionGroup;
 	for( int i = 0; i< m_mOptionGroup.GetSize(); i++ ) {
 		if(LPCTSTR key = m_mOptionGroup.GetAt(i)) {
-			aOptionGroup = static_cast<CStdPtrArray*>(m_mOptionGroup.Find(key));
+			aOptionGroup = static_cast<CDuiPtrArray*>(m_mOptionGroup.Find(key));
 			delete aOptionGroup;
 		}
 	}
@@ -2146,11 +2154,11 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
         if( isdigit(*bitmap) ) {
             LPTSTR pstr = NULL;
             int iIndex = _tcstol(bitmap, &pstr, 10);
-            data = CRenderEngine::LoadImage(iIndex, type, mask);
+            data = CRenderEngine::LoadImage(this, iIndex, type, mask);
         }
     }
     else {
-        data = CRenderEngine::LoadImage(bitmap, NULL, mask);
+        data = CRenderEngine::LoadImage(this, bitmap, NULL, mask);
     }
 
     if( !data ) return NULL;
@@ -2220,11 +2228,11 @@ void CPaintManagerUI::ReloadAllImages()
                     if( isdigit(*bitmap) ) {
                         LPTSTR pstr = NULL;
                         int iIndex = _tcstol(bitmap, &pstr, 10);
-                        pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
+                        pNewData = CRenderEngine::LoadImage(this, iIndex, data->sResType.GetData(), data->dwMask);
                     }
                 }
                 else {
-                    pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
+                    pNewData = CRenderEngine::LoadImage(this, bitmap, NULL, data->dwMask);
                 }
                 if( pNewData == NULL ) continue;
 
@@ -2319,7 +2327,7 @@ CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 	return NULL;
 }
 
-int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
+int CPaintManagerUI::FindControl(LPCTSTR pstrName, CDuiPtrArray& ctrls) const
 {
 	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
@@ -2351,7 +2359,7 @@ void CPaintManagerUI::RemoveControl(LPCTSTR pstrName, CControlUI* pControl)
 
 void CPaintManagerUI::SetControlVisible(LPCTSTR pstrName, bool bVisible)
 {
-	CStdPtrArray ctrls;
+	CDuiPtrArray ctrls;
 	if (FindControl(pstrName, ctrls) == 0)
 		return;
 	
@@ -2367,7 +2375,7 @@ void CPaintManagerUI::SetControlVisible(LPCTSTR pstrName, bool bVisible)
 
 void CPaintManagerUI::EnalbeControl(LPCTSTR pstrName, bool bEnable)
 {
-	CStdPtrArray ctrls;
+	CDuiPtrArray ctrls;
 	if (FindControl(pstrName, ctrls) == 0)
 		return;
 
@@ -2383,7 +2391,7 @@ void CPaintManagerUI::EnalbeControl(LPCTSTR pstrName, bool bEnable)
 
 void CPaintManagerUI::SelectControl(LPCTSTR pstrName, bool bSelect)
 {
-	CStdPtrArray ctrls;
+	CDuiPtrArray ctrls;
 	if (FindControl(pstrName, ctrls) == 0)
 		return;
 
@@ -2421,7 +2429,7 @@ CControlUI* CPaintManagerUI::FindSubControlByClass(CControlUI* pParent, LPCTSTR 
     return pParent->FindControl(__FindControlFromClass, (LPVOID)pstrClass, UIFIND_ALL);
 }
 
-CStdPtrArray* CPaintManagerUI::FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass)
+CDuiPtrArray* CPaintManagerUI::FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass)
 {
     if( pParent == NULL ) pParent = GetRoot();
     ASSERT(pParent);
@@ -2430,7 +2438,7 @@ CStdPtrArray* CPaintManagerUI::FindSubControlsByClass(CControlUI* pParent, LPCTS
     return &m_aFoundControls;
 }
 
-CStdPtrArray* CPaintManagerUI::GetSubControlsByClass()
+CDuiPtrArray* CPaintManagerUI::GetSubControlsByClass()
 {
     return &m_aFoundControls;
 }
@@ -2499,7 +2507,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromClass(CControlUI* pThis, 
 {
     LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
     LPCTSTR pType = pThis->GetClass();
-    CStdPtrArray* pFoundControls = pThis->GetManager()->GetSubControlsByClass();
+    CDuiPtrArray* pFoundControls = pThis->GetManager()->GetSubControlsByClass();
     if( _tcsicmp(pstrType, _T("*")) == 0 || _tcsicmp(pstrType, pType) == 0 ) {
         int iIndex = -1;
         while( pFoundControls->GetAt(++iIndex) != NULL ) ;

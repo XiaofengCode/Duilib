@@ -67,7 +67,7 @@ namespace DuiLib
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		
 		void	IsAllChildChecked(); //检测所有子项是否都选中 2014.12.11 redrain
-		CStdPtrArray GetTreeNodes();
+		CDuiPtrArray GetTreeNodes();
 
 		int			 GetTreeIndex();
 		int			 GetNodeIndex();
@@ -116,7 +116,7 @@ namespace DuiLib
 
 		CTreeNodeUI*			pParentTreeNode;
 
-		CStdPtrArray			mTreeNodes;
+		CDuiPtrArray			mTreeNodes;
 	};
 
 	class UILIB_API CTreeViewUI : public CListUI,public INotifyUI

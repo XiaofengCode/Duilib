@@ -9,6 +9,7 @@ namespace DuiLib {
 class CComboWnd : public CWindowWnd, public INotifyUI
 {
 public:
+	CComboWnd(){}
     void Init(CComboUI* pOwner);
     LPCTSTR GetWindowClassName() const;
     void OnFinalMessage(HWND hWnd);
@@ -22,7 +23,6 @@ public:
 #if(_WIN32_WINNT >= 0x0501)
 	virtual UINT GetClassStyle() const;
 #endif
-
 public:
     CPaintManagerUI m_pm;
     CComboUI* m_pOwner;
@@ -78,7 +78,7 @@ void CComboWnd::Init(CComboUI* pOwner)
         ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
     }
     
-    Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
+    Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc, m_pm.GetInstance());
     // HACK: Don't deselect the parent's caption
     HWND hWndParent = m_hWnd;
     while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);

@@ -29,7 +29,7 @@ class UILIB_API CRenderEngine
 {
 public:
     static DWORD AdjustColor(DWORD dwColor, short H, short S, short L);
-    static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
+	static TImageInfo* LoadImage(CPaintManagerUI* pManager, STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     static void FreeImage(const TImageInfo* bitmap);
     static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
         const RECT& rcBmpPart, const RECT& rcCorners, bool alphaChannel, BYTE uFade = 255, 

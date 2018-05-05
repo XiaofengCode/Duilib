@@ -70,32 +70,132 @@ namespace DuiLib
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
-	class UILIB_API CStdPtrArray
+	//只支持基本类型，不支持类，因为里面不调用构造函数
+	template<class T>
+	class UILIB_API CDuiArray
 	{
 	public:
-		CStdPtrArray(int iPreallocSize = 0);
-		CStdPtrArray(const CStdPtrArray& src);
-		~CStdPtrArray();
+		CDuiArray(int iPreallocSize = 0) : m_ppVoid(NULL), m_nCount(0), m_nAllocated(iPreallocSize)
+		{
+//			ASSERT(iPreallocSize >= 0);
+			if (iPreallocSize > 0)
+			{
+				Resize(iPreallocSize);
+			}
+		}
+		CDuiArray(const CDuiArray& src) : m_ppVoid(NULL), m_nCount(0), m_nAllocated(0)
+		{
+			for (int i = 0; i < src.GetSize(); i++)
+				Add(src.GetAt(i));
+		}
+		~CDuiArray()
+		{
+			if (m_ppVoid != NULL) free(m_ppVoid);
+		}
 
-		void Empty();
-		void Resize(int iSize);
-		bool IsEmpty() const;
-		int Find(LPVOID iIndex) const;
-		bool Add(LPVOID pData);
-		bool SetAt(int iIndex, LPVOID pData);
-		bool InsertAt(int iIndex, LPVOID pData);
-		bool Remove(int iIndex);
-		int GetSize() const;
-		LPVOID* GetData();
+		void Empty()
+		{
+			if (m_ppVoid != NULL) free(m_ppVoid);
+			m_ppVoid = NULL;
+			m_nCount = m_nAllocated = 0;
+		}
+		void Resize(int iSize)
+		{
+			Empty();
+			m_ppVoid = static_cast<T*>(malloc(iSize * sizeof(T)));
+			::ZeroMemory(m_ppVoid, iSize * sizeof(T));
+			m_nAllocated = iSize;
+			m_nCount = iSize;
+		}
+		bool IsEmpty() const
+		{
+			return m_nCount == 0;
+		}
 
-		LPVOID GetAt(int iIndex) const;
-		LPVOID operator[] (int nIndex) const;
+		int Find(T tData) const
+		{
+			for (int i = 0; i < m_nCount; i++) if (m_ppVoid[i] == tData) return i;
+			return -1;
+		}
+		bool Add(T tData)
+		{
+			if (++m_nCount >= m_nAllocated) {
+				int nAllocated = m_nAllocated * 2;
+				if (nAllocated == 0) nAllocated = 11;
+				T* ppVoid = static_cast<T*>(realloc(m_ppVoid, nAllocated * sizeof(T)));
+				if (ppVoid != NULL) {
+					m_nAllocated = nAllocated;
+					m_ppVoid = ppVoid;
+				}
+				else {
+					--m_nCount;
+					return false;
+				}
+			}
+			m_ppVoid[m_nCount - 1] = tData;
+			return true;
+		}
+		bool SetAt(int iIndex, T tData)
+		{
+			if (iIndex < 0 || iIndex >= m_nCount) return false;
+			m_ppVoid[iIndex] = tData;
+			return true;
+		}
+		bool InsertAt(int iIndex, T tData)
+		{
+			if (iIndex == m_nCount) return Add(tData);
+			if (iIndex < 0 || iIndex > m_nCount) return false;
+			if (++m_nCount >= m_nAllocated) {
+				int nAllocated = m_nAllocated * 2;
+				if (nAllocated == 0) nAllocated = 11;
+				LPVOID* ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, nAllocated * sizeof(LPVOID)));
+				if (ppVoid != NULL) {
+					m_nAllocated = nAllocated;
+					m_ppVoid = ppVoid;
+				}
+				else {
+					--m_nCount;
+					return false;
+				}
+			}
+			memmove(&m_ppVoid[iIndex + 1], &m_ppVoid[iIndex], (m_nCount - iIndex - 1) * sizeof(LPVOID));
+			m_ppVoid[iIndex] = tData;
+			return true;
+		}
+		bool Remove(int iIndex)
+		{
+			if (iIndex < 0 || iIndex >= m_nCount) return false;
+			if (iIndex < --m_nCount) ::CopyMemory(m_ppVoid + iIndex, m_ppVoid + iIndex + 1, (m_nCount - iIndex) * sizeof(LPVOID));
+			return true;
+		}
+		int GetSize() const
+		{
+			return m_nCount;
+		}
+
+		T* GetData()
+		{
+			return m_ppVoid;
+		}
+
+		T GetAt(int iIndex) const
+		{
+			if (iIndex < 0 || iIndex >= m_nCount) return NULL;
+			return m_ppVoid[iIndex];
+		}
+		T operator[] (int iIndex) const
+		{
+			//ASSERT(iIndex >= 0 && iIndex < m_nCount);
+			return m_ppVoid[iIndex];
+		}
 
 	protected:
-		LPVOID* m_ppVoid;
+		T * m_ppVoid;
 		int m_nCount;
 		int m_nAllocated;
 	};
+
+	typedef CDuiArray<LPVOID> CDuiPtrArray;
 
 
 	/////////////////////////////////////////////////////////////////////////////////////

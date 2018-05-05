@@ -24,7 +24,6 @@ namespace DuiLib
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		//LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
 	protected:
 		CDateTimeUI* m_pOwner;
 		HBRUSH m_hBkBrush;
@@ -44,7 +43,7 @@ namespace DuiLib
 		{
 			RECT rcPos = CalPos();
 			UINT uStyle = m_pOwner->GetDptStyle() | WS_CHILD;
-			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
+			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos, m_pOwner->m_pManager->GetInstance());
 			SetWindowFont(m_hWnd, m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->hFont, TRUE);
 		}
 
@@ -239,7 +238,7 @@ namespace DuiLib
 
 		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
 		{
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
+			::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
 			return;
 		}
 		if( event.Type == UIEVENT_WINDOWSIZE )

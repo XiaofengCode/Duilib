@@ -3,7 +3,7 @@
 
 namespace DuiLib{
 
-	CDuiStringTable::CDuiStringTable():m_mapStringHash(16), m_pstrtype(NULL)
+	CDuiStringTable::CDuiStringTable(CPaintManagerUI* pManager):m_mapStringHash(16), m_pstrtype(NULL), m_pManager(pManager), m_xml(pManager)
 	{
 	}
 
@@ -42,12 +42,12 @@ namespace DuiLib{
 		}
 		else 
 		{
-			HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
+			HRSRC hResource = ::FindResource(m_pManager->GetResourceDll(), xml.m_lpstr, type);
 			if( hResource == NULL )
 			{
 				return false;
 			}
-			HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
+			HGLOBAL hGlobal = ::LoadResource(m_pManager->GetResourceDll(), hResource);
 			if( hGlobal == NULL ) 
 			{
 				FreeResource(hResource);
@@ -56,7 +56,7 @@ namespace DuiLib{
 				}
 			}
 
-			if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) ))
+			if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(m_pManager->GetResourceDll(), hResource) ))
 			{
 				return false;
 			}
@@ -245,10 +245,10 @@ namespace DuiLib{
 		HANDLE hFile = ::CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if( hFile == INVALID_HANDLE_VALUE )
 		{
-			hFile = ::CreateFile(CPaintManagerUI::GetInstancePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			hFile = ::CreateFile(m_pManager->GetInstancePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if( hFile == INVALID_HANDLE_VALUE )
 			{
-				hFile = ::CreateFile(CPaintManagerUI::GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+				hFile = ::CreateFile(m_pManager->GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 				if( hFile == INVALID_HANDLE_VALUE )
 				{
 					return Load(lpszFile, 0, lpszLang);

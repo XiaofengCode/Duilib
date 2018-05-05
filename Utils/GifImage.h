@@ -4,7 +4,7 @@ namespace DuiLib{
 	class UILIB_API CGifImage
 	{
 	public:
-		CGifImage();
+		CGifImage(CPaintManagerUI* pManager);
 		~CGifImage();
 		//Gif±³¾°
 		void SetAutoPlay(bool bIsAuto = true );
@@ -31,6 +31,7 @@ namespace DuiLib{
 		UINT			m_nTimerID;
 		CControlUI*		m_pParent;
 		CDuiString		m_sImagePath;
+		CPaintManagerUI* m_pManager;
 	};
 }
 

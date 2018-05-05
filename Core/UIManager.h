@@ -206,25 +206,25 @@ public:
 	void SetUseGdiplusText(bool bUse);
 	bool IsUseGdiplusText() const;
 
-    static HINSTANCE GetInstance();
-    static CDuiString GetInstancePath();
-    static CDuiString GetCurrentPath();
-    static HINSTANCE GetResourceDll();
-    static const CDuiString& GetResourcePath();
-    static const CDuiString& GetResourceZip();
-    static bool IsCachedResourceZip();
-    static HANDLE GetResourceZipHandle();
-    static void SetInstance(HINSTANCE hInst);
-    static void SetCurrentPath(LPCTSTR pStrPath);
-    static void SetResourceDll(HINSTANCE hInst);
-    static void SetResourcePath(LPCTSTR pStrPath);
-	static void SetResourceZip(LPVOID pVoid, unsigned int len);
-    static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false);
-    static void GetHSL(short* H, short* S, short* L);
-    static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
+    HINSTANCE GetInstance();
+    CDuiString GetInstancePath();
+    CDuiString GetCurrentPath();
+    HINSTANCE GetResourceDll();
+    const CDuiString& GetResourcePath();
+    const CDuiString& GetResourceZip();
+    bool IsCachedResourceZip();
+    HANDLE GetResourceZipHandle();
+    void SetInstance(HINSTANCE hInst);
+    void SetCurrentPath(LPCTSTR pStrPath);
+    void SetResourceDll(HINSTANCE hInst);
+    void SetResourcePath(LPCTSTR pStrPath);
+	void SetResourceZip(LPVOID pVoid, unsigned int len);
+    void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false);
+    void GetHSL(short* H, short* S, short* L);
+    void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
-    static bool LoadPlugin(LPCTSTR pstrModuleName);
-    static CStdPtrArray* GetPlugins();
+    bool LoadPlugin(LPCTSTR pstrModuleName);
+    CDuiPtrArray* GetPlugins();
 
     bool UseParentResource(CPaintManagerUI* pm);
     CPaintManagerUI* GetParentResource() const;
@@ -274,7 +274,7 @@ public:
     void ReapObjects(CControlUI* pControl);
 
     bool AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
-    CStdPtrArray* GetOptionGroup(LPCTSTR pStrGroupName);
+    CDuiPtrArray* GetOptionGroup(LPCTSTR pStrGroupName);
     void RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
     void RemoveAllOptionGroups();
 
@@ -321,18 +321,18 @@ public:
     CControlUI* FindSubControlByPoint(CControlUI* pParent, POINT pt) const;
     CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
     CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
-    CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
-    CStdPtrArray* GetSubControlsByClass();
+    CDuiPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
+    CDuiPtrArray* GetSubControlsByClass();
 
-	int			FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const;
+	int			FindControl(LPCTSTR pstrName, CDuiPtrArray& ctrls) const;
 	void		RemoveControl(LPCTSTR pstrName, CControlUI* pControl);
 	void		SetControlVisible(LPCTSTR pstrName, bool bVisible);
 	void		EnalbeControl(LPCTSTR pstrName, bool bEnable);
 	void		SelectControl(LPCTSTR pstrName, bool bSelect);
 
-    static void MessageLoop();
+    void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
-	static void Term();
+	void Term();
 
     bool MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
     bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
@@ -430,14 +430,14 @@ private:
 	bool m_bUsedVirtualWnd;
 
     //
-    CStdPtrArray m_aNotifiers;
-    CStdPtrArray m_aTimers;
-    CStdPtrArray m_aPreMessageFilters;
-    CStdPtrArray m_aMessageFilters;
-    CStdPtrArray m_aPostPaintControls;
-    CStdPtrArray m_aDelayedCleanup;
-    CStdPtrArray m_aAsyncNotify;
-    CStdPtrArray m_aFoundControls;
+    CDuiPtrArray m_aNotifiers;
+    CDuiPtrArray m_aTimers;
+    CDuiPtrArray m_aPreMessageFilters;
+    CDuiPtrArray m_aMessageFilters;
+    CDuiPtrArray m_aPostPaintControls;
+    CDuiPtrArray m_aDelayedCleanup;
+    CDuiPtrArray m_aAsyncNotify;
+    CDuiPtrArray m_aFoundControls;
 	/*
 	struct lessDuiString
 	{	// functor for operator<
@@ -468,25 +468,26 @@ private:
 
     CStdStringPtrMap m_mImageHash;
     CStdStringPtrMap m_DefaultAttrHash;
-    //
-    static HINSTANCE m_hInstance;
-    static HINSTANCE m_hResourceInstance;
-    static CDuiString m_pStrResourcePath;
-    static CDuiString m_pStrResourceZip;
-    static bool m_bCachedResourceZip;
-    static HANDLE m_hResourceZip;
-    static short m_H;
-    static short m_S;
-    static short m_L;
-    static CStdPtrArray m_aPreMessages;
-    static CStdPtrArray m_aPlugins;
+	//
+	HPEN m_hUpdateRectPen;
+    HINSTANCE m_hInstance;
+    HINSTANCE m_hResourceInstance;
+    CDuiString m_pStrResourcePath;
+    CDuiString m_pStrResourceZip;
+    bool m_bCachedResourceZip;
+    HANDLE m_hResourceZip;
+    short m_H;
+    short m_S;
+    short m_L;
+    static CDuiPtrArray m_aPreMessages;
+    CDuiPtrArray m_aPlugins;
 
 	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
 
 public:
 	CDuiString m_pStrDefaultFontName;
-	CStdPtrArray m_aTranslateAccelerator;
+	CDuiPtrArray m_aTranslateAccelerator;
 	CDuiStringTable m_StringTable;
 };
 

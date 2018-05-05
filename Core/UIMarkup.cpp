@@ -184,7 +184,7 @@ void CMarkupNode::_MapAttributes()
 //
 //
 
-CMarkup::CMarkup(LPCTSTR pstrXML)
+CMarkup::CMarkup(CPaintManagerUI* pManager, LPCTSTR pstrXML):m_pManager(pManager)
 {
     m_pstrXML = NULL;
     m_pElements = NULL;
@@ -338,8 +338,8 @@ bool CMarkup::LoadFromMem(BYTE* pByte, DWORD dwSize, int encoding)
 bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 {
     Release();
-    CDuiString sFile = CPaintManagerUI::GetResourcePath();
-    if( CPaintManagerUI::GetResourceZip().IsEmpty() )
+    CDuiString sFile = m_pManager->GetResourcePath();
+    if(m_pManager->GetResourceZip().IsEmpty() )
 	{
         sFile += pstrFilename;
         HANDLE hFile = ::CreateFile(sFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -367,14 +367,14 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
         return ret;
     }
     else {
-        sFile += CPaintManagerUI::GetResourceZip();
+		sFile += m_pManager->GetResourceZip();
         HZIP hz = NULL;
-        if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+        if( m_pManager->IsCachedResourceZip() ) hz = (HZIP)m_pManager->GetResourceZipHandle();
         else hz = OpenZip((void*)sFile.GetData(), 0, 2);
 		if (hz == NULL)
 		{
-			sFile = CPaintManagerUI::GetResourceZip();
-			if (CPaintManagerUI::IsCachedResourceZip()) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+			sFile = m_pManager->GetResourceZip();
+			if (m_pManager->IsCachedResourceZip()) hz = (HZIP)m_pManager->GetResourceZipHandle();
 			else hz = OpenZip((void*)sFile.GetData(), 0, 2);
 			if (hz == NULL)
 				return _Failed(_T("Error opening zip file"));
@@ -390,10 +390,10 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
         int res = UnzipItem(hz, i, pByte, dwSize, 3);
         if( res != 0x00000000 && res != 0x00000600) {
             delete[] pByte;
-            if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+            if( !m_pManager->IsCachedResourceZip() ) CloseZip(hz);
             return _Failed(_T("Could not unzip file"));
         }
-        if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+        if( !m_pManager->IsCachedResourceZip() ) CloseZip(hz);
         bool ret = LoadFromMem(pByte, dwSize, encoding);
         delete[] pByte;
 

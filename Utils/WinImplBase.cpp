@@ -9,11 +9,19 @@ namespace DuiLib
 
 	//////////////////////////////////////////////////////////////////////////
 
-	LPBYTE WindowImplBase::m_lpResourceZIPBuffer=NULL;
-
 	DUI_BEGIN_MESSAGE_MAP(WindowImplBase,CNotifyPump)
 		DUI_ON_MSGTYPE(DUI_MSGTYPE_CLICK,OnClick)
-		DUI_END_MESSAGE_MAP()
+	DUI_END_MESSAGE_MAP()
+
+// 	WindowImplBase::WindowImplBase(HINSTANCE hInstance) : CWindowWnd(&m_PaintManager), m_lpResourceZIPBuffer(NULL)
+// 	{
+// 		m_PaintManager.SetInstance(hInstance);
+// 	}
+//
+// 	WindowImplBase::~WindowImplBase()
+// 	{
+// 		if (m_lpResourceZIPBuffer)delete m_lpResourceZIPBuffer;
+// 	}
 
 	void WindowImplBase::OnFinalMessage( HWND hWnd )
 	{
@@ -341,10 +349,11 @@ namespace DuiLib
 		::SetWindowPos(*this, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
 			rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
 
+		m_PaintManager.SetResourcePath(GetResourcePath());
 		m_PaintManager.Init(m_hWnd);
 		m_PaintManager.AddPreMessageFilter(this);
 
-		CDialogBuilder builder;
+		CDialogBuilder builder(&m_PaintManager);
 		if (m_PaintManager.GetResourcePath().IsEmpty())
 		{	// 允许更灵活的资源路径定义
 			CDuiString strResourcePath=m_PaintManager.GetInstancePath();
@@ -595,7 +604,7 @@ namespace DuiLib
 		}
 	}
 
-	CDuiString WindowImplBase::GetDlgItemText( LPCTSTR lpszCtrlName )
+	CDuiString WindowImplBase::GetDlgItemText(LPCTSTR lpszCtrlName)
 	{
 		CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
 		if (pCtrl)

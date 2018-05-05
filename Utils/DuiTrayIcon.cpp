@@ -31,7 +31,7 @@ namespace DuiLib
 		{
 			dwMessage = WM_DUI_TRAYICON_MESSAGE;
 		}
-		m_hIcon = LoadIcon(CPaintManagerUI::GetInstance(),MAKEINTRESOURCE(uIconIDResource));
+		m_hIcon = LoadIcon(m_pManager->GetInstance(),MAKEINTRESOURCE(uIconIDResource));
 
 		m_trayData.cbSize = sizeof(NOTIFYICONDATA);
 		m_trayData.hWnd	 = hWnd;
@@ -104,7 +104,7 @@ namespace DuiLib
 	bool CDuiTrayIconUI::SetTooltipText( UINT _IDResource )
 	{
 		TCHAR mbuf[64];
-		LoadString(CPaintManagerUI::GetInstance(), _IDResource, mbuf, 64);
+		LoadString(m_pManager->GetInstance(), _IDResource, mbuf, 64);
 
 		return SetTooltipText(mbuf);
 	}
@@ -130,13 +130,13 @@ namespace DuiLib
 
 	bool CDuiTrayIconUI::SetIcon( LPCTSTR _IconFile )
 	{
-		HICON hIcon = LoadIcon(CPaintManagerUI::GetInstance(),_IconFile);
+		HICON hIcon = LoadIcon(m_pManager->GetInstance(),_IconFile);
 		return SetIcon(hIcon);
 	}
 
 	bool CDuiTrayIconUI::SetIcon( UINT _IDResource )
 	{
-		HICON hIcon = LoadIcon(CPaintManagerUI::GetInstance(),MAKEINTRESOURCE(_IDResource));
+		HICON hIcon = LoadIcon(m_pManager->GetInstance(),MAKEINTRESOURCE(_IDResource));
 		return SetIcon(hIcon);
 	}
 

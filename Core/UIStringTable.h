@@ -9,7 +9,7 @@ namespace DuiLib{
 	class UILIB_API CDuiStringTable
 	{
 	public:
-		CDuiStringTable();
+		CDuiStringTable(CPaintManagerUI* pManager);
 		~CDuiStringTable();
 		bool Load(STRINGorID xml, LPCTSTR type, LPCTSTR lpszLang);
 		bool LoadFromFile(LPCTSTR lpszFile, LPCTSTR lpszLang);
@@ -26,6 +26,7 @@ namespace DuiLib{
 		//CDuiStringMap m_mapStringHash;
 		CStdStringPtrMap m_mapStringHash;
 		CDuiString m_strLan;
+		CPaintManagerUI* m_pManager;
 	};
 
 }

@@ -282,7 +282,7 @@ namespace DuiLib{
 		void RemoveTimerAll();
 		bool RunTimers();
 	protected:
-		CStdPtrArray m_aDuiTimers;
+		CDuiPtrArray m_aDuiTimers;
 	};
 }
 #endif // UITimer_h__

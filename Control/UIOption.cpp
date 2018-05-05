@@ -76,7 +76,7 @@ namespace DuiLib
 			{
 				if( m_bSelected ) 
 				{
-					CStdPtrArray* aOptionGroup = m_pManager->GetOptionGroup(m_sGroupName);
+					CDuiPtrArray* aOptionGroup = m_pManager->GetOptionGroup(m_sGroupName);
 					for( int i = 0; i < aOptionGroup->GetSize(); i++ ) 
 					{
 						COptionUI* pControl = static_cast<COptionUI*>(aOptionGroup->GetAt(i));

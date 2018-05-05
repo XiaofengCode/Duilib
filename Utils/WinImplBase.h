@@ -22,8 +22,8 @@ namespace DuiLib
 		, public IDialogBuilderCallback
 	{
 	public:
-		WindowImplBase(){};
-		virtual ~WindowImplBase(){};
+		WindowImplBase(HINSTANCE hInstance) : m_lpResourceZIPBuffer(NULL){}
+		virtual ~WindowImplBase(){if (m_lpResourceZIPBuffer)delete m_lpResourceZIPBuffer;}
 		virtual void InitWindow(){}
 		virtual void OnLoadSkinFailed();
 		virtual void OnLoadSkinFinished(){}
@@ -36,6 +36,7 @@ namespace DuiLib
 		virtual CDuiString GetDlgItemText(LPCTSTR lpszCtrlName);
 		virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 	protected:
+		virtual CDuiString GetResourcePath() = 0;
 		virtual CDuiString GetStringTableFile();
 		virtual LPCTSTR GetStringTableLang();
 		virtual LPCTSTR LoadString(LPCTSTR lpszID);
@@ -45,7 +46,7 @@ namespace DuiLib
 		virtual LRESULT ResponseDefaultKeyEvent(WPARAM wParam);
 
 		CPaintManagerUI m_PaintManager;
-		static LPBYTE m_lpResourceZIPBuffer;
+		LPBYTE m_lpResourceZIPBuffer;
 
 	public:
 		virtual UINT GetClassStyle() const;

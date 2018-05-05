@@ -16,6 +16,7 @@ class CActiveXCtrl;
 class CActiveXWnd : public CWindowWnd
 {
 public:
+	CActiveXWnd(){}
     HWND Init(CActiveXCtrl* pOwner, HWND hWndParent);
 
     LPCTSTR GetWindowClassName() const;
@@ -31,7 +32,6 @@ protected:
     LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
 protected:
     CActiveXCtrl* m_pOwner;
 };
@@ -212,7 +212,7 @@ class CActiveXCtrl :
     friend class CActiveXUI;
     friend class CActiveXWnd;
 public:
-    CActiveXCtrl();
+    CActiveXCtrl(CPaintManagerUI* pManager);
     ~CActiveXCtrl();
 
     // IUnknown
@@ -299,9 +299,10 @@ protected:
     bool m_bUIActivated;
     bool m_bInPlaceActive;
     bool m_bWindowless;
+	CPaintManagerUI* m_pManager;
 };
 
-CActiveXCtrl::CActiveXCtrl() : 
+CActiveXCtrl::CActiveXCtrl(CPaintManagerUI* pManager) :
 m_dwRef(1), 
 m_pOwner(NULL), 
 m_pWindow(NULL),
@@ -313,7 +314,8 @@ m_bFocused(false),
 m_bCaptured(false),
 m_bWindowless(true),
 m_bUIActivated(false),
-m_bInPlaceActive(false)
+m_bInPlaceActive(false),
+m_pManager(pManager)
 {
 }
 
@@ -749,7 +751,7 @@ STDMETHODIMP CActiveXCtrl::ParseDisplayName(IBindCtx *pbc, LPOLESTR pszDisplayNa
 HRESULT CActiveXCtrl::CreateActiveXWnd()
 {
     if( m_pWindow != NULL ) return S_OK;
-    m_pWindow = new CActiveXWnd;
+    m_pWindow = new CActiveXWnd();
     if( m_pWindow == NULL ) return E_OUTOFMEMORY;
     m_pOwner->m_hwndHost = m_pWindow->Init(this, m_pOwner->GetManager()->GetPaintWindow());
     return S_OK;
@@ -1095,7 +1097,7 @@ bool CActiveXUI::DoCreateControl()
     pOleControl->Release();
     if( m_pUnk == NULL ) return false;
     // Create the host too
-    m_pControl = new CActiveXCtrl();
+    m_pControl = new CActiveXCtrl(m_pManager);
     m_pControl->m_pOwner = this;
     // More control creation stuff
     DWORD dwMiscStatus = 0;

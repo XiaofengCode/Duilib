@@ -243,7 +243,7 @@ DWORD CRenderEngine::AdjustColor(DWORD dwColor, short H, short S, short L)
     return dwColor;
 }
 
-TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask)
+TImageInfo* CRenderEngine::LoadImage(CPaintManagerUI* pManager, STRINGorID bitmap, LPCTSTR type, DWORD mask)
 {
     LPBYTE pData = NULL;
     DWORD dwSize = 0;
@@ -251,8 +251,8 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	do 
 	{
 		if( type == NULL ) {
-			CDuiString sFile = CPaintManagerUI::GetResourcePath();
-			if( CPaintManagerUI::GetResourceZip().IsEmpty() ) {
+			CDuiString sFile = pManager->GetResourcePath();
+			if( pManager->GetResourceZip().IsEmpty() ) {
 				sFile += bitmap.m_lpstr;
 				HANDLE hFile = ::CreateFile(sFile.GetData(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
 					FILE_ATTRIBUTE_NORMAL, NULL);
@@ -272,9 +272,9 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 				}
 			}
 			else {
-				sFile += CPaintManagerUI::GetResourceZip();
+				sFile += pManager->GetResourceZip();
 				HZIP hz = NULL;
-				if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+				if( pManager->IsCachedResourceZip() ) hz = (HZIP)pManager->GetResourceZipHandle();
 				else hz = OpenZip((void*)sFile.GetData(), 0, 2);
 				if( hz == NULL ) break;
 				ZIPENTRY ze; 
@@ -287,22 +287,22 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 				if( res != 0x00000000 && res != 0x00000600) {
 					delete[] pData;
 					pData = NULL;
-					if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+					if( !pManager->IsCachedResourceZip() ) CloseZip(hz);
 					break;
 				}
-				if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
+				if( !pManager->IsCachedResourceZip() ) CloseZip(hz);
 			}
 		}
 		else {
-			HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), bitmap.m_lpstr, type);
+			HRSRC hResource = ::FindResource(pManager->GetResourceDll(), bitmap.m_lpstr, type);
 			if( hResource == NULL ) break;
-			HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
+			HGLOBAL hGlobal = ::LoadResource(pManager->GetResourceDll(), hResource);
 			if( hGlobal == NULL ) {
 				FreeResource(hResource);
 				break;
 			}
 
-			dwSize = ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource);
+			dwSize = ::SizeofResource(pManager->GetResourceDll(), hResource);
 			if( dwSize == 0 ) break;
 			pData = new BYTE[ dwSize ];
 			::CopyMemory(pData, (LPBYTE)::LockResource(hGlobal), dwSize);
@@ -1184,8 +1184,8 @@ void CRenderEngine::DrawGradient(HDC hDC, const RECT& rc, DWORD dwFirst, DWORD d
     {
         TRIVERTEX triv[2] = 
         {
-            { rcPaint.left, rcPaint.top, GetBValue(dwFirst) << 8, GetGValue(dwFirst) << 8, GetRValue(dwFirst) << 8, 0xFF00 },
-            { rcPaint.right, rcPaint.bottom, GetBValue(dwSecond) << 8, GetGValue(dwSecond) << 8, GetRValue(dwSecond) << 8, 0xFF00 }
+            { rcPaint.left, rcPaint.top, (COLOR16)(GetBValue(dwFirst) << 8), (COLOR16)(GetGValue(dwFirst) << 8), (COLOR16)(GetRValue(dwFirst) << 8), 0xFF00 },
+            { rcPaint.right, rcPaint.bottom, (COLOR16)(GetBValue(dwSecond) << 8), (COLOR16)(GetGValue(dwSecond) << 8), (COLOR16)(GetRValue(dwSecond) << 8), 0xFF00 }
         };
         GRADIENT_RECT grc = { 0, 1 };
         lpGradientFill(hPaintDC, triv, 2, &grc, 1, bVertical ? GRADIENT_FILL_RECT_V : GRADIENT_FILL_RECT_H);
@@ -1400,9 +1400,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
     bool bDraw = (uStyle & DT_CALCRECT) == 0;
 
-    CStdPtrArray aFontArray(10);
-    CStdPtrArray aColorArray(10);
-    CStdPtrArray aPIndentArray(10);
+    CDuiPtrArray aFontArray(10);
+    CDuiArray<DWORD> aColorArray(10);
+    CDuiArray<int> aPIndentArray(10);
 
     RECT rcClip = { 0 };
     ::GetClipBox(hDC, &rcClip);
@@ -1464,9 +1464,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     int iLineLinkIndex = 0;
 
     // 排版习惯是图文底部对齐，所以每行绘制都要分两步，先计算高度，再绘制
-    CStdPtrArray aLineFontArray;
-    CStdPtrArray aLineColorArray;
-    CStdPtrArray aLinePIndentArray;
+    CDuiPtrArray aLineFontArray;
+    CDuiPtrArray aLineColorArray;
+    CDuiPtrArray aLinePIndentArray;
     LPCTSTR pstrLineBegin = pstrText;
     bool bLineInRaw = false;
     bool bLineInLink = false;
@@ -1536,7 +1536,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     //    if( ::PtInRect(&rc, ptMouse) )
                     //        clrColor = pManager->GetDefaultLinkHoverFontColor();
                     //}
-                    aColorArray.Add((LPVOID)clrColor);
+                    aColorArray.Add(clrColor);
                     ::SetTextColor(hDC,  RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                     TFontInfo* pFontInfo = pManager->GetDefaultFontInfo();
                     if( aFontArray.GetSize() > 0 )
@@ -1580,7 +1580,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     if( *pstrText == _T('#')) pstrText++;
                     DWORD clrColor = _tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 16);
-                    aColorArray.Add((LPVOID)clrColor);
+                    aColorArray.Add(clrColor);
                     ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 }
                 break;
@@ -1773,7 +1773,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( pt.x > rc.left ) bLineEnd = true;
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     int cyLineExtra = (int)_tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 10);
-                    aPIndentArray.Add((LPVOID)cyLineExtra);
+                    aPIndentArray.Add(cyLineExtra);
                     cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + cyLineExtra);
                 }
                 break;
@@ -1852,7 +1852,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 pstrText++;
                 if( pt.x > rc.left ) bLineEnd = true;
                 aPIndentArray.Remove(aPIndentArray.GetSize() - 1);
-                cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + (int)aPIndentArray.GetAt(aPIndentArray.GetSize() - 1));
+                cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + aPIndentArray.GetAt(aPIndentArray.GetSize() - 1));
                 break;
             case _T('s'):
                 {
@@ -1872,7 +1872,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     }
                     aColorArray.Remove(aColorArray.GetSize() - 1);
                     DWORD clrColor = dwTextColor;
-                    if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
+                    if( aColorArray.GetSize() > 0 ) clrColor = aColorArray.GetAt(aColorArray.GetSize() - 1);
                     ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                     bInLink = false;
                 }
@@ -1892,7 +1892,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     }
                     pTm = &pFontInfo->tm;
                     ::SelectObject(hDC, pFontInfo->hFont);
-                    cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + (int)aPIndentArray.GetAt(aPIndentArray.GetSize() - 1));
+                    cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + aPIndentArray.GetAt(aPIndentArray.GetSize() - 1));
                 }
                 break;
             }
@@ -2031,7 +2031,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 bInSelected = bLineInSelected;
 
                 DWORD clrColor = dwTextColor;
-                if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
+                if( aColorArray.GetSize() > 0 ) clrColor = aColorArray.GetAt(aColorArray.GetSize() - 1);
                 ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 TFontInfo* pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                 if( pFontInfo == NULL ) pFontInfo = pManager->GetDefaultFontInfo();

@@ -2,7 +2,12 @@
 
 namespace DuiLib {
 
-CDialogBuilder::CDialogBuilder() : m_pCallback(NULL), m_pstrtype(NULL), m_pAttrbuteCallback(NULL)
+CDialogBuilder::CDialogBuilder(CPaintManagerUI* pManager) : 
+	m_pCallback(NULL),
+	m_pstrtype(NULL),
+	m_pAttrbuteCallback(NULL),
+	m_pManager(pManager),
+	m_xml(pManager)
 {
 
 }
@@ -26,16 +31,16 @@ CControlUI* CDialogBuilder::Create( STRINGorID xml, LPCTSTR type /*= NULL*/, IDi
 		}
 	}
 	else {
-		HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
+		HRSRC hResource = ::FindResource(m_pManager->GetResourceDll(), xml.m_lpstr, type);
 		if( hResource == NULL ) return NULL;
-		HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
+		HGLOBAL hGlobal = ::LoadResource(m_pManager->GetResourceDll(), hResource);
 		if( hGlobal == NULL ) {
 			FreeResource(hResource);
 			return NULL;
 		}
 
 		m_pCallback = pCallback;
-		if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) return NULL;
+		if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(m_pManager->GetResourceDll(), hResource) )) return NULL;
 		::FreeResource(hResource);
 		m_pstrtype = type;
 	}
@@ -489,7 +494,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 			}
             for ( int i = 0; i < count; i++ )
 			{
-                CDialogBuilder builder;
+                CDialogBuilder builder(m_pManager);
                 if( m_pstrtype != NULL )
 				{ // 使用资源dll，从资源中读取
                     WORD id = (WORD)_tcstol(szValue, &pstr, 10); 
@@ -633,7 +638,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
             // User-supplied control factory
             if( pControl == NULL ) 
 			{
-                CStdPtrArray* pPlugins = CPaintManagerUI::GetPlugins();
+				CDuiPtrArray* pPlugins = m_pManager->GetPlugins();
                 LPCREATECONTROL lpCreateControl = NULL;
                 for( int i = 0; i < pPlugins->GetSize(); ++i )
 				{

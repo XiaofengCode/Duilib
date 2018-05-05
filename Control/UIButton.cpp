@@ -113,7 +113,7 @@ namespace DuiLib
 			}
 		}
 		if( event.Type == UIEVENT_SETCURSOR ) {
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
 			return;
 		}
 		__super::DoEvent(event);

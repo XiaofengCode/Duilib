@@ -486,7 +486,7 @@ namespace DuiLib
 
 	}
 
-	CStdPtrArray CTreeNodeUI::GetTreeNodes()
+	CDuiPtrArray CTreeNodeUI::GetTreeNodes()
 	{
 		return mTreeNodes;
 	}

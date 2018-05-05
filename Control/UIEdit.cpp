@@ -19,7 +19,6 @@ namespace DuiLib
 		LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		bool IsFocus(){return m_bFocused;}
-
 	protected:
 		CEditUI* m_pOwner;
 		HBRUSH m_hBkBrush;
@@ -52,7 +51,7 @@ namespace DuiLib
 			uStyle = WS_CHILD | ES_AUTOHSCROLL;
 		}
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
-		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
+		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos, m_pOwner->m_pManager->GetInstance());
 		HFONT hFont=NULL;
 		LPCTSTR lpszFontIndex=m_pOwner->GetFont();
 		if (lpszFontIndex != NULL)
@@ -191,7 +190,6 @@ namespace DuiLib
 		return 0;
 	}
 
-
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 	//
@@ -232,7 +230,7 @@ namespace DuiLib
 
 		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
 		{
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
+			::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
 			return;
 		}
 		if( event.Type == UIEVENT_WINDOWSIZE )

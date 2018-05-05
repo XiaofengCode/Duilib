@@ -21,7 +21,7 @@ public:
 class UILIB_API CDialogBuilder
 {
 public:
-    CDialogBuilder();
+    CDialogBuilder(CPaintManagerUI* pManager);
 
 	void SetAttrbuteCallBack(IDialogBuilderAttrbuteCallback * pAttrbuteCallback = NULL);
 
@@ -42,6 +42,7 @@ private:
     IDialogBuilderCallback* m_pCallback;
     LPCTSTR m_pstrtype;
 	IDialogBuilderAttrbuteCallback * m_pAttrbuteCallback;
+	CPaintManagerUI* m_pManager;
 };
 
 } // namespace DuiLib

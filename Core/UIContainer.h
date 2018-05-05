@@ -104,14 +104,14 @@ public:
     virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
-	CStdPtrArray & GetItems(){ return m_items; };
+	CDuiPtrArray & GetItems(){ return m_items; };
 
 protected:
     virtual void SetFloatPos(int iIndex);
     virtual void ProcessScrollBar(RECT rc, int cxRequired, int cyRequired);
 
 protected:
-    CStdPtrArray m_items;
+    CDuiPtrArray m_items;
     RECT m_rcInset;
     int m_iChildPadding;
     bool m_bAutoDestroy;

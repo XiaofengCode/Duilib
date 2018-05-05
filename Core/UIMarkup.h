@@ -20,7 +20,7 @@ class UILIB_API CMarkup
 {
     friend class CMarkupNode;
 public:
-    CMarkup(LPCTSTR pstrXML = NULL);
+    CMarkup(CPaintManagerUI* pManager, LPCTSTR pstrXML = NULL);
     ~CMarkup();
 
     bool Load(LPCTSTR pstrXML);
@@ -52,6 +52,7 @@ private:
     TCHAR m_szErrorMsg[100];
     TCHAR m_szErrorXML[50];
     bool m_bPreserveWhitespace;
+	CPaintManagerUI* m_pManager;
 
 private:
     bool _Parse();

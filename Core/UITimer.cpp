@@ -244,7 +244,7 @@ namespace DuiLib{
 		if(m_uTimerID)
 			InnerKillTimer();
 
-		m_uTimerID		= timeSetEvent(m_iInterval,m_uTimerAccuracy,TimerProc,(DWORD)this,TIME_PERIODIC);
+		m_uTimerID		= timeSetEvent(m_iInterval,m_uTimerAccuracy,TimerProc,(DWORD_PTR)this,TIME_PERIODIC);
 
 		if(m_uTimerID)
 			return true;

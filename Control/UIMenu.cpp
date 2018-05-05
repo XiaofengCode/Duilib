@@ -180,7 +180,7 @@ void CMenuWnd::Init(CMenuElementUI* pOwner, STRINGorID xml, POINT point,
 
 	GetGlobalContextMenuObserver().AddReceiver(this);
 
-	Create((m_pOwner == NULL) ? pMainPaintManager->GetPaintWindow() : m_pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP , WS_EX_TOOLWINDOW | WS_EX_TOPMOST, CDuiRect());
+	Create((m_pOwner == NULL) ? pMainPaintManager->GetPaintWindow() : m_pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP , WS_EX_TOOLWINDOW | WS_EX_TOPMOST, CDuiRect(), m_pm.GetInstance());
 
 	// HACK: Don't deselect the parent's caption
     HWND hWndParent = m_hWnd;
@@ -391,7 +391,7 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	else {
 		m_pm.Init(m_hWnd);
 
-		CDialogBuilder builder;
+		CDialogBuilder builder(&m_pm);
 		builder.SetAttrbuteCallBack(m_pAttrbuteCallback);
 
 		CControlUI* pRoot = builder.Create(m_xml ,UINT(0), this, &m_pm);
