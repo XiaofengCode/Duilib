@@ -39,7 +39,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="duipub.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UIlib.cpp">
@@ -182,7 +182,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="duipub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIlib.h">

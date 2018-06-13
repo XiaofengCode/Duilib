@@ -1,7 +1,7 @@
 #ifndef WIN_IMPL_BASE_HPP
 #define WIN_IMPL_BASE_HPP
 
-#include "stdafx.h"
+#include "duipub.h"
 #include <algorithm>
 
 namespace DuiLib

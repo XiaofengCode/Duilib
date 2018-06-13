@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 #include "UIText.h"
 
 namespace DuiLib

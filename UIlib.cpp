@@ -47,7 +47,7 @@
 //
 
 
-#include "stdafx.h"
+#include "duipub.h"
 #include "UIlib.h"
 
 

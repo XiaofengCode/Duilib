@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 
 #ifdef _DEBUG
 #include <shlwapi.h>

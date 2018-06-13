@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "duipub.h"
 #include "UIChildLayout.h"
 
 namespace DuiLib
