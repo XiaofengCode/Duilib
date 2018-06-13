@@ -22,7 +22,9 @@ namespace DuiLib
 		, public IDialogBuilderCallback
 	{
 	public:
-		WindowImplBase(HINSTANCE hInstance) : m_lpResourceZIPBuffer(NULL){}
+		WindowImplBase(HINSTANCE hInstance) : m_lpResourceZIPBuffer(NULL) {
+			m_PaintManager.SetInstance(hInstance);
+		}
 		virtual ~WindowImplBase(){if (m_lpResourceZIPBuffer)delete m_lpResourceZIPBuffer;}
 		virtual void InitWindow(){}
 		virtual void OnLoadSkinFailed();

@@ -95,6 +95,7 @@ void CControlUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool
 {
     m_pManager = pManager;
     m_pParent = pParent;
+	m_gifBk.SetManager(pManager);
     if( bInit && m_pParent ) Init();
 }
 

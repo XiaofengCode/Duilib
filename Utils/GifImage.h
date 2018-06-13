@@ -17,6 +17,7 @@ namespace DuiLib{
 		void DeleteImage();
 		bool IsValid(){return !!m_pImage;}
 		void DrawFrame( HDC hDC, RECT rcItem );
+		void SetManager(CPaintManagerUI* pManager) { m_pManager = pManager; }
 
 	private:
 		Gdiplus::Image*	LoadGifFromFile(LPCTSTR pstrGifPath);
