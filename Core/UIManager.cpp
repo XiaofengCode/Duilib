@@ -1005,6 +1005,12 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // Create tooltip information
             CDuiString sToolTip = pHover->GetToolTip();
             if( sToolTip.IsEmpty() ) return true;
+			//ÅĞ¶ÏÊÇ·ñÓĞ°ïÖú¿ò
+			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+			if (pCtlToolTip)
+			{
+				return true;
+			}
             ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
             m_ToolTip.cbSize = sizeof(TOOLINFO);
             m_ToolTip.uFlags = TTF_IDISHWND;
@@ -1023,7 +1029,12 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         }
         return true;
     case WM_MOUSELEAVE:
-        {
+		{
+			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+			if (pCtlToolTip)
+			{
+				pCtlToolTip->SetText(m_strDefaultTooltip);
+			}
             if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
             if( m_bMouseTracking ) ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) -1);
             m_bMouseTracking = false;
@@ -1070,8 +1081,17 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             else if( pNewHover != NULL ) {
                 event.Type = UIEVENT_MOUSEMOVE;
                 event.pSender = pNewHover;
-                pNewHover->Event(event);
-            }
+				CDuiString sToolTip = pNewHover->GetToolTip();
+				if (!sToolTip.IsEmpty())
+				{
+					CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+					if (pCtlToolTip)
+					{
+						pCtlToolTip->SetText(sToolTip);
+					}
+				}
+				pNewHover->Event(event);
+			}
         }
         break;
     case WM_LBUTTONDOWN:
@@ -1355,6 +1375,15 @@ bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*=
     if( pControl == NULL ) return false;
     pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent(), true);
     pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
+
+	CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+	if (pCtlToolTip)
+	{
+		if (m_strDefaultTooltip.IsEmpty())
+		{
+			m_strDefaultTooltip = pCtlToolTip->GetText();
+		}
+	}
     return true;
 }
 

@@ -483,11 +483,11 @@ private:
 
 	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
-
 public:
 	CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;
 	CDuiStringTable m_StringTable;
+	CDuiString m_strDefaultTooltip;
 };
 
 } // namespace DuiLib

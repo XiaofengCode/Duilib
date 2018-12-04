@@ -39,13 +39,39 @@ namespace DuiLib
 	{
 		m_pOwner = pOwner;
 		m_pOwner->m_nDTUpdateFlag = DT_NONE;
+		RECT rcPos = CalPos();
 
 		if (m_hWnd == NULL)
 		{
-			RECT rcPos = CalPos();
-			UINT uStyle = m_pOwner->GetDptStyle() | WS_CHILD;
+
+			UINT uStyle = 0;//m_pOwner->GetDptStyle();
+			if(m_pOwner->GetManager()->IsBackgroundTransparent())
+			{
+				uStyle = WS_POPUP | WS_VISIBLE;
+				RECT rcWnd={0};
+				::GetWindowRect(m_pOwner->GetManager()->GetPaintWindow(), &rcWnd);
+				rcPos.left += rcWnd.left;
+				rcPos.right += rcWnd.left;
+				rcPos.top += rcWnd.top;
+				rcPos.bottom += rcWnd.top;
+			}
+			else
+			{
+				uStyle = WS_CHILD;
+			}
+
+			//UINT uStyle = m_pOwner->GetDptStyle() | WS_CHILD;
 			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 			SetWindowFont(m_hWnd, m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->hFont, TRUE);
+
+			if (m_pOwner->GetDptStyle() & DTS_TIMEFORMAT)
+			{
+				::SendMessage(m_hWnd, DTM_SETFORMAT, 0, (LPARAM)_T("HH:mm:ss"));
+			}
+			else
+			{
+				::SendMessage(m_hWnd, DTM_SETFORMAT, 0, (LPARAM)_T("yyyy-MM-dd HH:mm"));
+			}
 		}
 
 		if (m_pOwner->GetText().IsEmpty())
@@ -164,13 +190,13 @@ namespace DuiLib
 	//
 	CDateTimeUI::CDateTimeUI()
 	{
+		m_uDptStyle = 0;
 		::GetLocalTime(&m_sysTime);
 		m_bReadOnly = false;
 		m_pWindow = NULL;
 		m_nDTUpdateFlag=DT_UPDATE;
 		UpdateText();		// add by:daviyang35 初始化界面时显示时间
 		m_nDTUpdateFlag = DT_NONE;
-		m_uDptStyle = 0;
 	}
 
 	LPCTSTR CDateTimeUI::GetClass() const

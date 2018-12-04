@@ -2312,7 +2312,7 @@ LPVOID CListContainerElementUI::GetInterface(LPCTSTR pstrName)
 {
     if( _tcscmp(pstrName, DUI_CTR_LISTITEM) == 0 ) return static_cast<IListItemUI*>(this);
 	if( _tcscmp(pstrName, DUI_CTR_LISTCONTAINERELEMENT) == 0 ) return static_cast<CListContainerElementUI*>(this);
-    return CContainerUI::GetInterface(pstrName);
+    return CHorizontalLayoutUI::GetInterface(pstrName);
 }
 
 IListOwnerUI* CListContainerElementUI::GetOwner()
@@ -2393,11 +2393,11 @@ void CListContainerElementUI::Invalidate()
             if( m_pManager != NULL ) m_pManager->Invalidate(invalidateRc);
         }
         else {
-            CContainerUI::Invalidate();
+            CHorizontalLayoutUI::Invalidate();
         }
     }
     else {
-        CContainerUI::Invalidate();
+        CHorizontalLayoutUI::Invalidate();
     }
 }
 
@@ -2504,14 +2504,14 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 void CListContainerElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcsicmp(pstrName, _T("selected")) == 0 ) Select();
-    else CContainerUI::SetAttribute(pstrName, pstrValue);
+    else CHorizontalLayoutUI::SetAttribute(pstrName, pstrValue);
 }
 
 void CListContainerElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
 {
     if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
     DrawItemBk(hDC, m_rcItem);
-    CContainerUI::DoPaint(hDC, rcPaint);
+    CHorizontalLayoutUI::DoPaint(hDC, rcPaint);
 }
 
 void CListContainerElementUI::DrawItemText(HDC hDC, const RECT& rcItem)

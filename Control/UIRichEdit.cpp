@@ -1060,7 +1060,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 //
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
-    m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), 
+    m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
 	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0)
 {
@@ -1214,11 +1214,6 @@ void CRichEditUI::SetWinStyle(LONG lStyle)
     m_lTwhStyle = lStyle;
 }
 
-DWORD CRichEditUI::GetTextColor()
-{
-    return m_dwTextColor;
-}
-
 void CRichEditUI::SetTextColor(DWORD dwTextColor)
 {
     m_dwTextColor = dwTextColor;
@@ -1354,7 +1349,7 @@ void CRichEditUI::SetText(LPCTSTR pstrText)
 	DWORD dwTextColor = m_dwTextColor;
     m_sText = pstrText;
 
-	if (m_sText.GetLength() == 0 && !IsFocused())
+	if (m_sText.GetLength() == 0  && m_sTipValue.GetLength() && !IsFocused())
 	{
 		m_sText = m_sTipValue;
 		dwTextColor = m_dwTipValueColor;
@@ -1799,6 +1794,10 @@ void CRichEditUI::DoInit()
 			m_bTip = true;
 			SetTipText(m_sTipValue);
 			m_pTwh->SetColor(m_dwTipValueColor);
+		}
+		else
+		{
+			SetTextColor(m_dwTextColor);
 		}
     }
 

@@ -37,8 +37,7 @@ public:
 	void SetEnabled(bool bEnabled);
     LONG GetWinStyle();
     void SetWinStyle(LONG lStyle);
-    DWORD GetTextColor();
-    void SetTextColor(DWORD dwTextColor);
+    virtual void SetTextColor(DWORD dwTextColor);
     int GetLimitText();
     void SetLimitText(int iChars);
     long GetTextLength(DWORD dwFlags = GTL_DEFAULT) const;
@@ -158,7 +157,7 @@ protected:
     bool m_bRich;
     bool m_bReadOnly;
     bool m_bWordWrap;
-    DWORD m_dwTextColor;
+    //DWORD m_dwTextColor;
     CDuiString m_sFont;
     int m_iLimitText;
     LONG m_lTwhStyle;

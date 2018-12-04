@@ -390,7 +390,7 @@ namespace DuiLib
 		CDuiString strPath = GetStringTableFile();
 		if (strPath.GetLength())
 		{
-			m_PaintManager.GetStringTable().LoadFromFile(strPath, GetStringTableLang());
+			m_PaintManager.GetStringTable().Load((LPCTSTR)strPath, NULL, GetStringTableLang());
 		}
 		CControlUI* pRoot=NULL;
 		if (GetResourceType()==UILIB_RESOURCE)
