@@ -9,12 +9,18 @@ namespace DuiLib
 	{
 	public:
 		CProgressUI();
+		enum ProgressType{
+			TypeNormol,
+			TypeHorizontal = TypeNormol,
+			TypeVertical,
+			TypeCircular,
+		};
 
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
-		bool IsHorizontal();
-		void SetHorizontal(bool bHorizontal = true);
+		bool IsHorizontal() const;
+		//void SetHorizontal(bool bHorizontal = true);
 		bool IsStretchForeImage();
 		void SetStretchForeImage(bool bStretchForeImage = true);
 		int GetMinValue() const;
@@ -27,12 +33,27 @@ namespace DuiLib
 		void SetForeImage(LPCTSTR pStrImage);
 		void SetForeColor(DWORD dwTextColor);
 		DWORD GetForeColor() const;
+		int GetCircularFinishedWidth() const;
+		void SetCircularFinishedWidth(int nValue);
+		int GetCircularLastWidth() const;
+		void SetCircularLastWidth(int nValue);
+		int GetCircularSpace() const;
+		void SetCircularSpace(int nValue);
+		int GetCircularStartAngle() const;
+		void SetCircularStartAngle(int nValue);
+		int GetCircularSweepAngle() const;
+		void SetCircularSweepAngle(int nValue);
+
+		ProgressType GetType() const;
+		void SetType(ProgressType type);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void PaintStatusImage(HDC hDC);
 
+		void DoPaint(HDC hDC, const RECT& rcPaint);
+
 	protected:
-		bool m_bHorizontal;
+		//bool m_bHorizontal;
 		bool m_bStretchForeImage;
 		int m_nMax;
 		int m_nMin;
@@ -41,6 +62,14 @@ namespace DuiLib
 
 		CDuiString m_sForeImage;
 		CDuiString m_sForeImageModify;
+		ProgressType m_Type;
+
+		//圆环形状属性
+		int m_nCirFinishedWidth;	// 已完成圆环宽度
+		int m_nCirLastWidth;	// 剩余圆环宽度
+		int m_nCirSpace;	// 已完成和未完成的间距
+		int m_nStartAngle;	// 起始角度
+		int m_nSweepAngle;	// 角度大小
 	};
 
 } // namespace DuiLib

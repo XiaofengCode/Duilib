@@ -51,7 +51,7 @@ namespace DuiLib
 
 	RECT CSliderUI::GetThumbRect() const
 	{
-		if( m_bHorizontal ) {
+		if( IsHorizontal() ) {
 			int left = m_rcItem.left + (LONGLONG)(m_rcItem.right - m_rcItem.left - m_szThumb.cx) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
 			int top = (m_rcItem.bottom + m_rcItem.top - m_szThumb.cy) / 2;
 			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
@@ -117,7 +117,7 @@ namespace DuiLib
 
 				int nValue;
 
-				if( m_bHorizontal ) {
+				if( IsHorizontal() ) {
 					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) nValue = m_nMax;
 					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) nValue = m_nMin;
 					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
@@ -156,7 +156,7 @@ namespace DuiLib
 				if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
 					m_uButtonState &= ~UISTATE_CAPTURED;
 				}
-				if( m_bHorizontal ) {
+				if( IsHorizontal() ) {
 					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) nValue = m_nMax;
 					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) nValue = m_nMin;
 					else nValue = m_nMin + (LONGLONG)(m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
@@ -196,7 +196,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {//2014.7.28 redrain 重写这个消息判断让Slider发出DUI_MSGTYPE_VALUECHANGED_MOVE消息，让他在滑动过程也发出消息，比如用在改变音量时，一边滑动就可以一边改变音量
-				if( m_bHorizontal ) {
+				if( IsHorizontal() ) {
 					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
 					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
 					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);

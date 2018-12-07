@@ -3,7 +3,8 @@
 
 namespace DuiLib
 {
-	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true)
+	CProgressUI::CProgressUI() : m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true),
+		m_Type(TypeNormol), m_nCirFinishedWidth(0), m_nCirLastWidth(0), m_nCirSpace(0), m_nStartAngle(-90),m_nSweepAngle(0)
 	{
 		m_dwForeColor = 0;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
@@ -21,18 +22,18 @@ namespace DuiLib
 		return CLabelUI::GetInterface(pstrName);
 	}
 
-	bool CProgressUI::IsHorizontal()
+	bool CProgressUI::IsHorizontal() const
 	{
-		return m_bHorizontal;
+		return m_Type == TypeHorizontal;
 	}
 
-	void CProgressUI::SetHorizontal(bool bHorizontal)
-	{
-		if( m_bHorizontal == bHorizontal ) return;
-
-		m_bHorizontal = bHorizontal;
-		Invalidate();
-	}
+// 	void CProgressUI::SetHorizontal(bool bHorizontal)
+// 	{
+// 		if( m_Type == TypeHorizontal == bHorizontal ) return;
+// 
+// 		m_bHorizontal = bHorizontal;
+// 		Invalidate();
+// 	}
 
 	int CProgressUI::GetMinValue() const
 	{
@@ -95,6 +96,69 @@ namespace DuiLib
 		return m_dwForeColor;
 	}
 
+	int CProgressUI::GetCircularFinishedWidth() const
+	{
+		return m_nCirFinishedWidth;
+	}
+
+	void CProgressUI::SetCircularFinishedWidth(int nValue)
+	{
+		m_nCirFinishedWidth = nValue;
+	}
+
+	int CProgressUI::GetCircularLastWidth() const
+	{
+		return m_nCirLastWidth;
+	}
+
+	void CProgressUI::SetCircularLastWidth(int nValue)
+	{
+		m_nCirLastWidth = nValue;
+	}
+
+	int CProgressUI::GetCircularSpace() const
+	{
+		return m_nCirSpace;
+	}
+
+	void CProgressUI::SetCircularSpace(int nValue)
+	{
+		m_nCirSpace = nValue;
+	}
+
+	int CProgressUI::GetCircularStartAngle() const
+	{
+		return m_nStartAngle;
+	}
+
+	void CProgressUI::SetCircularStartAngle(int nValue)
+	{
+		if (m_nStartAngle < -360 || m_nStartAngle > 360)
+		{
+			return;
+		}
+		m_nStartAngle = nValue;
+	}
+
+	int CProgressUI::GetCircularSweepAngle() const
+	{
+		return m_nSweepAngle;
+	}
+
+	void CProgressUI::SetCircularSweepAngle(int nValue)
+	{
+		if (m_nSweepAngle < -360 || m_nSweepAngle > 360)
+		{
+			return;
+		}
+		m_nSweepAngle = nValue;
+	}
+
+	DuiLib::CProgressUI::ProgressType CProgressUI::GetType() const
+	{
+		return m_Type;
+	}
+
 	void CProgressUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		if( _tcsicmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
@@ -106,11 +170,41 @@ namespace DuiLib
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetForeColor(clrColor);
 		}
-		else if( _tcsicmp(pstrName, _T("hor")) == 0 ) SetHorizontal(_tcsicmp(pstrValue, _T("true")) == 0);
+		else if( _tcsicmp(pstrName, _T("hor")) == 0 )
+		{
+			if(_tcsicmp(pstrValue, _T("true")) == 0)
+			{
+				SetType(TypeHorizontal);
+			}
+			else
+			{
+				SetType(TypeVertical);
+			}
+		}
 		else if( _tcsicmp(pstrName, _T("min")) == 0 ) SetMinValue(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("max")) == 0 ) SetMaxValue(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("value")) == 0 ) SetValue(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("isstretchfore"))==0) SetStretchForeImage(_tcsicmp(pstrValue, _T("true")) == 0? true : false);
+		else if( _tcsicmp(pstrName, _T("type"))==0)
+		{
+			if (_tcsicmp(pstrValue, _T("1")) == 0 ||  _tcsicmp(pstrValue, _T("Ver")) == 0 || _tcsicmp(pstrValue, _T("Vertical")) == 0)
+			{
+				SetType(TypeVertical);
+			}
+			else if (_tcsicmp(pstrValue, _T("2")) == 0 ||  _tcsicmp(pstrValue, _T("Cir")) == 0 || _tcsicmp(pstrValue, _T("Circular")) == 0)
+			{
+				SetType(TypeCircular);
+			}
+			else
+			{
+				SetType(TypeHorizontal);
+			}
+		}
+		else if( _tcsicmp(pstrName, _T("CirFinishedWidth")) == 0 ) SetCircularFinishedWidth(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("CirLastWidth")) == 0 ) SetCircularLastWidth(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("StartAngle")) == 0 ) SetCircularStartAngle(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("SweepAngle")) == 0 ) SetCircularSweepAngle(_ttoi(pstrValue));
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -121,7 +215,7 @@ namespace DuiLib
 		if( m_nValue < m_nMin ) m_nValue = m_nMin;
 
 		RECT rc = {0};
-		if( m_bHorizontal ) {
+		if( IsHorizontal() ) {
 			rc.right = (LONGLONG)(m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
 			rc.bottom = m_rcItem.bottom - m_rcItem.top;
 		}
@@ -159,6 +253,82 @@ namespace DuiLib
 		}
 	}
 
+	void CProgressUI::DoPaint(HDC hDC, const RECT& rcPaint)
+	{
+		if (GetType() != TypeCircular)
+		{
+			CLabelUI::DoPaint(hDC, rcPaint);
+			return;
+		}
+		if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
+
+		Gdiplus::Graphics g(hDC);
+		g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
+		CDuiRect rcItem(m_rcItem.left + m_rcPadding.left,
+			m_rcItem.top + m_rcPadding.top,
+			m_rcItem.right + m_rcPadding.right,
+			m_rcItem.bottom + m_rcPadding.bottom);
+		//TODO:如果有边框就先绘制边框
+		//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
+		int nWidth = GetCircularFinishedWidth();
+		if (!nWidth)
+		{
+			nWidth = rcItem.GetHeight()/5;
+		}
+		CDuiRect rcValue(rcItem);
+		rcValue.Deflate(nWidth/2, nWidth/2);
+		Gdiplus::Pen pen(m_dwForeColor);
+		pen.SetWidth(nWidth);
+		int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
+		//绘制已完成部分
+		double nStartAngle = GetCircularStartAngle() + GetCircularSpace();
+		double nSweepAngle = nSweepValue - GetCircularSpace()*0.5f;
+		if (nSweepAngle <= 0)
+		{
+			nSweepAngle = 2;
+		}
+		g.DrawArc(&pen, rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle, nSweepAngle);
+
+		nWidth = GetCircularLastWidth();
+		if (!nWidth)
+		{
+			nWidth = rcItem.GetHeight()/5;
+		}
+		CDuiRect rcLast(rcItem);
+		rcLast.Deflate(nWidth/2, nWidth/2);
+		//rcLast.Deflate(rcItem.GetWidth()*GetCircularSpace()/360, rcItem.GetWidth()*GetCircularSpace()/360);
+		//绘制剩余部分
+		pen.SetColor(m_dwBackColor);
+		pen.SetWidth(nWidth);
+		nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue;
+		nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2;
+		if (nSweepAngle <= 0)
+		{
+			nSweepAngle = 2;
+		}
+		g.DrawArc(&pen, rcLast.left, rcLast.top, rcLast.GetWidth(), rcLast.GetHeight(), nStartAngle, nSweepAngle);
+		CLabelUI::PaintText(hDC);
+		return;
+		
+// 		// 绘制循序：背景颜色->背景图->状态图->文本->边框
+// 		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ) {
+// 			CRenderClip roundClip;
+// 			CRenderClip::GenerateRoundClip(hDC, m_rcPaint,  m_rcItem, m_cxyBorderRound.cx, m_cxyBorderRound.cy, roundClip);
+// 			PaintBkColor(hDC);
+// 			PaintBkImage(hDC);
+// 			PaintStatusImage(hDC);
+// 			PaintText(hDC);
+// 			PaintBorder(hDC);
+// 		}
+// 		else {
+// 			PaintBkColor(hDC);
+// 			PaintBkImage(hDC);
+// 			PaintStatusImage(hDC);
+// 			PaintText(hDC);
+// 			PaintBorder(hDC);
+// 		}
+	}
+
 	bool CProgressUI::IsStretchForeImage()
 	{
 		return m_bStretchForeImage;
@@ -170,4 +340,11 @@ namespace DuiLib
 		m_bStretchForeImage=bStretchForeImage;
 		Invalidate();
 	}
+
+	void CProgressUI::SetType(ProgressType type)
+	{
+		m_Type = type;
+		Invalidate();
+	}
+
 }
