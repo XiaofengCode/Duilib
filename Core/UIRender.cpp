@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 
 extern "C"
 {
@@ -258,7 +258,11 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 					FILE_ATTRIBUTE_NORMAL, NULL);
 				if( hFile == INVALID_HANDLE_VALUE ) break;
 				dwSize = ::GetFileSize(hFile, NULL);
-				if( dwSize == 0 ) break;
+				if( dwSize == 0 )
+				{
+					CloseHandle( hFile );
+					break;
+				}
 
 				DWORD dwRead = 0;
 				pData = new BYTE[ dwSize ];
@@ -317,7 +321,11 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 			FILE_ATTRIBUTE_NORMAL, NULL);
 		if( hFile == INVALID_HANDLE_VALUE ) break;
 		dwSize = ::GetFileSize(hFile, NULL);
-		if( dwSize == 0 ) break;
+		if( dwSize == 0 )
+		{
+			::CloseHandle( hFile );
+			break;
+		}
 
 		DWORD dwRead = 0;
 		pData = new BYTE[ dwSize ];

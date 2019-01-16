@@ -25,6 +25,9 @@ namespace DuiLib
 		void SetReadOnly(bool bReadOnly);
 		bool IsReadOnly() const;
 
+		void SetFormat(LPCTSTR lpszFormat);
+		LPCTSTR GetFormat();
+
 		void UpdateText();
 
 		void DoEvent(TEventUI& event);
@@ -37,6 +40,7 @@ namespace DuiLib
 		int        m_nDTUpdateFlag;
 		bool       m_bReadOnly;
 		UINT		m_uDptStyle;
+		CDuiString	m_strFormat;
 
 		CDateTimeWnd* m_pWindow;
 	};

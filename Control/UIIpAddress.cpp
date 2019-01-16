@@ -1,11 +1,11 @@
-#include "stdafx.h"
+#include "duipub.h"
 #include "UIDateTime.h"
 #pragma comment( lib, "ws2_32.lib" )
 
 DWORD GetDefaultIpAddress()   
 {   
 	//Windows跟Socket使用高低位相反
-	DWORD dwIP = inet_addr("127.0.0.1");
+	DWORD dwIP = 0;//inet_addr("127.0.0.1");
 	
 	return dwIP;
 }
@@ -93,8 +93,8 @@ namespace DuiLib
 
 		if (m_pOwner->GetText().IsEmpty())
 			m_pOwner->m_dwIP = GetDefaultIpAddress();
-		
-		::SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&m_pOwner->m_dwIP));
+		DWORD dwIP = m_pOwner->GetIP();
+		::SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&dwIP));
 		//::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
 		::ShowWindow(m_hWnd, SW_SHOW);
 		//RedrawWindow(m_hWnd, NULL, NULL, 0);
@@ -249,6 +249,15 @@ namespace DuiLib
 
 	DWORD CIPAddressUI::GetIP()
 	{
+		in_addr addr;
+		CDuiString strText = GetText();
+		int b1 = 0, b2 = 0, b3 = 0, b4 = 0;
+		_stscanf((LPCTSTR)strText, _T("%d.%d.%d.%d"), &b1, &b2, &b3, &b4);
+		addr.S_un.S_un_b.s_b1 = b1;
+		addr.S_un.S_un_b.s_b2 = b2;
+		addr.S_un.S_un_b.s_b3 = b3;
+		addr.S_un.S_un_b.s_b4 = b4;
+		m_dwIP = addr.S_un.S_addr;
 		return m_dwIP;
 	}
 
@@ -274,6 +283,11 @@ namespace DuiLib
 // 		if (m_nIPUpdateFlag == IP_DELETE)
 // 			SetText(_T(""));
 // 		else if (m_nIPUpdateFlag == IP_UPDATE)
+		if (m_dwIP == 0)
+		{
+			SetText(_T("   .   .   .   "));
+		}
+		else
 		{
 			TCHAR szIP[MAX_PATH] = {0};
 			in_addr addr;

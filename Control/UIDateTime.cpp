@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "duipub.h"
 #include "UIDateTime.h"
 
 namespace DuiLib
@@ -60,17 +60,20 @@ namespace DuiLib
 				uStyle = WS_CHILD;
 			}
 
-			//UINT uStyle = m_pOwner->GetDptStyle() | WS_CHILD;
-			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
-			SetWindowFont(m_hWnd, m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->hFont, TRUE);
-
 			if (m_pOwner->GetDptStyle() & DTS_TIMEFORMAT)
 			{
-				::SendMessage(m_hWnd, DTM_SETFORMAT, 0, (LPARAM)_T("HH:mm:ss"));
+				uStyle |= DTS_TIMEFORMAT;
 			}
 			else
 			{
-				::SendMessage(m_hWnd, DTM_SETFORMAT, 0, (LPARAM)_T("yyyy-MM-dd HH:mm"));
+				uStyle |= DTS_SHORTDATEFORMAT;
+			}
+			//UINT uStyle = m_pOwner->GetDptStyle() | WS_CHILD;
+			Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
+			SetWindowFont(m_hWnd, m_pOwner->GetManager()->GetFontInfo(m_pOwner->GetFont())->hFont, TRUE);
+			if (m_pOwner->GetFormat())
+			{
+				DateTime_SetFormat(m_hWnd, m_pOwner->GetFormat());
 			}
 		}
 
@@ -131,28 +134,28 @@ namespace DuiLib
 			PostMessage(WM_CLOSE);
 			return lRes;
 		}
-		//	else if( uMsg == OCM_COMMAND ) {
-		// 		if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-		// 		else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
-		// 			RECT rcClient;
-		// 			::GetClientRect(m_hWnd, &rcClient);
-		// 			::InvalidateRect(m_hWnd, &rcClient, FALSE);
-		// 		}
-		//	}
-		//	else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
-		// 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
-		//	}
-		// 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
-		// 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
-		// 			::SetBkMode((HDC)wParam, TRANSPARENT);
-		// 			DWORD dwTextColor = m_pOwner->GetTextColor();
-		// 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-		// 			if( m_hBkBrush == NULL ) {
-		// 				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
-		// 				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
-		// 			}
-		// 			return (LRESULT)m_hBkBrush;
-		// 		}
+//	else if( uMsg == OCM_COMMAND ) {
+// 		if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+// 		else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
+// 			RECT rcClient;
+// 			::GetClientRect(m_hWnd, &rcClient);
+// 			::InvalidateRect(m_hWnd, &rcClient, FALSE);
+// 		}
+//	}
+//	else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
+// 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
+//	}
+// 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
+// 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
+// 			::SetBkMode((HDC)wParam, TRANSPARENT);
+// 			DWORD dwTextColor = m_pOwner->GetTextColor();
+// 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
+// 			if( m_hBkBrush == NULL ) {
+// 				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
+// 				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
+// 			}
+// 			return (LRESULT)m_hBkBrush;
+// 		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
@@ -232,27 +235,60 @@ namespace DuiLib
 		return m_bReadOnly;
 	}
 
+	void CDateTimeUI::SetFormat(LPCTSTR lpszFormat)
+	{
+		m_strFormat = lpszFormat;
+		UpdateText();
+	}
+
+	LPCTSTR CDateTimeUI::GetFormat()
+	{
+		if (m_strFormat.GetLength())
+		{
+			return m_strFormat;
+		}
+		return NULL;
+	}
+
 	void CDateTimeUI::UpdateText()
 	{
-		if (m_nDTUpdateFlag == DT_DELETE)
-			SetText(_T(""));
-		else if (m_nDTUpdateFlag == DT_UPDATE)
+		TCHAR szTime[64];
+		TCHAR szDate[64];
+		if (m_uDptStyle & DTS_TIMEFORMAT)
 		{
-			CDuiString sText;
-			if (m_uDptStyle & DTS_TIMEFORMAT)
+			CDuiString strFormat = GetFormat();
+			if (strFormat.GetLength() == 0)
 			{
-				sText.SmallFormat(_T("%2d:%02d:%02d"),
-					m_sysTime.wHour, m_sysTime.wMinute, m_sysTime.wSecond);
+				GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, NULL, szTime, sizeof(szTime)/sizeof(szTime[0]));
 			}
 			else
 			{
-				sText.SmallFormat(_T("%4d-%02d-%02d %2d:%02d"),
-					m_sysTime.wYear, m_sysTime.wMonth, m_sysTime.wDay, m_sysTime.wHour, m_sysTime.wMinute);
+				GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
+				if (strFormat.Find(_T("y")) >= 0 || strFormat.Find(_T("M")) >= 0 || strFormat.Find(_T("d")) >= 0)
+				{
+					GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, szDate, szTime, sizeof(szTime)/sizeof(szTime[0]));
+				}
 			}
-			
-			SetText(sText);
-			
 		}
+		else
+		{
+			CDuiString strFormat = GetFormat();
+			if (strFormat.GetLength() == 0)
+			{
+				GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, NULL, szTime, sizeof(szTime)/sizeof(szTime[0]));
+			}
+			else
+			{
+				GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
+				if (strFormat.Find(_T("H")) >= 0 || strFormat.Find(_T("h")) >= 0 ||
+					strFormat.Find(_T("m")) >= 0 || strFormat.Find(_T("s")) >= 0)
+				{
+					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, szDate, szTime, sizeof(szTime)/sizeof(szTime[0]));
+				}
+			}
+		}			
+
+		SetText(szTime);
 	}
 
 	void CDateTimeUI::DoEvent(TEventUI& event)
@@ -339,6 +375,11 @@ namespace DuiLib
 				m_nDTUpdateFlag = DT_UPDATE;
 				UpdateText();
 			}
+			return;
+		}
+		if (_tcsicmp(pstrName, _T("format")) == 0)
+		{
+			SetFormat(pstrValue);
 			return;
 		}
 		CLabelUI::SetAttribute(pstrName, pstrValue);

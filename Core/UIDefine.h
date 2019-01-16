@@ -18,7 +18,8 @@ class CControlUI;
 typedef struct tagTNotifyUI 
 {
 	CDuiString sType;
-	CDuiString sVirtualWnd;
+	CDuiStringArray arVirtualWnd;
+	int nVirualWndLevel;
 	CControlUI* pSender;
 	DWORD dwTimestamp;
 	POINT ptMouse;

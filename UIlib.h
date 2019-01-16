@@ -77,6 +77,7 @@
 #include "Utils/UIDelegate.h"
 #include "Utils/XUnzip.h"
 #include "Utils/GifImage.h"
+#include "Core/AttributeManager.h"
 #include "Core/UIDefine.h"
 #include "Core/UIStringTable.h"
 #include "Core/UIManager.h"

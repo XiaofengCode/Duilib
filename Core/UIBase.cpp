@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 
 #ifdef _DEBUG
 #include <shlwapi.h>
@@ -191,24 +191,20 @@ LDispatch:
 	return bRet;
 }
 
-void CNotifyPump::NotifyPump(TNotifyUI& msg)
+bool CNotifyPump::NotifyPump(TNotifyUI& msg)
 {
 	///遍历虚拟窗口
-	if( !msg.sVirtualWnd.IsEmpty() ){
-		for( int i = 0; i< m_VirtualWndMap.GetSize(); i++ ) {
-			if( LPCTSTR key = m_VirtualWndMap.GetAt(i) ) {
-				if( _tcsicmp(key, msg.sVirtualWnd.GetData()) == 0 ){
-					CNotifyPump* pObject = static_cast<CNotifyPump*>(m_VirtualWndMap.Find(key, false));
-					if( pObject && pObject->LoopDispatch(msg) )
-						return;
-				}
-			}
-		}
+	if(msg.arVirtualWnd.GetSize() && msg.nVirualWndLevel)
+	{
+		msg.nVirualWndLevel--;
+		CNotifyPump* pObject = static_cast<CNotifyPump*>(m_VirtualWndMap.Find(msg.arVirtualWnd[msg.nVirualWndLevel], false));
+		if( pObject && pObject->NotifyPump(msg) )
+			return true;
 	}
 
 	///
 	//遍历主窗口
-	LoopDispatch( msg );
+	return LoopDispatch( msg );
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 #include <zmouse.h>
 
 namespace DuiLib {
@@ -464,6 +464,9 @@ void CPaintManagerUI::SetTransparent(int nOpacity)
         else dwNewStyle &= ~WS_EX_LAYERED;
         if(dwStyle != dwNewStyle) ::SetWindowLong(m_hWndPaint, GWL_EXSTYLE, dwNewStyle);
         fSetLayeredWindowAttributes(m_hWndPaint, 0, nOpacity, LWA_ALPHA);
+		::RedrawWindow(m_hWndPaint, NULL, NULL,
+			RDW_ERASE | RDW_INVALIDATE | 
+			RDW_FRAME | RDW_ALLCHILDREN);
     }
 }
 
@@ -1779,7 +1782,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
 	Msg.bAsync = bAsync;
 	if( m_bUsedVirtualWnd )
 	{
-		Msg.sVirtualWnd = Msg.pSender->GetVirtualWnd();
+		Msg.nVirualWndLevel = Msg.pSender->GetVirtualWnd(Msg.arVirtualWnd);
 	}
 
     if( !bAsync ) {

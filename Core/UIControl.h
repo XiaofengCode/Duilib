@@ -166,6 +166,8 @@ public:
 	//ÐéÄâ´°¿Ú²ÎÊý
 	void SetVirtualWnd(LPCTSTR pstrValue);
 	CDuiString GetVirtualWnd() const;
+	int GetVirtualWnd(CDuiStringArray& arVirtualWnd) const;
+
  	virtual void  OnTimer( UINT_PTR idEvent );
 
 	virtual CDuiString GetStyle();
@@ -228,6 +230,9 @@ protected:
 	int  m_nWidthScale;
 	int  m_nHeightScale;
 	CDuiString	m_strStyle;
+
+
+	CAttributeManager m_attrs;
 };
 
 } // namespace DuiLib

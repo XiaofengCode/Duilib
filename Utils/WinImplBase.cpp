@@ -1,7 +1,7 @@
 #ifndef WIN_IMPL_BASE_HPP
 #define WIN_IMPL_BASE_HPP
 
-#include "stdafx.h"
+#include "duipub.h"
 #include <algorithm>
 
 namespace DuiLib
@@ -578,7 +578,7 @@ namespace DuiLib
 
 	void WindowImplBase::Notify(TNotifyUI& msg)
 	{
-		return CNotifyPump::NotifyPump(msg);
+		CNotifyPump::NotifyPump(msg);
 	}
 
 	CControlUI* WindowImplBase::GetDlgItem( LPCTSTR lpszName )

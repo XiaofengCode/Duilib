@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "duipub.h"
 #include "UIProgress.h"
 
 namespace DuiLib
@@ -19,7 +19,7 @@ namespace DuiLib
 	LPVOID CProgressUI::GetInterface(LPCTSTR pstrName)
 	{
 		if( _tcscmp(pstrName, DUI_CTR_PROGRESS) == 0 ) return static_cast<CProgressUI*>(this);
-		return CLabelUI::GetInterface(pstrName);
+		return __super::GetInterface(pstrName);
 	}
 
 	bool CProgressUI::IsHorizontal() const
@@ -205,7 +205,7 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("StartAngle")) == 0 ) SetCircularStartAngle(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("SweepAngle")) == 0 ) SetCircularSweepAngle(_ttoi(pstrValue));
-		else CLabelUI::SetAttribute(pstrName, pstrValue);
+		else __super::SetAttribute(pstrName, pstrValue);
 	}
 
 	void CProgressUI::PaintStatusImage(HDC hDC)
@@ -214,42 +214,49 @@ namespace DuiLib
 		if( m_nValue > m_nMax ) m_nValue = m_nMax;
 		if( m_nValue < m_nMin ) m_nValue = m_nMin;
 
-		RECT rc = {0};
-		if( IsHorizontal() ) {
-			rc.right = (LONGLONG)(m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
-			rc.bottom = m_rcItem.bottom - m_rcItem.top;
-		}
-		else {
-			rc.top = (LONGLONG)(m_rcItem.bottom - m_rcItem.top) * (m_nMax - m_nValue) / (m_nMax - m_nMin);
-			rc.right = m_rcItem.right - m_rcItem.left;
-			rc.bottom = m_rcItem.bottom - m_rcItem.top;
-		}
+		if (GetType() != TypeCircular)
+		{
+			RECT rc = {0};
+			if( IsHorizontal() ) {
+				rc.right = (LONGLONG)(m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			}
+			else {
+				rc.top = (LONGLONG)(m_rcItem.bottom - m_rcItem.top) * (m_nMax - m_nValue) / (m_nMax - m_nMin);
+				rc.right = m_rcItem.right - m_rcItem.left;
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			}
 
-		if( !m_sForeImage.IsEmpty() ) {
-			m_sForeImageModify.Empty();
-			double S = GetScaleDpi();
-			if (m_bStretchForeImage)
-			{
-				m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"),
-					(int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+			if( !m_sForeImage.IsEmpty() ) {
+				m_sForeImageModify.Empty();
+				double S = GetScaleDpi();
+				if (m_bStretchForeImage)
+				{
+					m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"),
+						(int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+				}
+				else
+				{
+					m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d' source='%d,%d,%d,%d'")
+						, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S)
+						, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+				}
+
+				if( !DrawImage(hDC, (LPCTSTR)m_sForeImage, (LPCTSTR)m_sForeImageModify) ) m_sForeImage.Empty();
+				else return;
 			}
 			else
 			{
-				m_sForeImageModify.SmallFormat(_T("dest='%d,%d,%d,%d' source='%d,%d,%d,%d'")
-					, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S)
-					, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
+				rc.left += m_rcItem.left;
+				rc.right += m_rcItem.left;
+				rc.top += m_rcItem.top;
+				rc.bottom += m_rcItem.top;
+				CRenderEngine::DrawColor(hDC, rc, m_dwForeColor);
 			}
-
-			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage, (LPCTSTR)m_sForeImageModify) ) m_sForeImage.Empty();
-			else return;
 		}
 		else
 		{
-			rc.left += m_rcItem.left;
-			rc.right += m_rcItem.left;
-			rc.top += m_rcItem.top;
-			rc.bottom += m_rcItem.top;
-			CRenderEngine::DrawColor(hDC, rc, m_dwForeColor);
+			__super::PaintStatusImage(hDC);
 		}
 	}
 
@@ -257,11 +264,14 @@ namespace DuiLib
 	{
 		if (GetType() != TypeCircular)
 		{
-			CLabelUI::DoPaint(hDC, rcPaint);
+			__super::DoPaint(hDC, rcPaint);
 			return;
 		}
 		if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-
+// 		SIZE szRound = {(m_rcItem.right + m_rcPadding.right - m_rcItem.left - m_rcPadding.left),
+// 			(m_rcItem.bottom + m_rcPadding.bottom - m_rcItem.top - m_rcPadding.top)};
+// 		SetBorderRound(szRound);
+		PaintBkImage(hDC);
 		Gdiplus::Graphics g(hDC);
 		g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//¿¹¾â³Ý 
 		CDuiRect rcItem(m_rcItem.left + m_rcPadding.left,
@@ -300,14 +310,16 @@ namespace DuiLib
 		//»æÖÆÊ£Óà²¿·Ö
 		pen.SetColor(m_dwBackColor);
 		pen.SetWidth(nWidth);
-		nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue;
-		nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2;
+		nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue - 1;
+		nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2 + 2;
 		if (nSweepAngle <= 0)
 		{
 			nSweepAngle = 2;
 		}
 		g.DrawArc(&pen, rcLast.left, rcLast.top, rcLast.GetWidth(), rcLast.GetHeight(), nStartAngle, nSweepAngle);
-		CLabelUI::PaintText(hDC);
+		PaintStatusImage(hDC);
+		PaintText(hDC);
+		PaintBorder(hDC);
 		return;
 		
 // 		// »æÖÆÑ­Ðò£º±³¾°ÑÕÉ«->±³¾°Í¼->×´Ì¬Í¼->ÎÄ±¾->±ß¿ò

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 #include "UIGifAnim.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +238,11 @@ namespace DuiLib
 					FILE_ATTRIBUTE_NORMAL, NULL);
 				if( hFile == INVALID_HANDLE_VALUE ) break;
 				dwSize = ::GetFileSize(hFile, NULL);
-				if( dwSize == 0 ) break;
+				if( dwSize == 0 )
+				{
+					CloseHandle(hFile);
+					break;
+				}
 
 				DWORD dwRead = 0;
 				pData = new BYTE[ dwSize ];
@@ -282,7 +286,11 @@ namespace DuiLib
 				FILE_ATTRIBUTE_NORMAL, NULL);
 			if( hFile == INVALID_HANDLE_VALUE ) break;
 			dwSize = ::GetFileSize(hFile, NULL);
-			if( dwSize == 0 ) break;
+			if( dwSize == 0 )
+			{
+				CloseHandle(hFile);
+				break;
+			}
 
 			DWORD dwRead = 0;
 			pData = new BYTE[ dwSize ];

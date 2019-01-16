@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 ///////////////////////////////////////////////////////////////////////////////////////
 
 namespace DuiLib {
@@ -770,19 +770,41 @@ void CControlUI::SetVirtualWnd(LPCTSTR pstrValue)
 CDuiString CControlUI::GetVirtualWnd() const
 {
 	CDuiString str;
-	if( !m_sVirtualWnd.IsEmpty() ){
+	if( !m_sVirtualWnd.IsEmpty() )
+	{
 		str = m_sVirtualWnd;
 	}
-	else{
+	else
+	{
 		CControlUI* pParent = GetParent();
-		if( pParent != NULL){
+		if( pParent != NULL)
+		{
 			str = pParent->GetVirtualWnd();
 		}
-		else{
+		else
+		{
 			str = _T("");
 		}
 	}
 	return str;
+}
+
+int CControlUI::GetVirtualWnd(CDuiStringArray& arVirtualWnd) const
+{
+	CDuiString str;
+	arVirtualWnd.RemoveAll();
+	if( !m_sVirtualWnd.IsEmpty() )
+	{
+		arVirtualWnd.Add(m_sVirtualWnd);
+	}
+	CControlUI* pParent = GetParent();
+	if( pParent != NULL)
+	{
+		CDuiStringArray arVirtualWndParent;
+		pParent->GetVirtualWnd(arVirtualWndParent);
+		arVirtualWnd.Append(arVirtualWndParent);
+	}
+	return arVirtualWnd.GetSize();
 }
 
 void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "duipub.h"
 
 #ifndef TRACE
 #define TRACE
@@ -347,9 +347,15 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 			return _Failed(_T("Error opening file"));
         DWORD dwSize = ::GetFileSize(hFile, NULL);
         if( dwSize == 0 )
+		{
+			CloseHandle(hFile);
 			return _Failed(_T("File is empty"));
+		}
         if ( dwSize > 4096*1024 )
+		{
+			CloseHandle(hFile);
 			return _Failed(_T("File too large"));
+		}
 
         DWORD dwRead = 0;
         BYTE* pByte = new BYTE[ dwSize ];

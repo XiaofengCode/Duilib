@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "duipub.h"
 #include "Utils.h"
 
 namespace DuiLib
@@ -509,7 +509,7 @@ namespace DuiLib
 		if ( lpStr )
 		{
 			ASSERT(!::IsBadStringPtrA(lpStr,-1));
-			int cchStr = (int) strlen(lpStr) + 1;
+			int cchStr = (int) (strlen(lpStr) + 1)*2;
 			LPWSTR pwstr = (LPWSTR) _alloca(cchStr);
 			if( pwstr != NULL ) ::MultiByteToWideChar(::GetACP(), 0, lpStr, -1, pwstr, cchStr) ;
 			Append(pwstr);
@@ -805,6 +805,21 @@ namespace DuiLib
 			return 0;
 		Assign(Left(iPos) + Right(GetLength() - iPos - iCount));
 		return 1;
+	}
+
+	CDuiStringArray CDuiString::Split(TCHAR cSplit)
+	{
+		CDuiStringArray arRes;
+		int nLastPos = 0;
+		int nPos = Find(cSplit);
+		while (nPos >= 0)
+		{
+			arRes.Add(Mid(nLastPos, nPos - nLastPos));
+			nLastPos = nPos + 1;
+			nPos = Find(cSplit, nLastPos);
+		}
+		arRes.Add(Mid(nLastPos, GetLength() - nLastPos));
+		return arRes;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////

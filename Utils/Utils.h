@@ -3,6 +3,7 @@
 
 #pragma once
 #include "OAIdl.h"
+#include <vector>
 namespace DuiLib
 {
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,65 @@ namespace DuiLib
 		void Union(CDuiRect& rc);
 	};
 
+
+	template<class T>
+	class UILIB_API CDuiArray
+	{
+	public:
+		CDuiArray(){}
+		~CDuiArray(){}
+		void Resize(int iSize)
+		{
+			m_vec.resize(iSize);
+		}
+		bool IsEmpty() const
+		{
+			return m_vec.empty();
+		}
+		void Add(T data)
+		{
+			m_vec.push_back(data);
+		}
+		void SetAt(int iIndex, T data)
+		{
+			m_vec[iIndex] = data;
+		}
+		void InsertAt(int iIndex, T data)
+		{
+			m_vec.insert(m_vec.begin() + iIndex, 1, data);
+		}
+		void Remove(int iIndex)
+		{
+			m_vec.erase(m_vec.begin() + iIndex);
+		}
+		int GetSize() const
+		{
+			return m_vec.size();
+		}
+		LPVOID GetData()
+		{
+			return m_vec.data();
+		}
+
+		T GetAt(int iIndex) const
+		{
+			return m_vec[iIndex];
+		}
+		T& operator[] (int iIndex)
+		{
+			return m_vec[iIndex];			
+		}
+		void RemoveAll()
+		{
+			m_vec.clear();
+		}
+		void Append(const CDuiArray<T>& src)
+		{
+			m_vec.insert(m_vec.end(), src.m_vec.begin(), src.m_vec.end());
+		}
+	protected:
+		std::vector<T> m_vec;
+	};
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
@@ -127,7 +187,8 @@ namespace DuiLib
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
-
+	class UILIB_API CDuiString;
+	typedef CDuiArray<CDuiString> CDuiStringArray;
 	class UILIB_API CDuiString
 	{
 	public:
@@ -193,6 +254,7 @@ namespace DuiLib
         int __cdecl Format(LPCTSTR pstrFormat, va_list Args);
 		int __cdecl SmallFormat(LPCTSTR pstrFormat, ...);
 		int Delete(int iPos, int iCount = 1);
+		CDuiStringArray Split(TCHAR cSplit);
 	protected:
 		LPTSTR m_pstr;
 		TCHAR m_szBuffer[MAX_LOCAL_STRING_LEN + 1];
