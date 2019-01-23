@@ -112,7 +112,7 @@ namespace DuiLib
 				}
 			}
 		}
-		if( event.Type == UIEVENT_SETCURSOR ) {
+		if( event.Type == UIEVENT_SETCURSOR && IsEnabled()) {
 			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 			return;
 		}

@@ -157,7 +157,10 @@ public:
     virtual SIZE EstimateSize(SIZE szAvailable);
 
     virtual void DoPaint(HDC hDC, const RECT& rcPaint);
-    virtual void PaintBkColor(HDC hDC);
+
+	void PaintFocusedDot(HDC hDC);
+
+	virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
     virtual void PaintStatusImage(HDC hDC);
     virtual void PaintText(HDC hDC);

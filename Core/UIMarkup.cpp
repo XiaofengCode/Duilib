@@ -337,74 +337,15 @@ bool CMarkup::LoadFromMem(BYTE* pByte, DWORD dwSize, int encoding)
 
 bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 {
-    Release();
-    CDuiString sFile = CPaintManagerUI::GetResourcePath();
-    if( CPaintManagerUI::GetResourceZip().IsEmpty() )
+	Release();
+	CDuiBuffer buf;
+	if (!DuiReadResourceFileData(pstrFilename, buf))
 	{
-        sFile += pstrFilename;
-        HANDLE hFile = ::CreateFile(sFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if( hFile == INVALID_HANDLE_VALUE )
-			return _Failed(_T("Error opening file"));
-        DWORD dwSize = ::GetFileSize(hFile, NULL);
-        if( dwSize == 0 )
-		{
-			CloseHandle(hFile);
-			return _Failed(_T("File is empty"));
-		}
-        if ( dwSize > 4096*1024 )
-		{
-			CloseHandle(hFile);
-			return _Failed(_T("File too large"));
-		}
+		return false;
+	}
 
-        DWORD dwRead = 0;
-        BYTE* pByte = new BYTE[ dwSize ];
-        ::ReadFile( hFile, pByte, dwSize, &dwRead, NULL );
-        ::CloseHandle( hFile );
-
-        if( dwRead != dwSize ) {
-            delete[] pByte;
-            Release();
-            return _Failed(_T("Could not read file"));
-        }
-        bool ret = LoadFromMem(pByte, dwSize, encoding);
-        delete[] pByte;
-
-        return ret;
-    }
-    else {
-        sFile += CPaintManagerUI::GetResourceZip();
-        HZIP hz = NULL;
-        if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
-        else hz = OpenZip((void*)sFile.GetData(), 0, 2);
-		if (hz == NULL)
-		{
-			sFile = CPaintManagerUI::GetResourceZip();
-			if (CPaintManagerUI::IsCachedResourceZip()) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
-			else hz = OpenZip((void*)sFile.GetData(), 0, 2);
-			if (hz == NULL)
-				return _Failed(_T("Error opening zip file"));
-		}
-
-        ZIPENTRY ze; 
-        int i; 
-        if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 ) return _Failed(_T("Could not find ziped file"));
-        DWORD dwSize = ze.unc_size;
-        if( dwSize == 0 ) return _Failed(_T("File is empty"));
-        if ( dwSize > 4096*1024 ) return _Failed(_T("File too large"));
-        BYTE* pByte = new BYTE[ dwSize ];
-        int res = UnzipItem(hz, i, pByte, dwSize, 3);
-        if( res != 0x00000000 && res != 0x00000600) {
-            delete[] pByte;
-            if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
-            return _Failed(_T("Could not unzip file"));
-        }
-        if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
-        bool ret = LoadFromMem(pByte, dwSize, encoding);
-        delete[] pByte;
-
-        return ret;
-    }
+	bool ret = LoadFromMem(buf, buf.GetSize(), encoding);
+	return ret;
 }
 
 void CMarkup::Release()

@@ -1269,7 +1269,16 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             ::ScreenToClient(m_hWndPaint, &pt);
             CControlUI* pControl = FindControl(pt);
             if( pControl == NULL ) break;
-            if( (pControl->GetControlFlags() & UIFLAG_SETCURSOR) == 0 ) break;
+			while ((pControl->GetControlFlags() & UIFLAG_SETCURSOR) == 0) 
+			{
+				pControl = pControl->GetParent();
+				if (!pControl || !PtInRect(&pControl->GetPos(), pt))
+				{
+					pControl = NULL;
+					break;
+				}
+			} 
+			if( pControl == NULL ) break;
             TEventUI event = { 0 };
             event.Type = UIEVENT_SETCURSOR;
             event.wParam = wParam;

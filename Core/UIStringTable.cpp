@@ -242,43 +242,12 @@ namespace DuiLib{
 		{
 			m_strLan.Empty();
 		}
-		HANDLE hFile = ::CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if( hFile == INVALID_HANDLE_VALUE )
+		CDuiBuffer buf;
+		if (!DuiReadResourceFileData(lpszFile, buf))
 		{
-			hFile = ::CreateFile(CPaintManagerUI::GetInstancePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-			if( hFile == INVALID_HANDLE_VALUE )
-			{
-				hFile = ::CreateFile(CPaintManagerUI::GetResourcePath() + lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-				if( hFile == INVALID_HANDLE_VALUE )
-				{
-					return Load(lpszFile, 0, lpszLang);
-				}
-			}
+			return false;
 		}
-		DWORD dwSize = ::GetFileSize(hFile, NULL);
-		if( dwSize == 0 )
-		{
-			CloseHandle(hFile);
-			return _Failed(_T("LoadFromFile File is empty"));
-		}
-		if ( dwSize > 4096*1024 )
-		{
-			CloseHandle(hFile);
-			return _Failed(_T("LoadFromFile File too large"));
-		}
-
-		DWORD dwRead = 0;
-		BYTE* pByte = new BYTE[ dwSize ];
-		::ReadFile( hFile, pByte, dwSize, &dwRead, NULL );
-		::CloseHandle( hFile );
-
-		if( dwRead != dwSize ) 
-		{
-			delete[] pByte;
-			return _Failed(_T("LoadFromFile Could not read file"));
-		}
-		bool ret = m_xml.LoadFromMem(pByte, dwSize);
-		delete[] pByte;
+		bool ret = m_xml.LoadFromMem(buf, buf.GetSize());
 		if (!ret)
 		{
 			return _Failed(_T("LoadFromFile LoadFromMem failed"));

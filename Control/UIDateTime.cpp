@@ -303,7 +303,7 @@ namespace DuiLib
 			return;
 		}
 
-		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
+		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() && !IsFocused())
 		{
 			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
 			return;

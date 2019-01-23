@@ -242,7 +242,7 @@ namespace DuiLib
 // 			}
 // 			return;
 // 		}
-		if( event.Type == UIEVENT_SETCURSOR )
+		if( event.Type == UIEVENT_SETCURSOR && IsEnabled())
 		{
 			RECT rcThumb = GetThumbRect();
 			if( IsEnabled()) {

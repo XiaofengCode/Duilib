@@ -140,7 +140,15 @@ namespace DuiLib
 		{
 			return bRet;
 		}
-
+		do 
+		{
+			if (pControl->GetControlFlags()&UIFLAG_TABSTOP)
+			{
+				return FALSE;
+			}
+			pControl = pControl->GetParent();
+		} while (pControl);
+		return TRUE;
 		CDuiString strClassName;
 		std::vector<CDuiString> vctStaticName;
 

@@ -320,6 +320,7 @@ namespace DuiLib
 		PaintStatusImage(hDC);
 		PaintText(hDC);
 		PaintBorder(hDC);
+		PaintFocusedDot(hDC);
 		return;
 		
 // 		// »æÖÆÑ­Ðò£º±³¾°ÑÕÉ«->±³¾°Í¼->×´Ì¬Í¼->ÎÄ±¾->±ß¿ò

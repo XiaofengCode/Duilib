@@ -183,6 +183,9 @@
     <ClCompile Include="Core\AttributeManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\FileHelper.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UIlib.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="Core\AttributeManager.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\FileHelper.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

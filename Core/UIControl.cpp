@@ -1135,6 +1135,11 @@ void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
         PaintText(hDC);
         PaintBorder(hDC);
     }
+	PaintFocusedDot(hDC);
+}
+
+void CControlUI::PaintFocusedDot(HDC hDC)
+{
 	if (IsFocused())
 	{
 		if (m_pManager->GetShowFocusDot() && m_pManager->GetNeedShowFocusDot())

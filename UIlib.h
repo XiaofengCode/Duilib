@@ -73,6 +73,7 @@
 #include <gdiplus.h>
 
 #include "Utils/Utils.h"
+#include "Utils/FileHelper.h"
 #include "Utils/UIShadow.h"
 #include "Utils/UIDelegate.h"
 #include "Utils/XUnzip.h"

@@ -1317,6 +1317,7 @@
     <ClCompile Include="Layout\UISliderTabLayout.cpp" />
     <ClCompile Include="UIlib.cpp" />
     <ClCompile Include="Utils\DuiTrayIcon.cpp" />
+    <ClCompile Include="Utils\FileHelper.cpp" />
     <ClCompile Include="Utils\GifImage.cpp" />
     <ClCompile Include="Utils\UIShadow.cpp" />
     <ClCompile Include="Utils\WinImplBase.cpp" />
@@ -1443,6 +1444,7 @@
     <ClInclude Include="Utils\downloadmgr.h" />
     <ClInclude Include="Utils\DuiPointer.h" />
     <ClInclude Include="Utils\DuiTrayIcon.h" />
+    <ClInclude Include="Utils\FileHelper.h" />
     <ClInclude Include="Utils\FlashEventHandler.h" />
     <ClInclude Include="Utils\GifImage.h" />
     <ClInclude Include="Utils\Internal.h" />

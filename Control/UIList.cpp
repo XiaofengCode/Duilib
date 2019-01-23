@@ -40,7 +40,7 @@ LPCTSTR CListUI::GetClass() const
 
 UINT CListUI::GetControlFlags() const
 {
-    return UIFLAG_TABSTOP;
+    return 0;
 }
 
 LPVOID CListUI::GetInterface(LPCTSTR pstrName)
@@ -1622,7 +1622,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
         }
         return;
     }
-    if( event.Type == UIEVENT_SETCURSOR )
+    if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
     {
         RECT rcSeparator = GetThumbRect();
 		if (m_iSepWidth>=0)//111024 by cddjr, 增加分隔符区域，方便用户拖动
@@ -2185,7 +2185,7 @@ void CListTextElementUI::DoEvent(TEventUI& event)
     }
 
     // When you hover over a link
-    if( event.Type == UIEVENT_SETCURSOR ) {
+    if( event.Type == UIEVENT_SETCURSOR && IsEnabled() ) {
         for( int i = 0; i < m_nLinks; i++ ) {
             if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
                 ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));

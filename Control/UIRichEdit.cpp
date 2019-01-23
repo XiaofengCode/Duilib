@@ -1235,47 +1235,21 @@ DWORD CRichEditUI::GetDisabledTextColor() const
 
 void CRichEditUI::SetRtfFile(LPCTSTR lpszFileName)
 {
-	BYTE *lpData = NULL;
-	HANDLE hFile = CreateFile(lpszFileName, GENERIC_READ, FILE_SHARE_DELETE|FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-	if (hFile == INVALID_HANDLE_VALUE)
+
+	CDuiBuffer buf;
+	if (!DuiReadResourceFileData(lpszFileName, buf))
 	{
-		hFile = CreateFile(GetManager()->GetResourcePath() + lpszFileName, GENERIC_READ, FILE_SHARE_DELETE|FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-		if (hFile == INVALID_HANDLE_VALUE)
-		{
-			hFile = CreateFile(GetManager()->GetInstancePath() + lpszFileName, GENERIC_READ, FILE_SHARE_DELETE|FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-			if (hFile == INVALID_HANDLE_VALUE)
-			{
-				return;
-			}
-		}
-	}
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	//超过1MB就不支持
-	if (dwFileSize > 1024*1024)
-	{
-		goto _exit;
-	}
-	lpData = new BYTE[dwFileSize];
-	if (!ReadFile(hFile, lpData, dwFileSize, &dwFileSize, NULL))
-	{
-		goto _exit;
+		return;
 	}
 
 	if( !m_pTwh )
 	{
-		m_sText = (LPCTSTR)lpData;
-		goto _exit;
+		m_sText = (LPCTSTR)(LPVOID)buf;
+		return;
 	}
 	SetSel(0, -1);
-	ReplaceSel((LPCTSTR)lpData, FALSE);
-
-_exit:
-	if (lpData)
-	{
-		delete[] lpData;
-	}
-	CloseHandle(hFile);
-	
+	ReplaceSel((LPCTSTR)(LPVOID)buf, FALSE);
+		
 }
 
 int CRichEditUI::GetLimitText()
