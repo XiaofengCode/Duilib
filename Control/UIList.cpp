@@ -40,7 +40,7 @@ LPCTSTR CListUI::GetClass() const
 
 UINT CListUI::GetControlFlags() const
 {
-    return 0;
+    return UIFLAG_TABSTOP;
 }
 
 LPVOID CListUI::GetInterface(LPCTSTR pstrName)
