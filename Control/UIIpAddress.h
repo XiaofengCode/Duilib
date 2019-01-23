@@ -31,6 +31,8 @@ namespace DuiLib
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		static DWORD GetLocalIpAddress();
+
+		UINT GetControlFlags() const;
 	protected:
 		DWORD	m_dwIP;
 		bool       m_bReadOnly;

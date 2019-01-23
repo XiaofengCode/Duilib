@@ -231,21 +231,21 @@ namespace DuiLib
 		if( (m_uButtonState & UISTATE_PUSHED) != 0 && IsSelected() && !m_sSelectedPushedImage.IsEmpty()) {
 			if( !DrawImage(hDC, (LPCTSTR)m_sSelectedPushedImage) )
 				m_sSelectedPushedImage.Empty();
-			else goto Label_ForeImage;
+			goto Label_ForeImage;
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 && IsSelected() && !m_sSelectedHotImage.IsEmpty()) {
 			if( !DrawImage(hDC, (LPCTSTR)m_sSelectedHotImage) )
 				m_sSelectedHotImage.Empty();
-			else goto Label_ForeImage;
+			goto Label_ForeImage;
 		}
 		else if( (m_uButtonState & UISTATE_SELECTED) != 0 ) {
 			if( !m_sSelectedImage.IsEmpty() ) {
 				if( !DrawImage(hDC, (LPCTSTR)m_sSelectedImage) ) m_sSelectedImage.Empty();
-				else goto Label_ForeImage;
+				goto Label_ForeImage;
 			}
 			else if(m_dwSelectedBkColor != 0) {
 				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
-				return;
+				goto Label_ForeImage;
 			}	
 		}
 

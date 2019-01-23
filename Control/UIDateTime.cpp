@@ -252,8 +252,8 @@ namespace DuiLib
 
 	void CDateTimeUI::UpdateText()
 	{
-		TCHAR szTime[64];
-		TCHAR szDate[64];
+		TCHAR szTime[64] = {0};
+		TCHAR szDate[64] = {0};
 		if (m_uDptStyle & DTS_TIMEFORMAT)
 		{
 			CDuiString strFormat = GetFormat();
@@ -263,10 +263,14 @@ namespace DuiLib
 			}
 			else
 			{
-				GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
 				if (strFormat.Find(_T("y")) >= 0 || strFormat.Find(_T("M")) >= 0 || strFormat.Find(_T("d")) >= 0)
 				{
+					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
 					GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, szDate, szTime, sizeof(szTime)/sizeof(szTime[0]));
+				}
+				else
+				{
+					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szTime, sizeof(szTime)/sizeof(szTime[0]));
 				}
 			}
 		}
@@ -383,6 +387,13 @@ namespace DuiLib
 			return;
 		}
 		CLabelUI::SetAttribute(pstrName, pstrValue);
+	}
+
+	UINT CDateTimeUI::GetControlFlags() const
+	{
+		if( !IsEnabled() ) return CControlUI::GetControlFlags();
+
+		return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
 	}
 
 }

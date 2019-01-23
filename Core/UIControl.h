@@ -59,6 +59,8 @@ public:
 	void SetBorderSize(int nSize);
 	DWORD GetBorderColor() const;
 	void SetBorderColor(DWORD dwBorderColor);
+	DWORD GetFocusDotColor() const;
+	void SetFocusDotColor(DWORD dwColor);
 
 	void SetBorderSize(RECT rc);
 	int GetLeftBorderSize() const;
@@ -224,6 +226,8 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
+	DWORD m_dwFocusDotColor;
+	bool m_bShowFocusDot;
 
 	//Gif
 	CGifImage		m_gifBk;

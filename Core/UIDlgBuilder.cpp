@@ -265,6 +265,18 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 					{
 						pManager->SetWindowTitile(pstrValue);
 					}
+					else if( _tcsicmp(pstrName, _T("showfocusdot")) == 0 )
+					{
+						pManager->SetShowFocusDot(_tcsicmp(pstrValue, _T("true")) == 0);
+					} 
+					else if( _tcsicmp(pstrName, _T("defaultfocusdotcolor")) == 0 )
+					{
+						if( *pstrValue == _T('#')) 
+							pstrValue = ::CharNext(pstrValue);
+						LPTSTR pstr = NULL;
+						DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+						pManager->SetDefaultFocusDotColor(clrColor);
+					} 
                 }
             }
         }

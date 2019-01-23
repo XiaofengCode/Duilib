@@ -7,16 +7,10 @@
 #include <map>
 
 namespace DuiLib {
-/////////////////////////////////////////////////////////////////////////////////////
-//
 
 class CControlUI;
 class CRichEditUI;
 class CDuiTrayIconUI;
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
-
 enum EVENTTYPE_UI
 {
     UIEVENT__FIRST = 1,
@@ -238,7 +232,13 @@ public:
     DWORD GetDefaultLinkHoverFontColor() const;
     void SetDefaultLinkHoverFontColor(DWORD dwColor);
     DWORD GetDefaultSelectedBkColor() const;
-    void SetDefaultSelectedBkColor(DWORD dwColor);
+	void SetDefaultSelectedBkColor(DWORD dwColor);
+	DWORD GetDefaultFocusDotColor() const;
+	void SetDefaultFocusDotColor(DWORD dwColor);
+	DWORD GetShowFocusDot() const;
+	void SetShowFocusDot(bool bShow);
+	DWORD GetNeedShowFocusDot() const;
+	void SetNeedShowFocusDot(bool bShow);
     TFontInfo* GetDefaultFontInfo();
     void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     DWORD GetCustomFontCount() const;
@@ -461,7 +461,10 @@ private:
     DWORD m_dwDefaultFontColor;
     DWORD m_dwDefaultLinkFontColor;
     DWORD m_dwDefaultLinkHoverFontColor;
-    DWORD m_dwDefaultSelectedBkColor;
+	DWORD m_dwDefaultSelectedBkColor;
+	DWORD m_dwDefaultFocusDotColor;
+	bool m_bShowFocusDot;
+	bool m_bNeedShowFocusDot;
     TFontInfo m_DefaultFontInfo;
 	CStdStringPtrMap m_mapFont;
     //CStdPtrArray m_aCustomFonts;

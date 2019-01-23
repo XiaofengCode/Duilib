@@ -2,11 +2,6 @@
 #include <zmouse.h>
 
 namespace DuiLib {
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//
-
 static UINT MapKeyState()
 {
     UINT uState = 0;
@@ -87,13 +82,16 @@ m_pBmpBackgroundBits(NULL),
 m_bCaretActive(false),
 m_bCaretShowing(false),
 m_currentCaretObject(NULL),
-m_bUseGdiplusText(false)
+m_bUseGdiplusText(false),
+m_bShowFocusDot(false),
+m_bNeedShowFocusDot(false)
 {
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
     m_dwDefaultLinkFontColor = 0xFF0000FF;
     m_dwDefaultLinkHoverFontColor = 0xFFD3215F;
     m_dwDefaultSelectedBkColor = 0xFFBAE4FF;
+	m_dwDefaultFocusDotColor = 0xFFA7A6AA;
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     lf.lfCharSet = DEFAULT_CHARSET;
@@ -610,7 +608,8 @@ bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam,
                if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL ) {
                    if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() ) return false;
                }
-               SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
+			   SetNeedShowFocusDot(true);
+			   SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
                return true;
            }
         }
@@ -1009,11 +1008,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             CDuiString sToolTip = pHover->GetToolTip();
             if( sToolTip.IsEmpty() ) return true;
 			//ÅÐ¶ÏÊÇ·ñÓÐ°ïÖú¿ò
-			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
-			if (pCtlToolTip)
-			{
-				return true;
-			}
+// 			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+// 			if (pCtlToolTip)
+// 			{
+// 				return true;
+// 			}
             ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
             m_ToolTip.cbSize = sizeof(TOOLINFO);
             m_ToolTip.uFlags = TTF_IDISHWND;
@@ -1108,7 +1107,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             CControlUI* pControl = FindControl(pt);
             if( pControl == NULL ) break;
             if( pControl->GetManager() != this ) break;
-            m_pEventClick = pControl;
+			m_pEventClick = pControl;
+			SetNeedShowFocusDot(false);
             pControl->SetFocus();
             SetCapture();
             TEventUI event = { 0 };
@@ -1881,6 +1881,36 @@ DWORD CPaintManagerUI::GetDefaultSelectedBkColor() const
 void CPaintManagerUI::SetDefaultSelectedBkColor(DWORD dwColor)
 {
     m_dwDefaultSelectedBkColor = dwColor;
+}
+
+DWORD CPaintManagerUI::GetDefaultFocusDotColor() const
+{
+	return m_dwDefaultFocusDotColor;
+}
+
+void CPaintManagerUI::SetDefaultFocusDotColor(DWORD dwColor)
+{
+	m_dwDefaultFocusDotColor = dwColor;
+}
+
+DWORD CPaintManagerUI::GetShowFocusDot() const
+{
+	return m_bShowFocusDot;
+}
+
+void CPaintManagerUI::SetShowFocusDot(bool bShow)
+{
+	m_bShowFocusDot = bShow;
+}
+
+DWORD CPaintManagerUI::GetNeedShowFocusDot() const
+{
+	return m_bNeedShowFocusDot;
+}
+
+void CPaintManagerUI::SetNeedShowFocusDot(bool bShow)
+{
+	m_bNeedShowFocusDot = bShow;
 }
 
 TFontInfo* CPaintManagerUI::GetDefaultFontInfo()

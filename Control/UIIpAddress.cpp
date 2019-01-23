@@ -322,6 +322,8 @@ namespace DuiLib
 		{
 			if( m_pWindow ) 
 			{
+				m_pWindow->Init(this);
+				m_pWindow->ShowWindow();
 				return;
 			}
 			m_pWindow = new CIPAddressWnd();
@@ -395,6 +397,13 @@ namespace DuiLib
 		DWORD dwIP = MAKEIPADDRESS(addr.S_un.S_un_b.s_b1, addr.S_un.S_un_b.s_b2, addr.S_un.S_un_b.s_b3, addr.S_un.S_un_b.s_b4);
 		WSACleanup();
 		return dwIP;
+	}
+
+	UINT CIPAddressUI::GetControlFlags() const
+	{
+		if( !IsEnabled() ) return CControlUI::GetControlFlags();
+
+		return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
 	}
 
 }

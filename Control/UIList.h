@@ -6,8 +6,6 @@
 #include "Layout/UIHorizontalLayout.h"
 
 namespace DuiLib {
-/////////////////////////////////////////////////////////////////////////////////////
-//
 
 typedef int (CALLBACK *PULVCompareFunc)(UINT_PTR, UINT_PTR, UINT_PTR);
 

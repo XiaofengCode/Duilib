@@ -986,7 +986,8 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 
 					bool bRight = false;
 					bool bBottom = false;
-					int x = (int)(S * _tcstol(sValue.GetData(), &pstr, 10));
+					LPCTSTR lpszValue = sValue.GetData();
+					int x = (int)(S * _tcstol(lpszValue, &pstr, 10));
 					ASSERT(pstr);
 					if (x < 0)
 					{
@@ -995,7 +996,7 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 					else if (x == 0)
 					{
 						LPCTSTR pstrTmp = pstr - 1;
-						while (pstrTmp && *pstrTmp && (*pstrTmp) >= '0' && (*pstrTmp) <= '9')
+						while (pstrTmp && pstrTmp != lpszValue && (*pstrTmp) >= '0' && (*pstrTmp) <= '9')
 						{
 							--pstrTmp;
 						}
@@ -1255,10 +1256,10 @@ void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenCol
 	::DeleteObject(hPen);
 }
 
-void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor)
+void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle /*= PS_SOLID*/)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
-    HPEN hPen = ::CreatePen(PS_SOLID | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
+    HPEN hPen = ::CreatePen(nStyle, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
     ::Rectangle(hDC, rc.left, rc.top, rc.right, rc.bottom);

@@ -28,7 +28,8 @@ m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
 m_nTooltipWidth(300),
-m_dwTextColor(0)
+m_dwTextColor(0),
+m_dwFocusDotColor(0)
 {
     m_cXY.cx = m_cXY.cy = 0;
     m_cxyFixed.cx = m_cxyFixed.cy = 0;
@@ -204,6 +205,22 @@ void CControlUI::SetBorderColor(DWORD dwBorderColor)
 
     m_dwBorderColor = dwBorderColor;
     Invalidate();
+}
+
+DWORD CControlUI::GetFocusDotColor() const
+{
+	return m_dwFocusDotColor;
+}
+
+void CControlUI::SetFocusDotColor(DWORD dwColor)
+{
+	if( m_dwFocusDotColor == dwColor ) return;
+
+	m_dwFocusDotColor = dwColor;
+	if (IsFocused())
+	{
+		Invalidate();
+	}
 }
 
 DWORD CControlUI::GetFocusBorderColor() const
@@ -986,6 +1003,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		SetStyle(pstrValue);
 	}
+	else if (_tcsicmp(pstrName, _T("focusdotcolor")) == 0) {
+		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetFocusDotColor(clrColor);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
@@ -1112,6 +1135,20 @@ void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
         PaintText(hDC);
         PaintBorder(hDC);
     }
+	if (IsFocused())
+	{
+		if (m_pManager->GetShowFocusDot() && m_pManager->GetNeedShowFocusDot())
+		{
+			CDuiRect rc(m_rcItem);
+			rc.Deflate(1, 1);
+			DWORD dwFocusDotColor = GetFocusDotColor();
+			if (!dwFocusDotColor)
+			{
+				dwFocusDotColor = m_pManager->GetDefaultFocusDotColor();
+			}
+			CRenderEngine::DrawRect(hDC, rc, 1, dwFocusDotColor, PS_DOT);
+		}
+	}
 }
 
 void CControlUI::PaintBkColor(HDC hDC)
@@ -1198,7 +1235,7 @@ void CControlUI::PaintBorder(HDC hDC)
 				}
 			}
 			else if(m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(dwBorderColor));
+				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 		}
 	}
 }

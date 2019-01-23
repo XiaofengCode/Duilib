@@ -35,6 +35,8 @@ namespace DuiLib
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		UINT GetDptStyle(){return m_uDptStyle;}
+
+		UINT GetControlFlags() const;
 	protected:
 		SYSTEMTIME m_sysTime;
 		int        m_nDTUpdateFlag;
