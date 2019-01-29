@@ -255,7 +255,7 @@ CTxtWinHost::~CTxtWinHost()
     pserv->Release();
 }
 
-////////////////////// Create/Init/Destruct Commands ///////////////////////
+// Create/Init/Destruct Commands
 
 BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
 {
@@ -355,7 +355,7 @@ err:
     return FALSE;
 }
 
-/////////////////////////////////  IUnknown ////////////////////////////////
+//  IUnknown 
 
 
 HRESULT CTxtWinHost::QueryInterface(REFIID riid, void **ppvObject)
@@ -391,7 +391,7 @@ ULONG CTxtWinHost::Release(void)
     return c_Refs;
 }
 
-/////////////////////////////////  Far East Support  //////////////////////////////////////
+//  Far East Support  
 
 HIMC CTxtWinHost::TxImmGetContext(void)
 {
@@ -403,7 +403,7 @@ void CTxtWinHost::TxImmReleaseContext(HIMC himc)
     //::ImmReleaseContext( hwnd, himc );
 }
 
-//////////////////////////// ITextHost Interface  ////////////////////////////
+// ITextHost Interface  
 
 HDC CTxtWinHost::TxGetDC()
 {
@@ -1055,14 +1055,13 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
     pf = p;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
-	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0)
+	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0), m_bEnableZoom(false)
 {
 #ifndef _UNICODE
 	m_fAccumulateDBC =true;
@@ -1250,6 +1249,16 @@ void CRichEditUI::SetRtfFile(LPCTSTR lpszFileName)
 	SetSel(0, -1);
 	ReplaceSel((LPCTSTR)(LPVOID)buf, FALSE);
 		
+}
+
+bool CRichEditUI::IsEnableZoom()
+{
+	return m_bEnableZoom;
+}
+
+void CRichEditUI::EnableZoom(bool bEnable)
+{
+	m_bEnableZoom = bEnable;
 }
 
 int CRichEditUI::GetLimitText()
@@ -1442,7 +1451,7 @@ bool CRichEditUI::SetZoom(int nNum, int nDen)
     return (BOOL)lResult == TRUE;
 }
 
-bool CRichEditUI::SetZoomOff()
+bool CRichEditUI::ResetZoom()
 {
     LRESULT lResult;
     TxSendMessage(EM_SETZOOM, 0, 0, &lResult);
@@ -2412,6 +2421,9 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		if (_tcslen(pstrValue))
 			SetRtfFile(pstrValue);
 	}
+	else if( _tcsicmp(pstrName, _T("enablezoom")) == 0 ) {
+		EnableZoom(_tcsicmp(pstrValue, _T("true")) == 0);
+	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -2419,7 +2431,18 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 {
     if( !IsVisible() || !IsEnabled() ) return 0;
     if( !IsMouseEnabled() && uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST ) return 0;
-    if( uMsg == WM_MOUSEWHEEL && (LOWORD(wParam) & MK_CONTROL) == 0 ) return 0;
+    if( uMsg == WM_MOUSEWHEEL)
+	{
+		if ((LOWORD(wParam) & MK_CONTROL) == 0 )
+		{
+			return 0;
+		}
+		else if (!m_bEnableZoom)
+		{
+			return 0;
+		}
+	}
+
 
 	if (uMsg == WM_IME_COMPOSITION)
 	{

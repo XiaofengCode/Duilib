@@ -2,7 +2,6 @@
 
 namespace DuiLib {
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -304,16 +303,34 @@ void CListUI::DoEvent(TEventUI& event)
         break;
     case UIEVENT_SCROLLWHEEL:
         {
-            switch( LOWORD(event.wParam) ) {
-            case SB_LINEUP:
-                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel - 1, false), true);
-                else LineUp();
-                return;
-            case SB_LINEDOWN:
-                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel + 1, true), true);
-                else LineDown();
-                return;
-            }
+			short nDalta = (short)HIWORD(event.wParam);
+			SIZE sz = GetScrollPos();
+			sz.cy  -= nDalta;
+			if (nDalta < 0)
+			{
+				if( m_bScrollSelect )
+					SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+				else
+					SetScrollPos(sz);
+			}
+			else
+			{
+				if( m_bScrollSelect )
+					SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+				else
+					SetScrollPos(sz);
+			}
+			return;
+//             switch( LOWORD(event.wParam) ) {
+//             case SB_LINEUP:
+//                 if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+//                 else LineUp();
+//                 return;
+//             case SB_LINEDOWN:
+//                 if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+//                 else LineDown();
+//                 return;
+//             }
         }
         break;
     }
@@ -894,7 +911,6 @@ BOOL CListUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData)
 		return FALSE;
 	return m_pList->SortItems(pfnCompare, dwData);	
 }
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -1163,7 +1179,6 @@ void CListBodyUI::DoEvent(TEventUI& event)
     if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -1326,8 +1341,6 @@ bool CListHeaderUI::IsScaleHeader() const
 {
 	return m_bIsScaleHeader;
 }
-/////////////////////////////////////////////////////////////////////////////////////
-//
 //
 
 CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_uButtonState(0), m_iSepWidth(4),
@@ -1726,7 +1739,6 @@ void CListHeaderItemUI::PaintText(HDC hDC)
         m_sFont, DT_SINGLELINE | m_uTextStyle);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -1969,7 +1981,6 @@ void CListElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -2105,7 +2116,6 @@ void CListLabelElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -2286,7 +2296,6 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 

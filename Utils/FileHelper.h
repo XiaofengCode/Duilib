@@ -16,6 +16,8 @@ namespace DuiLib {
 
 		void Release();
 
+		bool SaveAs(LPCTSTR lpszFileName);
+
 		operator LPBYTE()
 		{
 			return (LPBYTE)m_lpMem;

@@ -4,7 +4,6 @@
 
 namespace DuiLib {
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 
 CMenuUI::CMenuUI()
@@ -111,7 +110,6 @@ void CMenuUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	__super::SetAttribute(pstrName, pstrValue);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 
 CMenuWnd::CMenuWnd():
@@ -290,6 +288,7 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 		m_pm.AddNotifier(this);
 		// Position the popup window in absolute space
 		RECT rcOwner = m_pOwner->GetPos();
+		::MapWindowRect(m_pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rcOwner);
 		RECT rc = rcOwner;
 
 		int cxFixed = 0;
@@ -322,7 +321,6 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 		rc.top = rcOwner.top;
 		rc.bottom = rc.top + cyFixed;
-		::MapWindowRect(m_pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
 		rc.left = rcWindow.right;
 		rc.right = rc.left + cxFixed;
 		rc.right += 2;
@@ -351,7 +349,7 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 		if (bReachBottom)
 		{
-			rc.bottom = rcWindow.top;
+			rc.bottom = rcOwner.bottom;//rcWindow.top;
 			rc.top = rc.bottom - cyFixed;
 		}
 
@@ -363,7 +361,7 @@ LRESULT CMenuWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
 		if( rc.bottom > rcWork.bottom )
 		{
-			rc.bottom = rc.top;
+			rc.bottom = rcOwner.bottom;//rc.top;
 			rc.top = rc.bottom - cyFixed;
 		}
 
@@ -732,7 +730,6 @@ LRESULT CMenuWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 
 CMenuElementUI::CMenuElementUI():

@@ -43,8 +43,6 @@ enum EVENTTYPE_UI
     UIEVENT__LAST,
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-//
 
 // Flags for CControlUI::GetControlFlags()
 #define UIFLAG_TABSTOP       0x00000001
@@ -77,9 +75,6 @@ enum EVENTTYPE_UI
 #define UISTATE_CAPTURED     0x00000040
 
 
-
-/////////////////////////////////////////////////////////////////////////////////////
-//
 
 typedef struct tagTFontInfo
 {
@@ -148,8 +143,6 @@ public:
 };
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-//
 typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 
 
@@ -352,6 +345,27 @@ private:
     static CControlUI* CALLBACK __FindControlFromClass(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlsFromClass(CControlUI* pThis, LPVOID pData);
 
+	bool OnKeyup(WPARAM wParam, LPARAM lParam)
+	{
+	}
+	bool OnSysCommand(WPARAM wParam, LPARAM lParam);
+	bool OnGetMinMaxInfo(WPARAM wParam, LPARAM lParam);
+	bool OnSize(WPARAM wParam, LPARAM lParam);
+	bool OnTimer(WPARAM wParam, LPARAM lParam);
+	bool OnMouseHover(WPARAM wParam, LPARAM lParam);
+	bool OnMouseLeave(WPARAM wParam, LPARAM lParam);
+	bool OnMouseMove(WPARAM wParam, LPARAM lParam);
+	bool OnLButtonDown(WPARAM wParam, LPARAM lParam);
+	bool OnLButtonDBClick(WPARAM wParam, LPARAM lParam);
+	bool OnLButtonUp(WPARAM wParam, LPARAM lParam);
+	bool OnRButtonDown(WPARAM wParam, LPARAM lParam);
+	bool OnContextMenu(WPARAM wParam, LPARAM lParam);
+	bool OnMouseWheel(WPARAM wParam, LPARAM lParam);
+	bool OnChar(WPARAM wParam, LPARAM lParam);
+	bool OnKeyDown(WPARAM wParam, LPARAM lParam);
+
+	bool OnKeyUp(WPARAM wParam, LPARAM lParam);
+	bool OnSetCursor(WPARAM wParam, LPARAM lParam);
 private:
 	double	m_nScale;
 
@@ -478,6 +492,7 @@ private:
     static CDuiString m_pStrResourceZip;
     static bool m_bCachedResourceZip;
     static HANDLE m_hResourceZip;
+	static CDuiBuffer m_BufferResourceZip;
     static short m_H;
     static short m_S;
     static short m_L;

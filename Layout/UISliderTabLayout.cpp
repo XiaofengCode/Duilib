@@ -2,7 +2,6 @@
 #include "UISliderTabLayout.h"
 
 namespace DuiLib {
-//////////////////////////////////////////////////////////////////////////
 // CSliderTabLayoutUI
 	CSliderTabLayoutUI::CSliderTabLayoutUI() : 
 	m_bIsVertical( false ),
@@ -92,14 +91,18 @@ namespace DuiLib {
 		}
 		else if(m_bScrollWheel && event.Type == UIEVENT_SCROLLWHEEL )
 		{
-			switch( LOWORD(event.wParam) ) {
-			case SB_LINEUP:
-				LineUp();
-				return;
-			case SB_LINEDOWN:
-				LineDown();
-				return;
-			}
+			short nDalta = (short)HIWORD(event.wParam);
+			SIZE sz = GetScrollPos();
+			sz.cy  -= nDalta;
+			SetScrollPos(sz);
+// 			switch( LOWORD(event.wParam) ) {
+// 			case SB_LINEUP:
+// 				LineUp();
+// 				return;
+// 			case SB_LINEDOWN:
+// 				LineDown();
+// 				return;
+// 			}
 		}
 		CTabLayoutUI::DoEvent(event);
 	}

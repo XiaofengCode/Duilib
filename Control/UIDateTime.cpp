@@ -188,8 +188,6 @@ namespace DuiLib
 	// 	m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
 	// 	return 0;
 	// }
-
-	//////////////////////////////////////////////////////////////////////////
 	//
 	CDateTimeUI::CDateTimeUI()
 	{
@@ -221,6 +219,12 @@ namespace DuiLib
 	void CDateTimeUI::SetTime(SYSTEMTIME* pst)
 	{
 		m_sysTime = *pst;
+		if (m_sysTime.wMonth > 12) m_sysTime.wMonth = 12;
+		if (m_sysTime.wDay > 31) m_sysTime.wDay = 1;
+		if (m_sysTime.wHour > 24) m_sysTime.wHour = 0;
+		if (m_sysTime.wMinute > 59) m_sysTime.wMinute = 0;
+		if (m_sysTime.wSecond > 59) m_sysTime.wSecond = 0;
+		if (m_sysTime.wMilliseconds > 1000) m_sysTime.wMilliseconds = 0;
 		UpdateText();
 	}
 

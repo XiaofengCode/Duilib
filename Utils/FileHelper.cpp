@@ -146,4 +146,22 @@ namespace DuiLib {
 			m_lpMem = NULL;
 		}
 	}
+
+	bool CDuiBuffer::SaveAs(LPCTSTR lpszFileName)
+	{
+		HANDLE hFile = CreateFile(lpszFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			return false;
+		}
+		DWORD dwWrite;
+		if (!WriteFile(hFile, m_lpMem, GetSize(), &dwWrite, NULL))
+		{
+			CloseHandle(hFile);
+			return false;
+		}
+		CloseHandle(hFile);
+		return dwWrite == GetSize();
+	}
+
 }

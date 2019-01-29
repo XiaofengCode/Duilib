@@ -36,7 +36,6 @@ typedef struct tagTIMERINFO
     bool bKilled;
 } TIMERINFO;
 
-/////////////////////////////////////////////////////////////////////////////////////
 
 HPEN m_hUpdateRectPen = NULL;
 HINSTANCE CPaintManagerUI::m_hInstance = NULL;
@@ -45,6 +44,7 @@ CDuiString CPaintManagerUI::m_pStrResourcePath;
 CDuiString CPaintManagerUI::m_pStrResourceZip;
 bool CPaintManagerUI::m_bCachedResourceZip = false;
 HANDLE CPaintManagerUI::m_hResourceZip = NULL;
+CDuiBuffer CPaintManagerUI::m_BufferResourceZip;
 short CPaintManagerUI::m_H = 180;
 short CPaintManagerUI::m_S = 100;
 short CPaintManagerUI::m_L = 100;
@@ -275,10 +275,15 @@ void CPaintManagerUI::SetResourceZip(LPCTSTR pStrPath, bool bCachedResourceZip)
     }
     m_pStrResourceZip = pStrPath;
     m_bCachedResourceZip = bCachedResourceZip;
-    if( m_bCachedResourceZip ) {
+    if( m_bCachedResourceZip )
+	{
         CDuiString sFile = CPaintManagerUI::GetResourcePath();
         sFile += CPaintManagerUI::GetResourceZip();
-        m_hResourceZip = (HANDLE)OpenZip((void*)sFile.GetData(), 0, 2);
+		if (DuiReadFileData(CPaintManagerUI::GetResourceZip(), m_BufferResourceZip))
+		{
+			SetResourceZip(m_BufferResourceZip, m_BufferResourceZip.GetSize());
+		}
+        //m_hResourceZip = (HANDLE)OpenZip((void*)sFile.GetData(), 0, 2);
     }
 }
 
@@ -934,166 +939,39 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 	   return true;
 	case WM_SYSCOMMAND:
 		{
-			if (SC_RESTORE == (wParam & 0xfff0))
-			{
-				m_bIsRestore = true;
-			}
-        return true;
+			OnSysCommand(wParam, lParam);
+			return true;
 		}
 		break;
     case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
-            if( m_szMinWindow.cx > 0 ) lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
-            if( m_szMinWindow.cy > 0 ) lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
-            if( m_szMaxWindow.cx > 0 ) lpMMI->ptMaxTrackSize.x = m_szMaxWindow.cx;
-            if( m_szMaxWindow.cy > 0 ) lpMMI->ptMaxTrackSize.y = m_szMaxWindow.cy;
+			OnGetMinMaxInfo(wParam, lParam);
         }
         break;
     case WM_SIZE:
         {
-            if( m_pFocus != NULL ) {
-                TEventUI event = { 0 };
-                event.Type = UIEVENT_WINDOWSIZE;
-                event.pSender = m_pFocus;
-                event.dwTimestamp = ::GetTickCount();
-                m_pFocus->Event(event);
-            }
-            if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
+			OnSize(wParam, lParam);
         }
         return true;
 	case WM_TIMER:
 		{
-			if(kCaretTimerID == LOWORD(wParam)){
-				//DUI__Trace(_T("WM_TIMER:%d (%d,%d)"), m_bCaretActive, m_rtCaret.left, m_rtCaret.top);
-				Invalidate(m_rtCaret);
-				m_bCaretActive = !m_bCaretActive;
-			}
-			else{
-				for( int i = 0; i < m_aTimers.GetSize(); i++ ) {
-					const TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i]);
-					if(pTimer->hWnd == m_hWndPaint && 
-						pTimer->uWinTimer == LOWORD(wParam) && 
-						pTimer->bKilled == false)
-					{
-						TEventUI event = { 0 };
-						event.Type = UIEVENT_TIMER;
-						event.pSender = pTimer->pSender;
-						event.wParam = pTimer->nLocalID;
-						event.dwTimestamp = ::GetTickCount();
-						pTimer->pSender->Event(event);
-						break;
-					}
-				}
-			}
-
+			OnTimer(wParam, lParam);
 		}
 		break;
     case WM_MOUSEHOVER:
         {
-            m_bMouseTracking = false;
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            CControlUI* pHover = FindControl(pt);
-            if( pHover == NULL ) break;
-            // Generate mouse hover event
-            if( m_pEventHover != NULL ) {
-                TEventUI event = { 0 };
-                event.ptMouse = pt;
-                event.Type = UIEVENT_MOUSEHOVER;
-                event.pSender = m_pEventHover;
-                event.dwTimestamp = ::GetTickCount();
-                m_pEventHover->Event(event);
-            }
-            // Create tooltip information
-            CDuiString sToolTip = pHover->GetToolTip();
-            if( sToolTip.IsEmpty() ) return true;
-			//≈–∂œ «∑Ò”–∞Ô÷˙øÚ
-// 			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
-// 			if (pCtlToolTip)
-// 			{
-// 				return true;
-// 			}
-            ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
-            m_ToolTip.cbSize = sizeof(TOOLINFO);
-            m_ToolTip.uFlags = TTF_IDISHWND;
-            m_ToolTip.hwnd = m_hWndPaint;
-            m_ToolTip.uId = (UINT_PTR) m_hWndPaint;
-            m_ToolTip.hinst = m_hInstance;
-            m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
-            m_ToolTip.rect = pHover->GetPos();
-            if( m_hwndTooltip == NULL ) {
-                m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
-                ::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
-            }
-			::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
-            ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
-            ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+			OnMouseHover(wParam, lParam);
         }
         return true;
     case WM_MOUSELEAVE:
 		{
-			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
-			if (pCtlToolTip)
-			{
-				pCtlToolTip->SetText(m_strDefaultTooltip);
-			}
-            if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
-            if( m_bMouseTracking ) ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) -1);
-            m_bMouseTracking = false;
+			OnMouseLeave(wParam, lParam);
         }
         break;
     case WM_MOUSEMOVE:
         {
             // Start tracking this entire window again...
-            if( !m_bMouseTracking ) {
-                TRACKMOUSEEVENT tme = { 0 };
-                tme.cbSize = sizeof(TRACKMOUSEEVENT);
-                tme.dwFlags = TME_HOVER | TME_LEAVE;
-                tme.hwndTrack = m_hWndPaint;
-                tme.dwHoverTime = m_hwndTooltip == NULL ? 400UL : (DWORD) ::SendMessage(m_hwndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
-                _TrackMouseEvent(&tme);
-                m_bMouseTracking = true;
-            }
-            // Generate the appropriate mouse messages
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            m_ptLastMousePos = pt;
-            CControlUI* pNewHover = FindControl(pt);
-            if( pNewHover != NULL && pNewHover->GetManager() != this ) break;
-            TEventUI event = { 0 };
-            event.ptMouse = pt;
-            event.dwTimestamp = ::GetTickCount();
-            if( pNewHover != m_pEventHover && m_pEventHover != NULL ) {
-                event.Type = UIEVENT_MOUSELEAVE;
-                event.pSender = m_pEventHover;
-                m_pEventHover->Event(event);
-                m_pEventHover = NULL;
-                if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
-            }
-            if( pNewHover != m_pEventHover && pNewHover != NULL ) {
-                event.Type = UIEVENT_MOUSEENTER;
-                event.pSender = pNewHover;
-                pNewHover->Event(event);
-                m_pEventHover = pNewHover;
-            }
-            if( m_pEventClick != NULL ) {
-                event.Type = UIEVENT_MOUSEMOVE;
-                event.pSender = m_pEventClick;
-                m_pEventClick->Event(event);
-            }
-            else if( pNewHover != NULL ) {
-                event.Type = UIEVENT_MOUSEMOVE;
-                event.pSender = pNewHover;
-				CDuiString sToolTip = pNewHover->GetToolTip();
-				if (!sToolTip.IsEmpty())
-				{
-					CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
-					if (pCtlToolTip)
-					{
-						pCtlToolTip->SetText(sToolTip);
-					}
-				}
-				pNewHover->Event(event);
-			}
+			OnMouseMove(wParam, lParam);
         }
         break;
     case WM_LBUTTONDOWN:
@@ -1101,194 +979,53 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // We alway set focus back to our app (this helps
             // when Win32 child windows are placed on the dialog
             // and we need to remove them on focus change).
-            ::SetFocus(m_hWndPaint);
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            m_ptLastMousePos = pt;
-            CControlUI* pControl = FindControl(pt);
-            if( pControl == NULL ) break;
-            if( pControl->GetManager() != this ) break;
-			m_pEventClick = pControl;
-			SetNeedShowFocusDot(false);
-            pControl->SetFocus();
-            SetCapture();
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_BUTTONDOWN;
-            event.pSender = pControl;
-            event.wParam = wParam;
-            event.lParam = lParam;
-            event.ptMouse = pt;
-            event.wKeyState = (WORD)wParam;
-            event.dwTimestamp = ::GetTickCount();
-            pControl->Event(event);
+			OnLButtonDown(wParam, lParam);
         }
         break;
     case WM_LBUTTONDBLCLK:
         {
-            ::SetFocus(m_hWndPaint);
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            m_ptLastMousePos = pt;
-            CControlUI* pControl = FindControl(pt);
-            if( pControl == NULL ) break;
-            if( pControl->GetManager() != this ) break;
-            SetCapture();
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_DBLCLICK;
-            event.pSender = pControl;
-            event.ptMouse = pt;
-            event.wKeyState = (WORD)wParam;
-            event.dwTimestamp = ::GetTickCount();
-            pControl->Event(event);
-            m_pEventClick = pControl;
+			OnLButtonDBClick(wParam, lParam);
         }
         break;
     case WM_LBUTTONUP:
         {
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            m_ptLastMousePos = pt;
-            if( m_pEventClick == NULL ) break;
-            ReleaseCapture();
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_BUTTONUP;
-            event.pSender = m_pEventClick;
-            event.wParam = wParam;
-            event.lParam = lParam;
-            event.ptMouse = pt;
-            event.wKeyState = (WORD)wParam;
-            event.dwTimestamp = ::GetTickCount();
-            m_pEventClick->Event(event);
-            m_pEventClick = NULL;
+			OnLButtonUp(wParam, lParam);
         }
         break;
     case WM_RBUTTONDOWN:
         {
-            ::SetFocus(m_hWndPaint);
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            m_ptLastMousePos = pt;
-            CControlUI* pControl = FindControl(pt);
-            if( pControl == NULL ) break;
-            if( pControl->GetManager() != this ) break;
-            pControl->SetFocus();
-            SetCapture();
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_RBUTTONDOWN;
-            event.pSender = pControl;
-            event.wParam = wParam;
-            event.lParam = lParam;
-            event.ptMouse = pt;
-            event.wKeyState = (WORD)wParam;
-            event.dwTimestamp = ::GetTickCount();
-            pControl->Event(event);
-            m_pEventClick = pControl;
+			OnRButtonDown(wParam, lParam);
         }
         break;
     case WM_CONTEXTMENU:
         {
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            ::ScreenToClient(m_hWndPaint, &pt);
-            m_ptLastMousePos = pt;
-            if( m_pEventClick == NULL ) break;
-            ReleaseCapture();
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_CONTEXTMENU;
-            event.pSender = m_pEventClick;
-            event.ptMouse = pt;
-            event.wKeyState = (WORD)wParam;
-            event.lParam = (LPARAM)m_pEventClick;
-            event.dwTimestamp = ::GetTickCount();
-            m_pEventClick->Event(event);
-            m_pEventClick = NULL;
+			OnContextMenu(wParam, lParam);
         }
         break;
     case WM_MOUSEWHEEL:
         {
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            ::ScreenToClient(m_hWndPaint, &pt);
-            m_ptLastMousePos = pt;
-            CControlUI* pControl = FindControl(pt);
-            if( pControl == NULL ) break;
-            if( pControl->GetManager() != this ) break;
-            int zDelta = (int) (short) HIWORD(wParam);
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_SCROLLWHEEL;
-            event.pSender = pControl;
-            event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
-            event.lParam = lParam;
-            event.wKeyState = MapKeyState();
-            event.dwTimestamp = ::GetTickCount();
-            pControl->Event(event);
-
-            // Let's make sure that the scroll item below the cursor is the same as before...
-            ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
+			OnMouseWheel(wParam, lParam);
         }
         break;
     case WM_CHAR:
         {
-            if( m_pFocus == NULL ) break;
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_CHAR;
-            event.chKey = (TCHAR)wParam;
-            event.ptMouse = m_ptLastMousePos;
-            event.wKeyState = MapKeyState();
-            event.dwTimestamp = ::GetTickCount();
-            m_pFocus->Event(event);
+			OnChar(wParam, lParam);
         }
         break;
     case WM_KEYDOWN:
         {
-            if( m_pFocus == NULL ) break;
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_KEYDOWN;
-            event.chKey = (TCHAR)wParam;
-            event.ptMouse = m_ptLastMousePos;
-            event.wKeyState = MapKeyState();
-            event.dwTimestamp = ::GetTickCount();
-            m_pFocus->Event(event);
-            m_pEventKey = m_pFocus;
+			OnKeyDown(wParam, lParam);
         }
         break;
     case WM_KEYUP:
         {
-            if( m_pEventKey == NULL ) break;
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_KEYUP;
-            event.chKey = (TCHAR)wParam;
-            event.ptMouse = m_ptLastMousePos;
-            event.wKeyState = MapKeyState();
-            event.dwTimestamp = ::GetTickCount();
-            m_pEventKey->Event(event);
-            m_pEventKey = NULL;
+            OnKeyUp(wParam, lParam);
         }
         break;
     case WM_SETCURSOR:
         {
-            if( LOWORD(lParam) != HTCLIENT ) break;
-            if( m_bMouseCapture ) return true;
-
-            POINT pt = { 0 };
-            ::GetCursorPos(&pt);
-            ::ScreenToClient(m_hWndPaint, &pt);
-            CControlUI* pControl = FindControl(pt);
-            if( pControl == NULL ) break;
-			while ((pControl->GetControlFlags() & UIFLAG_SETCURSOR) == 0) 
-			{
-				pControl = pControl->GetParent();
-				if (!pControl || !PtInRect(&pControl->GetPos(), pt))
-				{
-					pControl = NULL;
-					break;
-				}
-			} 
-			if( pControl == NULL ) break;
-            TEventUI event = { 0 };
-            event.Type = UIEVENT_SETCURSOR;
-            event.wParam = wParam;
-            event.lParam = lParam;
-            event.ptMouse = pt;
-            event.wKeyState = MapKeyState();
-            event.dwTimestamp = ::GetTickCount();
-            pControl->Event(event);
-        }
-        return true;
+			return OnSetCursor(wParam, lParam);
+		}
     case WM_NOTIFY:
         {
             LPNMHDR lpNMHDR = (LPNMHDR) lParam;
@@ -1387,15 +1124,6 @@ bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*=
     if( pControl == NULL ) return false;
     pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent(), true);
     pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
-
-	CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
-	if (pCtlToolTip)
-	{
-		if (m_strDefaultTooltip.IsEmpty())
-		{
-			m_strDefaultTooltip = pCtlToolTip->GetText();
-		}
-	}
     return true;
 }
 
@@ -2587,6 +2315,454 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlsFromClass(CControlUI* pThis,
     if( _tcsicmp(pstrType, _T("*")) == 0 || _tcsicmp(pstrType, pType) == 0 ) 
         pThis->GetManager()->GetSubControlsByClass()->Add((LPVOID)pThis);
     return NULL;
+}
+
+bool CPaintManagerUI::OnSysCommand(WPARAM wParam, LPARAM lParam)
+{
+	if (SC_RESTORE == (wParam & 0xfff0))
+	{
+		m_bIsRestore = true;
+	}
+	return true;
+}
+
+bool CPaintManagerUI::OnGetMinMaxInfo(WPARAM wParam, LPARAM lParam)
+{
+	LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
+	if( m_szMinWindow.cx > 0 ) lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
+	if( m_szMinWindow.cy > 0 ) lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+	if( m_szMaxWindow.cx > 0 ) lpMMI->ptMaxTrackSize.x = m_szMaxWindow.cx;
+	if( m_szMaxWindow.cy > 0 ) lpMMI->ptMaxTrackSize.y = m_szMaxWindow.cy;
+	return true;
+}
+
+bool CPaintManagerUI::OnSize(WPARAM wParam, LPARAM lParam)
+{
+	if( m_pFocus != NULL )
+	{
+		TEventUI event = { 0 };
+		event.Type = UIEVENT_WINDOWSIZE;
+		event.pSender = m_pFocus;
+		event.dwTimestamp = ::GetTickCount();
+		m_pFocus->Event(event);
+	}
+	if( m_pRoot != NULL )
+		m_pRoot->NeedUpdate();
+	return true;
+}
+
+bool CPaintManagerUI::OnTimer(WPARAM wParam, LPARAM lParam)
+{
+	if(kCaretTimerID == LOWORD(wParam))
+	{
+		//DUI__Trace(_T("WM_TIMER:%d (%d,%d)"), m_bCaretActive, m_rtCaret.left, m_rtCaret.top);
+		Invalidate(m_rtCaret);
+		m_bCaretActive = !m_bCaretActive;
+	}
+	else
+	{
+		for( int i = 0; i < m_aTimers.GetSize(); i++ )
+		{
+			const TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i]);
+			if(pTimer->hWnd == m_hWndPaint && 
+				pTimer->uWinTimer == LOWORD(wParam) && 
+				pTimer->bKilled == false)
+			{
+				TEventUI event = { 0 };
+				event.Type = UIEVENT_TIMER;
+				event.pSender = pTimer->pSender;
+				event.wParam = pTimer->nLocalID;
+				event.dwTimestamp = ::GetTickCount();
+				pTimer->pSender->Event(event);
+				break;
+			}
+		}
+	}
+	return true;
+}
+
+bool CPaintManagerUI::OnMouseHover(WPARAM wParam, LPARAM lParam)
+{
+	m_bMouseTracking = false;
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	CControlUI* pHover = FindControl(pt);
+	if( pHover == NULL )
+		return false;
+	// Generate mouse hover event
+	if( m_pEventHover != NULL )
+	{
+		TEventUI event = { 0 };
+		event.ptMouse = pt;
+		event.Type = UIEVENT_MOUSEHOVER;
+		event.pSender = m_pEventHover;
+		event.dwTimestamp = ::GetTickCount();
+		m_pEventHover->Event(event);
+	}
+	static CControlUI* pHoverLast = nullptr;
+	if (pHoverLast == pHover && IsWindowVisible(m_hwndTooltip))
+	{
+		return false;
+	}
+	pHoverLast = pHover;
+	// Create tooltip information
+	static CDuiString sToolTip;
+	sToolTip = pHover->GetToolTip();
+	if( sToolTip.IsEmpty() )
+	{
+		CControlUI* pParent = pHover;
+		while (pParent->GetToolTip().IsEmpty()) 
+		{
+			pParent = pParent->GetParent();
+			if (!pParent || !PtInRect(&pParent->GetPos(), pt))
+			{
+				pParent = NULL;
+				break;
+			}
+		}
+		if (!pParent)
+		{
+			return true;
+		}
+		sToolTip = pParent->GetToolTip();
+		pHover = pParent;
+	}
+	::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
+	m_ToolTip.cbSize = sizeof(TOOLINFO);
+	m_ToolTip.uFlags = TTF_IDISHWND;
+	m_ToolTip.hwnd = m_hWndPaint;
+	m_ToolTip.uId = (UINT_PTR) m_hWndPaint;
+	m_ToolTip.hinst = m_hInstance;
+	m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
+	m_ToolTip.rect = pHover->GetPos();
+	if( m_hwndTooltip == NULL ) {
+		m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
+		::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
+	}
+	::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
+	::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+	::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+	return true;
+}
+
+bool CPaintManagerUI::OnMouseLeave(WPARAM wParam, LPARAM lParam)
+{
+	CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+	if (pCtlToolTip)
+	{
+		if (!m_strDefaultTooltip.IsEmpty())
+		{
+			pCtlToolTip->SetText(m_strDefaultTooltip);
+			m_strDefaultTooltip.Empty();
+		}
+	}
+	if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+	if( m_bMouseTracking ) ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) -1);
+	m_bMouseTracking = false;
+	return true;
+}
+
+bool CPaintManagerUI::OnMouseMove(WPARAM wParam, LPARAM lParam)
+{
+	if( !m_bMouseTracking )
+	{
+		TRACKMOUSEEVENT tme = { 0 };
+		tme.cbSize = sizeof(TRACKMOUSEEVENT);
+		tme.dwFlags = TME_HOVER | TME_LEAVE;
+		tme.hwndTrack = m_hWndPaint;
+		tme.dwHoverTime = m_hwndTooltip == NULL ? 400UL : (DWORD) ::SendMessage(m_hwndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
+		_TrackMouseEvent(&tme);
+		m_bMouseTracking = true;
+	}
+	// Generate the appropriate mouse messages
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	m_ptLastMousePos = pt;
+	CControlUI* pNewHover = FindControl(pt);
+	if( pNewHover != NULL && pNewHover->GetManager() != this )
+		return false;
+	TEventUI event = { 0 };
+	event.ptMouse = pt;
+	event.dwTimestamp = ::GetTickCount();
+	if( pNewHover != m_pEventHover && m_pEventHover != NULL )
+	{
+		event.Type = UIEVENT_MOUSELEAVE;
+		event.pSender = m_pEventHover;
+		m_pEventHover->Event(event);
+		m_pEventHover = NULL;
+		if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+	}
+	if( pNewHover != m_pEventHover && pNewHover != NULL )
+	{
+		event.Type = UIEVENT_MOUSEENTER;
+		event.pSender = pNewHover;
+		pNewHover->Event(event);
+		m_pEventHover = pNewHover;
+	}
+	if( m_pEventClick != NULL )
+	{
+		event.Type = UIEVENT_MOUSEMOVE;
+		event.pSender = m_pEventClick;
+		m_pEventClick->Event(event);
+	}
+	else if( pNewHover != NULL )
+	{
+		event.Type = UIEVENT_MOUSEMOVE;
+		event.pSender = pNewHover;
+		CDuiString sToolTip = pNewHover->GetToolTip();
+		if (sToolTip.IsEmpty())
+		{
+			CControlUI* pParent = pNewHover;
+			while (pParent->GetToolTip().IsEmpty()) 
+			{
+				pParent = pParent->GetParent();
+				if (!pParent || !PtInRect(&pParent->GetPos(), pt))
+				{
+					pParent = NULL;
+					break;
+				}
+			}
+			if (pParent)
+			{
+				sToolTip = pParent->GetToolTip();
+				pNewHover = pParent;
+			}
+		}
+		if (!sToolTip.IsEmpty())
+		{
+			CControlUI* pCtlToolTip = FindControl(_T("lbl_ToolTip"));
+			if (pCtlToolTip)
+			{
+				if (m_strDefaultTooltip.IsEmpty())
+				{
+					m_strDefaultTooltip = pCtlToolTip->GetText();
+				}
+				pCtlToolTip->SetText(sToolTip);
+			}
+		}
+		pNewHover->Event(event);
+	}
+	return true;
+}
+
+bool CPaintManagerUI::OnLButtonDown(WPARAM wParam, LPARAM lParam)
+{
+	::SetFocus(m_hWndPaint);
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	m_ptLastMousePos = pt;
+	CControlUI* pControl = FindControl(pt);
+	if( pControl == NULL )
+		return false;
+	if( pControl->GetManager() != this )
+		return false;
+	m_pEventClick = pControl;
+	SetNeedShowFocusDot(false);
+	pControl->SetFocus();
+	SetCapture();
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_BUTTONDOWN;
+	event.pSender = pControl;
+	event.wParam = wParam;
+	event.lParam = lParam;
+	event.ptMouse = pt;
+	event.wKeyState = (WORD)wParam;
+	event.dwTimestamp = ::GetTickCount();
+	pControl->Event(event);
+	return true;
+}
+
+bool CPaintManagerUI::OnLButtonDBClick(WPARAM wParam, LPARAM lParam)
+{
+	::SetFocus(m_hWndPaint);
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	m_ptLastMousePos = pt;
+	CControlUI* pControl = FindControl(pt);
+	if( pControl == NULL )
+		return false;
+	if( pControl->GetManager() != this )
+		return false;
+	SetCapture();
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_DBLCLICK;
+	event.pSender = pControl;
+	event.ptMouse = pt;
+	event.wKeyState = (WORD)wParam;
+	event.dwTimestamp = ::GetTickCount();
+	pControl->Event(event);
+	m_pEventClick = pControl;
+	return true;
+}
+
+bool CPaintManagerUI::OnLButtonUp(WPARAM wParam, LPARAM lParam)
+{
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	m_ptLastMousePos = pt;
+	if( m_pEventClick == NULL )
+		return false;
+	ReleaseCapture();
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_BUTTONUP;
+	event.pSender = m_pEventClick;
+	event.wParam = wParam;
+	event.lParam = lParam;
+	event.ptMouse = pt;
+	event.wKeyState = (WORD)wParam;
+	event.dwTimestamp = ::GetTickCount();
+	m_pEventClick->Event(event);
+	m_pEventClick = NULL;
+	return true;
+}
+
+bool CPaintManagerUI::OnRButtonDown(WPARAM wParam, LPARAM lParam)
+{
+	::SetFocus(m_hWndPaint);
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	m_ptLastMousePos = pt;
+	CControlUI* pControl = FindControl(pt);
+	if( pControl == NULL )
+		return false;
+	if( pControl->GetManager() != this )
+		return false;
+	pControl->SetFocus();
+	SetCapture();
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_RBUTTONDOWN;
+	event.pSender = pControl;
+	event.wParam = wParam;
+	event.lParam = lParam;
+	event.ptMouse = pt;
+	event.wKeyState = (WORD)wParam;
+	event.dwTimestamp = ::GetTickCount();
+	pControl->Event(event);
+	m_pEventClick = pControl;
+	return true;
+}
+
+bool CPaintManagerUI::OnContextMenu(WPARAM wParam, LPARAM lParam)
+{
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	::ScreenToClient(m_hWndPaint, &pt);
+	m_ptLastMousePos = pt;
+	if( m_pEventClick == NULL )
+		return false;
+	ReleaseCapture();
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_CONTEXTMENU;
+	event.pSender = m_pEventClick;
+	event.ptMouse = pt;
+	event.wKeyState = (WORD)wParam;
+	event.lParam = (LPARAM)m_pEventClick;
+	event.dwTimestamp = ::GetTickCount();
+	m_pEventClick->Event(event);
+	m_pEventClick = NULL;
+	return true;
+}
+
+bool CPaintManagerUI::OnMouseWheel(WPARAM wParam, LPARAM lParam)
+{
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	::ScreenToClient(m_hWndPaint, &pt);
+	m_ptLastMousePos = pt;
+	CControlUI* pControl = FindControl(pt);
+	if( pControl == NULL )
+		return false;
+	if( pControl->GetManager() != this )
+		return false;
+	//int zDelta = (int) (short) HIWORD(wParam);
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_SCROLLWHEEL;
+	event.pSender = pControl;
+	event.wParam = wParam; //MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
+	event.lParam = lParam;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	pControl->Event(event);
+
+	// Let's make sure that the scroll item below the cursor is the same as before...
+	::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
+	return true;
+}
+
+bool CPaintManagerUI::OnChar(WPARAM wParam, LPARAM lParam)
+{
+	if( m_pFocus == NULL )
+		return false;
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_CHAR;
+	event.chKey = (TCHAR)wParam;
+	event.ptMouse = m_ptLastMousePos;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	m_pFocus->Event(event);
+	return true;
+}
+
+bool CPaintManagerUI::OnKeyDown(WPARAM wParam, LPARAM lParam)
+{
+	if( m_pFocus == NULL )
+		return false;
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_KEYDOWN;
+	event.chKey = (TCHAR)wParam;
+	event.ptMouse = m_ptLastMousePos;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	m_pFocus->Event(event);
+	m_pEventKey = m_pFocus;
+	return true;
+}
+
+bool CPaintManagerUI::OnKeyUp(WPARAM wParam, LPARAM lParam)
+{
+	if( m_pEventKey == NULL )
+		return false;
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_KEYUP;
+	event.chKey = (TCHAR)wParam;
+	event.ptMouse = m_ptLastMousePos;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	m_pEventKey->Event(event);
+	m_pEventKey = NULL;
+	return true;
+}
+
+bool CPaintManagerUI::OnSetCursor(WPARAM wParam, LPARAM lParam)
+{
+	if( LOWORD(lParam) != HTCLIENT )
+		return false;
+	if( m_bMouseCapture )
+		return true;
+
+	POINT pt = { 0 };
+	::GetCursorPos(&pt);
+	::ScreenToClient(m_hWndPaint, &pt);
+	CControlUI* pControl = FindControl(pt);
+	if( pControl == NULL )
+		return false;
+	CControlUI* pParent = pControl;
+	while ((pParent->GetControlFlags() & UIFLAG_SETCURSOR) == 0) 
+	{
+		pParent = pParent->GetParent();
+		if (!pParent || !PtInRect(&pParent->GetPos(), pt))
+		{
+			pParent = NULL;
+			break;
+		}
+	}
+	if (pParent)
+	{
+		pControl = pParent;
+	}
+	if( pControl == NULL )
+		return false;
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_SETCURSOR;
+	event.wParam = wParam;
+	event.lParam = lParam;
+	event.ptMouse = pt;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	pControl->Event(event);
+	return true;
 }
 
 bool CPaintManagerUI::TranslateAccelerator(LPMSG pMsg)

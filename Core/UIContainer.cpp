@@ -3,8 +3,6 @@
 namespace DuiLib
 {
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	//
 	//
 
 	CContainerUI::CContainerUI()
@@ -275,14 +273,20 @@ namespace DuiLib
 			}
 			else if( event.Type == UIEVENT_SCROLLWHEEL )
 			{
-				switch( LOWORD(event.wParam) ) {
-			case SB_LINEUP:
-				LineUp();
-				return;
-			case SB_LINEDOWN:
-				LineDown();
-				return;
-				}
+				short nDalta = (short)HIWORD(event.wParam);
+				SIZE sz = GetScrollPos();
+				sz.cy  -= nDalta;
+				SetScrollPos(sz);
+
+// 				switch( LOWORD(event.wParam) )
+// 				{
+// 				case SB_LINEUP:
+// 					LineUp();
+// 					return;
+// 				case SB_LINEDOWN:
+// 					LineDown();
+// 					return;
+// 				}
 			}
 		}
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() && m_pHorizontalScrollBar->IsEnabled() ) {
@@ -311,14 +315,18 @@ namespace DuiLib
 			}
 			else if( event.Type == UIEVENT_SCROLLWHEEL )
 			{
-				switch( LOWORD(event.wParam) ) {
-			case SB_LINEUP:
-				LineLeft();
-				return;
-			case SB_LINEDOWN:
-				LineRight();
-				return;
-				}
+				short nDalta = (short)HIWORD(event.wParam);
+				SIZE sz = GetScrollPos();
+				sz.cx -= nDalta;
+				SetScrollPos(sz);
+// 				switch( LOWORD(event.wParam) ) {
+// 			case SB_LINEUP:
+// 				LineLeft();
+// 				return;
+// 			case SB_LINEDOWN:
+// 				LineRight();
+// 				return;
+// 				}
 			}
 		}
 		CControlUI::DoEvent(event);

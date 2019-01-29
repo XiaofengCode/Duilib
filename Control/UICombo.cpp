@@ -2,7 +2,6 @@
 
 namespace DuiLib {
 
-/////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
@@ -162,10 +161,10 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
     else if( uMsg == WM_MOUSEWHEEL ) {
-        int zDelta = (int) (short) HIWORD(wParam);
+        //int zDelta = (int) (short) HIWORD(wParam);
         TEventUI event = { 0 };
         event.Type = UIEVENT_SCROLLWHEEL;
-        event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
+        event.wParam = wParam; //MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
         event.lParam = lParam;
         event.dwTimestamp = ::GetTickCount();
         m_pOwner->DoEvent(event);
@@ -210,7 +209,6 @@ UINT CComboWnd::GetClassStyle() const
 	return __super::GetClassStyle() | CS_DROPSHADOW;
 }
 #endif
-////////////////////////////////////////////////////////
 
 
 CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
@@ -436,7 +434,9 @@ void CComboUI::DoEvent(TEventUI& event)
     }
     if( event.Type == UIEVENT_KEYDOWN )
     {
-        switch( event.chKey ) {
+        switch( event.chKey )
+		{
+		case VK_SPACE:
         case VK_F4:
             Activate();
             return;
@@ -461,26 +461,20 @@ void CComboUI::DoEvent(TEventUI& event)
         }
     }
     if( event.Type == UIEVENT_SCROLLWHEEL )
-    {
-        bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+	{
+		short nDalta = (short)HIWORD(event.wParam);
+        //bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
 		if (!m_pWindow)
 		{
 			if (IsFocused())
 			{
-				SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+				SelectItem(FindSelectable(m_iCurSel + (nDalta < 0 ? 1 : -1), nDalta < 0));
 				return;
 			}
 		}
 		else
 		{
-			if (bDownward)
-			{
-				m_pWindow->Scroll(0, 10);
-			}
-			else
-			{
-				m_pWindow->Scroll(0, -10);
-			}
+			m_pWindow->Scroll(0, -nDalta);
 			return;
 		}
     }

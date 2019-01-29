@@ -57,7 +57,7 @@ public:
     WORD GetSelectionType() const;
     bool GetZoom(int& nNum, int& nDen) const;
     bool SetZoom(int nNum, int nDen);
-    bool SetZoomOff();
+    bool ResetZoom();
     bool GetAutoURLDetect() const;
     bool SetAutoURLDetect(bool bAutoDetect = true);
     DWORD GetEventMask() const;
@@ -148,6 +148,9 @@ public:
 	void SetDisabledTextColor(DWORD dwTextColor);
 	DWORD GetDisabledTextColor() const;
 	void SetRtfFile(LPCTSTR lpszFileName);
+
+	bool IsEnableZoom();
+	void EnableZoom(bool bEnable);
 protected:
     CTxtWinHost* m_pTwh;
     bool m_bVScrollBarFixing;
@@ -176,6 +179,7 @@ protected:
 	DWORD m_dwTipValueColor;
 	bool m_bTip;
 	DWORD m_dwDisabledTextColor;
+	bool m_bEnableZoom;
 };
 
 } // namespace DuiLib

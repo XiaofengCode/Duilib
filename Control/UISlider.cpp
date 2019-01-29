@@ -182,16 +182,29 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_SCROLLWHEEL ) 
 		{
-			switch( LOWORD(event.wParam) ) {
-		case SB_LINEUP:
-			SetValue(GetValue() + GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
-			return;
-		case SB_LINEDOWN:
-			SetValue(GetValue() - GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
-			return;
+			short nDalta = (short)HIWORD(event.wParam);
+			if (nDalta < 0)
+			{
+				SetValue(GetValue() - GetChangeStep());
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
+				return;
 			}
+			else
+			{
+				SetValue(GetValue() + GetChangeStep());
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
+				return;
+			}
+// 			switch( LOWORD(event.wParam) ) {
+// 		case SB_LINEUP:
+// 			SetValue(GetValue() + GetChangeStep());
+// 			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
+// 			return;
+// 		case SB_LINEDOWN:
+// 			SetValue(GetValue() - GetChangeStep());
+// 			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);//将当前位置传递给上层, Eric modified 2015-7-13
+// 			return;
+// 			}
 		}
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
