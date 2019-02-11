@@ -5,6 +5,7 @@ namespace DuiLib {
 	bool _Failed(LPCTSTR pstrError, LPCTSTR pstrLocation /*= NULL*/)
 	{
 		OutputDebugString(pstrError);
+		OutputDebugString(_T("\r\n"));;
 		return false;
 	}
 
@@ -53,7 +54,7 @@ namespace DuiLib {
 	{
 		if( CPaintManagerUI::GetResourceZip().IsEmpty() )
 		{
-			DuiReadFileData(pstrFilename, buffer);
+			return DuiReadFileData(pstrFilename, buffer);
 		}
 		else
 		{
@@ -70,14 +71,21 @@ namespace DuiLib {
 					{
 						hz = OpenZip((void*)(LPCTSTR)(CPaintManagerUI::GetInstancePath() + CPaintManagerUI::GetResourceZip()), 0, 2);
 						if (hz == NULL)
-							return _Failed(_T("Error opening zip file"));
+						{
+							return DuiReadFileData(pstrFilename, buffer);
+							//return _Failed(_T("Error opening zip file"));
+						}
 					}
 				}
 			}
 
 			ZIPENTRY ze; 
 			int i; 
-			if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 ) return _Failed(_T("Could not find ziped file"));
+			if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 )
+			{
+				return DuiReadFileData(pstrFilename, buffer);
+				//return _Failed(_T("Could not find ziped file"));
+			}
 			DWORD dwSize = ze.unc_size;
 			if( dwSize == 0 )
 				return _Failed(_T("File is empty"));

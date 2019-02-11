@@ -4,7 +4,7 @@
 namespace DuiLib
 {
 	CProgressUI::CProgressUI() : m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true),
-		m_Type(TypeNormol), m_nCirFinishedWidth(0), m_nCirLastWidth(0), m_nCirSpace(0), m_nStartAngle(-90),m_nSweepAngle(0)
+		m_Type(TypeNormol), m_nCirFinishedWidth(0), m_nCirLastWidth(0), m_nCirSpace(0), m_nStartAngle(-90),m_nSweepAngle(0), m_bButton(false)
 	{
 		m_dwForeColor = 0;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
@@ -154,6 +154,16 @@ namespace DuiLib
 		m_nSweepAngle = nValue;
 	}
 
+	int CProgressUI::IsButton() const
+	{
+		return m_bButton;
+	}
+
+	void CProgressUI::SetButton(bool bValue)
+	{
+		m_bButton = bValue;
+	}
+
 	DuiLib::CProgressUI::ProgressType CProgressUI::GetType() const
 	{
 		return m_Type;
@@ -205,6 +215,7 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("StartAngle")) == 0 ) SetCircularStartAngle(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("SweepAngle")) == 0 ) SetCircularSweepAngle(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("Button")) == 0 ) SetButton(_tcsicmp(pstrValue, _T("true")) == 0);
 		else __super::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -358,6 +369,18 @@ namespace DuiLib
 	{
 		m_Type = type;
 		Invalidate();
+	}
+
+	void CProgressUI::DoEvent(TEventUI& event)
+	{
+		if (m_bButton)
+		{
+			CButtonUI::DoEvent(event);
+		}
+		else
+		{
+			CLabelUI::DoEvent(event);
+		}
 	}
 
 }

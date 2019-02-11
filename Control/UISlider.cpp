@@ -259,7 +259,7 @@ namespace DuiLib
 		{
 			RECT rcThumb = GetThumbRect();
 			if( IsEnabled()) {
-				::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+				::SetCursor(::LoadCursor(NULL, IDC_HAND));
 				return;
 			}
 		}

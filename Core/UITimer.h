@@ -27,6 +27,7 @@ namespace DuiLib{
 	class UILIB_API IDuiTimer
 	{
 	public:
+		virtual ~IDuiTimer(void){}
 		virtual bool SetDuiTimer(HWND hWnd,LPARAM lParam,WPARAM wParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false) = 0;
 		virtual bool SetDuiTimer() = 0;
 		virtual void KillDuiTimer() = 0;

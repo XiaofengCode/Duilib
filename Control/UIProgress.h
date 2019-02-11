@@ -43,6 +43,8 @@ namespace DuiLib
 		void SetCircularStartAngle(int nValue);
 		int GetCircularSweepAngle() const;
 		void SetCircularSweepAngle(int nValue);
+		int IsButton() const;
+		void SetButton(bool bValue);
 
 		ProgressType GetType() const;
 		void SetType(ProgressType type);
@@ -51,6 +53,7 @@ namespace DuiLib
 		void PaintStatusImage(HDC hDC);
 
 		void DoPaint(HDC hDC, const RECT& rcPaint);
+		void DoEvent(TEventUI& event);
 
 	protected:
 		//bool m_bHorizontal;
@@ -70,6 +73,7 @@ namespace DuiLib
 		int m_nCirSpace;	// 已完成和未完成的间距
 		int m_nStartAngle;	// 起始角度
 		int m_nSweepAngle;	// 角度大小
+		bool m_bButton;
 	};
 
 } // namespace DuiLib

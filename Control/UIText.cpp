@@ -50,7 +50,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() ) {
 			for( int i = 0; i < m_nLinks; i++ ) {
 				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-					::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+					::SetCursor(::LoadCursor(NULL, IDC_HAND));
 					return;
 				}
 			}

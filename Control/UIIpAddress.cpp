@@ -34,7 +34,7 @@ namespace DuiLib
 
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-		//LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	protected:
 		CIPAddressUI* m_pOwner;
@@ -150,15 +150,17 @@ namespace DuiLib
 			{
 				lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
 			}
+			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE )
+			{
+				lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+			}
+			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE )
+			{
+				RECT rcClient;
+				::GetClientRect(m_hWnd, &rcClient);
+				::InvalidateRect(m_hWnd, &rcClient, FALSE);
+			}
 		}
-// 		else if( uMsg == OCM_COMMAND ) {
-// 			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-// 			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
-// 				RECT rcClient;
-// 				::GetClientRect(m_hWnd, &rcClient);
-// 				::InvalidateRect(m_hWnd, &rcClient, FALSE);
-// 			}
-// 		}
 		//	else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
 		// 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
 		//	}
@@ -197,9 +199,13 @@ namespace DuiLib
 //		if (m_pOwner->m_nIPUpdateFlag == IP_NONE)
 		{
 			//Windows控件的IP地址和Socket使用的相反，所以要根据字符串转换一下
-			char szIp[32] = {0};
-			::SendMessageA(m_hWnd, WM_GETTEXT, sizeof(szIp), (LPARAM)szIp);
-			m_pOwner->m_dwIP = inet_addr(szIp);
+			DWORD dwIP;
+			::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&dwIP);
+			dwIP = htonl(dwIP);
+			m_pOwner->SetIP(dwIP);
+// 			char szIp[32] = {0};
+// 			::SendMessageA(m_hWnd, WM_GETTEXT, sizeof(szIp), (LPARAM)szIp);
+// 			m_pOwner->m_dwIP = inet_addr(szIp);
 			//::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&m_pOwner->m_dwIP);
 //			m_pOwner->m_nIPUpdateFlag = IP_UPDATE;
 			m_pOwner->UpdateText();
@@ -209,20 +215,17 @@ namespace DuiLib
 		return lRes;
 	}
 
-	// LRESULT CDateTimeWnd::OnEditChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	// {
-	// 	if( !m_bInit ) return 0;
-	// 	if( m_pOwner == NULL ) return 0;
-	// 	// Copy text back
-	// 	int cchLen = ::GetWindowTextLength(m_hWnd) + 1;
-	// 	LPTSTR pstr = static_cast<LPTSTR>(_alloca(cchLen * sizeof(TCHAR)));
-	// 	ASSERT(pstr);
-	// 	if( pstr == NULL ) return 0;
-	// 	::GetWindowText(m_hWnd, pstr, cchLen);
-	// 	m_pOwner->m_sText = pstr;
-	// 	m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
-	// 	return 0;
-	// }
+	LRESULT CIPAddressWnd::OnEditChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		if( !m_bInit ) return 0;
+		if( m_pOwner == NULL ) return 0;
+		DWORD dwIP;
+		::SendMessage(m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&dwIP);
+		dwIP = htonl(dwIP);
+		m_pOwner->SetIP(dwIP);
+		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
+		return 0;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	//
@@ -307,7 +310,7 @@ namespace DuiLib
 
 		if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
 		{
-			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
+			::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
 			return;
 		}
 		if( event.Type == UIEVENT_WINDOWSIZE )

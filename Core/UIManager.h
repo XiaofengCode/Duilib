@@ -345,9 +345,6 @@ private:
     static CControlUI* CALLBACK __FindControlFromClass(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlsFromClass(CControlUI* pThis, LPVOID pData);
 
-	bool OnKeyup(WPARAM wParam, LPARAM lParam)
-	{
-	}
 	bool OnSysCommand(WPARAM wParam, LPARAM lParam);
 	bool OnGetMinMaxInfo(WPARAM wParam, LPARAM lParam);
 	bool OnSize(WPARAM wParam, LPARAM lParam);
