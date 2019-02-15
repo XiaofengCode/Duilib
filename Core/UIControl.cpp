@@ -888,10 +888,9 @@ int CControlUI::GetVirtualWnd(CDuiStringArray& arVirtualWnd) const
 {
 	CDuiString str;
 	arVirtualWnd.RemoveAll();
-	CDuiString sVirWnd = GetVirtualWnd();
-	if( !sVirWnd.IsEmpty() )
+	if( !m_sVirtualWnd.IsEmpty() )
 	{
-		arVirtualWnd.Add(sVirWnd);
+		arVirtualWnd.Add(m_sVirtualWnd);
 	}
 	CControlUI* pParent = GetParent();
 	if( pParent != NULL)
