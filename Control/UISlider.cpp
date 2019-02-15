@@ -5,6 +5,8 @@ namespace DuiLib
 {
 	CSliderUI::CSliderUI() : m_uButtonState(0), m_nStep(1),m_bSendMove(false)
 	{
+		m_attrs.AddKeyword(DUI_ATTR_POS_THUMB);
+		m_bButton = false;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		m_szThumb.cx = m_szThumb.cy = 10;
 	}
@@ -63,37 +65,67 @@ namespace DuiLib
 		}
 	}
 
-	LPCTSTR CSliderUI::GetThumbImage() const
+	const CDuiImage CSliderUI::GetThumbImage() const
 	{
-		return m_sThumbImage;
+		return m_attrs.GetImage(DUI_ATTR_POS_THUMB DUI_ATTR_IMAGE);
 	}
 
 	void CSliderUI::SetThumbImage(LPCTSTR pStrImage)
 	{
-		m_sThumbImage = pStrImage;
-		Invalidate();
+		CDuiString sImageOld = m_attrs.GetString(DUI_ATTR_POS_THUMB DUI_ATTR_IMAGE);
+		if( sImageOld == pStrImage )
+			return;
+
+		if (!m_attrs.SetAttribute(DUI_ATTR_POS_THUMB DUI_ATTR_IMAGE, pStrImage))
+			return;
+
+		const CDuiImage img = GetBkImage();
+		if (img)
+		{
+			Invalidate();
+		}
 	}
 
-	LPCTSTR CSliderUI::GetThumbHotImage() const
+	const CDuiImage CSliderUI::GetThumbHotImage() const
 	{
-		return m_sThumbHotImage;
+		return m_attrs.GetImage(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_HOT DUI_ATTR_IMAGE);
 	}
 
 	void CSliderUI::SetThumbHotImage(LPCTSTR pStrImage)
 	{
-		m_sThumbHotImage = pStrImage;
-		Invalidate();
+		CDuiString sImageOld = m_attrs.GetString(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_HOT DUI_ATTR_IMAGE);
+		if( sImageOld == pStrImage )
+			return;
+
+		if (!m_attrs.SetAttribute(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_HOT DUI_ATTR_IMAGE, pStrImage))
+			return;
+
+		const CDuiImage img = GetBkImage();
+		if (img)
+		{
+			Invalidate();
+		}
 	}
 
-	LPCTSTR CSliderUI::GetThumbPushedImage() const
+	const CDuiImage CSliderUI::GetThumbPushedImage() const
 	{
-		return m_sThumbPushedImage;
+		return m_attrs.GetImage(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_PUSHED DUI_ATTR_IMAGE);
 	}
 
 	void CSliderUI::SetThumbPushedImage(LPCTSTR pStrImage)
 	{
-		m_sThumbPushedImage = pStrImage;
-		Invalidate();
+		CDuiString sImageOld = m_attrs.GetString(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_PUSHED DUI_ATTR_IMAGE);
+		if( sImageOld == pStrImage )
+			return;
+
+		if (!m_attrs.SetAttribute(DUI_ATTR_POS_THUMB DUI_ATTR_STATUS_PUSHED DUI_ATTR_IMAGE, pStrImage))
+			return;
+
+		const CDuiImage img = GetBkImage();
+		if (img)
+		{
+			Invalidate();
+		}
 	}
 
 	void CSliderUI::SetValue(int nValue) //2014.7.28 redrain  当鼠标正在滑动滑块时不会收到SetValue的影响，比如滑动改变音乐的进度，不会因为外部一直调用SetValue而让我们无法滑动滑块
@@ -330,33 +362,39 @@ namespace DuiLib
 		rcThumb.top -= m_rcItem.top;
 		rcThumb.right -= m_rcItem.left;
 		rcThumb.bottom -= m_rcItem.top;
-		if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-			if( !m_sThumbPushedImage.IsEmpty() ) {
-				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
-					(int)(rcThumb.left / S), (int)(rcThumb.top / S), 
-					(int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
-				if( !DrawImage(hDC, (LPCTSTR)m_sThumbPushedImage, (LPCTSTR)m_sImageModify) ) m_sThumbPushedImage.Empty();
-				else return;
+		if( (m_uButtonState & UISTATE_CAPTURED) != 0 )
+		{
+			CDuiImage img = GetThumbPushedImage();
+			if( img )
+			{
+				img[0].m_rcDst = rcThumb;
+				if( !DrawImage(hDC, img[0]) )
+					SetThumbPushedImage(NULL);
+				else
+					return;
 			}
 		}
-		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( !m_sThumbHotImage.IsEmpty() ) {
-				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
-					(int)(rcThumb.left / S), (int)(rcThumb.top / S), 
-					(int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
-				if( !DrawImage(hDC, (LPCTSTR)m_sThumbHotImage, (LPCTSTR)m_sImageModify) ) m_sThumbHotImage.Empty();
-				else return;
+		else if( (m_uButtonState & UISTATE_HOT) != 0 )
+		{
+			CDuiImage img = GetThumbHotImage();
+			if( img )
+			{
+				img[0].m_rcDst = rcThumb;
+				if( !DrawImage(hDC, img[0]) )
+					SetThumbHotImage(NULL);
+				else
+					return;
 			}
 		}
 
-		if( !m_sThumbImage.IsEmpty() ) {
-			m_sImageModify.Empty();
-			m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), 
-				(int)(rcThumb.left / S), (int)(rcThumb.top / S), (int)(rcThumb.right / S), (int)(rcThumb.bottom / S));
-			if( !DrawImage(hDC, (LPCTSTR)m_sThumbImage, (LPCTSTR)m_sImageModify) ) m_sThumbImage.Empty();
-			else return;
+		CDuiImage img = GetThumbImage();
+		if( img )
+		{
+			img[0].m_rcDst = rcThumb;
+			if( !DrawImage(hDC, img[0]) )
+				SetThumbImage(NULL);
+			else
+				return;
 		}
 	}
 }

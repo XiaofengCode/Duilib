@@ -130,7 +130,7 @@ namespace DuiLib
 
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
-		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : m_cxyFixed.cx, 9999 };
+		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : GetFixedWidth(), 9999 };
 		rcText.left += m_rcTextPadding.left;
 		rcText.right -= m_rcTextPadding.right;
 		if( m_bShowHtml )
@@ -146,25 +146,15 @@ namespace DuiLib
 		{
 // 			RECT rcText = {0};
 // 			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_iFont, DT_CALCRECT | m_uTextStyle);
-			m_cxyFixed.cx = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right);
 		}
 
-		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
+		if( GetFixedHeight() == 0 ) return CDuiSize(GetFixedWidth(), m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
 		return CContainerUI::EstimateSize(szAvailable);
 	}
 
 	void CLabelUI::DoEvent(TEventUI& event)
 	{
-		if( event.Type == UIEVENT_SETFOCUS ) 
-		{
-			m_bFocused = true;
-			return;
-		}
-		if( event.Type == UIEVENT_KILLFOCUS ) 
-		{
-			m_bFocused = false;
-			return;
-		}
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
 			// return;

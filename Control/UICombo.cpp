@@ -404,14 +404,6 @@ void CComboUI::DoEvent(TEventUI& event)
         return;
     }
 
-    if( event.Type == UIEVENT_SETFOCUS ) 
-    {
-        Invalidate();
-    }
-    if( event.Type == UIEVENT_KILLFOCUS ) 
-    {
-        Invalidate();
-    }
     if( event.Type == UIEVENT_BUTTONDOWN )
     {
         if( IsEnabled() ) {
@@ -504,7 +496,7 @@ void CComboUI::DoEvent(TEventUI& event)
 
 SIZE CComboUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
+	if( GetFixedHeight() == 0 ) return CDuiSize(GetFixedWidth(), m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
     return CControlUI::EstimateSize(szAvailable);
 }
 

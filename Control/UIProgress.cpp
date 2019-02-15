@@ -319,7 +319,7 @@ namespace DuiLib
 		rcLast.Deflate(nWidth/2, nWidth/2);
 		//rcLast.Deflate(rcItem.GetWidth()*GetCircularSpace()/360, rcItem.GetWidth()*GetCircularSpace()/360);
 		//ªÊ÷∆ £”‡≤ø∑÷
-		pen.SetColor(m_dwBackColor);
+		pen.SetColor(GetBkColor());
 		pen.SetWidth(nWidth);
 		nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue - 1;
 		nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2 + 2;

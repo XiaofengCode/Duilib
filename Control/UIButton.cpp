@@ -37,15 +37,6 @@ namespace DuiLib
 			else __super::DoEvent(event);
 			return;
 		}
-
-		if( event.Type == UIEVENT_SETFOCUS ) 
-		{
-			Invalidate();
-		}
-		if( event.Type == UIEVENT_KILLFOCUS ) 
-		{
-			Invalidate();
-		}
 		if( event.Type == UIEVENT_KEYDOWN )
 		{
 			if (IsKeyboardEnabled()) {

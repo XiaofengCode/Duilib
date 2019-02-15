@@ -21,6 +21,7 @@
 
 namespace DuiLib
 {
+#define DUI_ATTR_POS_THUMB		_T("thumb")
 	class UILIB_API CSliderUI : public CProgressUI
 	{
 	public:
@@ -36,11 +37,11 @@ namespace DuiLib
 		void SetChangeStep(int step);
 		void SetThumbSize(SIZE szXY);
 		RECT GetThumbRect() const;
-		LPCTSTR GetThumbImage() const;
+		const CDuiImage GetThumbImage() const;
 		void SetThumbImage(LPCTSTR pStrImage);
-		LPCTSTR GetThumbHotImage() const;
+		const CDuiImage GetThumbHotImage() const;
 		void SetThumbHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetThumbPushedImage() const;
+		const CDuiImage GetThumbPushedImage() const;
 		void SetThumbPushedImage(LPCTSTR pStrImage);
 
 		void DoEvent(TEventUI& event);//2014.7.28 redrain
@@ -55,11 +56,11 @@ namespace DuiLib
 		UINT m_uButtonState;
 		int m_nStep;
 
-		CDuiString m_sThumbImage;
-		CDuiString m_sThumbHotImage;
-		CDuiString m_sThumbPushedImage;
+// 		CDuiString m_sThumbImage;
+// 		CDuiString m_sThumbHotImage;
+// 		CDuiString m_sThumbPushedImage;
 
-		CDuiString m_sImageModify;
+//		CDuiString m_sImageModify;
 		bool	   m_bSendMove;//2014.7.28 redrain
 	};
 }

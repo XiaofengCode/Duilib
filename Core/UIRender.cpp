@@ -801,10 +801,9 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
     ::DeleteDC(hCloneDC);
 }
 
-
 bool DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, const CDuiString& sImageName, \
-		const CDuiString& sImageResType, RECT rcItem, RECT rcBmpPart, RECT rcCorner, DWORD dwMask, BYTE bFade, \
-		bool bHole, bool bTiledX, bool bTiledY)
+	const CDuiString& sImageResType, RECT rcItem, RECT rcBmpPart, RECT rcCorner, DWORD dwMask, BYTE bFade, \
+	bool bHole, bool bTiledX, bool bTiledY)
 {
 	if (sImageName.IsEmpty()) {
 		return false;
@@ -834,7 +833,82 @@ bool DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& r
 	return true;
 }
 
-bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, 
+bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rcItem, const RECT& rcPaint, const CDuiImageItem& img)
+{
+	double S = 1.0;
+	if (pManager)
+	{
+		S = pManager->GetDpiScale();
+	}
+	RECT rcDest = rcItem;
+	if (img.m_rcDst.left|img.m_rcDst.right|img.m_rcDst.bottom|img.m_rcDst.top)
+	{
+		if (img.m_bRight)
+		{
+			rcDest.right = rcItem.right + img.m_rcDst.left;
+			rcDest.left = rcItem.right - img.m_rcDst.right;
+			if (rcDest.left < rcItem.left)
+			{
+				rcDest.left = rcItem.left;
+			}
+		}
+		else
+		{
+			rcDest.left = rcItem.left + img.m_rcDst.left;  
+			rcDest.right = rcItem.left + img.m_rcDst.right;
+			if (rcDest.right > rcItem.right)
+			{
+				rcDest.right = rcItem.right;
+			}
+		}
+
+		if (img.m_bBottom)
+		{
+			rcDest.bottom = rcItem.bottom + img.m_rcDst.top;
+			rcDest.top = rcItem.bottom - img.m_rcDst.bottom;
+			if (rcDest.top < rcItem.top)
+			{
+				rcDest.top = rcItem.top;
+			}
+		}
+		else
+		{
+			rcDest.top = rcItem.top + img.m_rcDst.top;  
+			rcDest.bottom = rcItem.top + img.m_rcDst.bottom;
+			if (rcDest.bottom > rcItem.bottom)
+			{
+				rcDest.bottom = rcItem.bottom;
+			}
+		}
+		rcDest.left *= S;
+		rcDest.top *= S;
+		rcDest.right *= S;
+		rcDest.bottom *= S;
+	}
+
+	RECT rcCorner = img.m_rcCorner;
+	rcCorner.left *= S;
+	rcCorner.top *= S;
+	rcCorner.right *= S;
+	rcCorner.bottom *= S;
+	return DuiLib::DrawImage(hDC, pManager, rcItem, rcPaint, img.m_strFile, img.m_strImageResType,
+		rcDest, img.m_rcSrc, rcCorner, img.m_dwMask, img.m_byFade, img.m_bHole, img.m_bXTiled, img.m_bYTiled);
+}
+
+bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rcItem, const RECT& rcPaint, const CDuiImage& img)
+{
+	bool bRet = true;
+	for (int i = 0; i < img.GetItemCount(); i++)
+	{
+		if (!DrawImage(hDC, pManager, rcItem, rcPaint, img[i]))
+		{
+			bRet = false;
+		}
+	}
+	return bRet;
+}
+
+bool CRenderEngine::DrawImageStringX(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, 
                                           LPCTSTR pStrImage, LPCTSTR pStrModify)
 {
 	if ((pManager == NULL) || (hDC == NULL)) return false;
@@ -913,14 +987,6 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
                 }
 				//Kevin, 支持相对右边和下边的偏移
 				else if( sItem == _T("dest") ) {
-// 					ASSERT(FALSE);
-// 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-// 					rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-// 					rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-// 					if (rcItem.right > rc.right) rcItem.right = rc.right;
-// 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-// 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
-
 					bool bRight = false;
 					bool bBottom = false;
 					LPCTSTR lpszValue = sValue.GetData();
@@ -1002,14 +1068,6 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 						}
 					}
 				}
-// 				else if( sItem == _T("dest") ) {
-// 					rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-// 					rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-// 					rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-// 					if (rcItem.right > rc.right) rcItem.right = rc.right;
-// 					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-// 					if (rcItem.bottom > rc.bottom) rcItem.bottom = rc.bottom;
-// 				}
                 else if( sItem == _T("source") ) 
 				{
                     rcBmpPart.left = _tcstol(sValue.GetData(), &pstr, 10);

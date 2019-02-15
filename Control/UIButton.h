@@ -72,6 +72,7 @@ namespace DuiLib
 
 		int			m_iBindTabIndex;
 		CDuiString	m_sBindTabLayoutName;
+		CDuiString m_sForeImage;
 	};
 
 }	// namespace DuiLib

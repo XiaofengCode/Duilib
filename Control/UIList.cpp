@@ -1200,7 +1200,7 @@ LPVOID CListHeaderUI::GetInterface(LPCTSTR pstrName)
 
 SIZE CListHeaderUI::EstimateSize(SIZE szAvailable)
 {
-    SIZE cXY = {0, m_cxyFixed.cy};
+	SIZE cXY = {0, GetFixedHeight()};
 	if( cXY.cy == 0 && m_pManager != NULL ) {
 		for( int it = 0; it < m_items.GetSize(); it++ ) {
 			cXY.cy = MAX(cXY.cy,static_cast<CControlUI*>(m_items[it])->EstimateSize(szAvailable).cy);
@@ -1626,8 +1626,8 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
                 rc.left -= ptLastMouse.x - event.ptMouse.x;
             }
             
-            if( rc.right - rc.left > GetMinWidth() ) {
-                m_cxyFixed.cx = rc.right - rc.left;
+			if( rc.right - rc.left > GetMinWidth() ) {
+				m_attrs.SetAttribute(DUI_ATTR_WIDTH, rc.right - rc.left);
                 ptLastMouse = event.ptMouse;
                 if( GetParent() ) 
                     GetParent()->NeedParentUpdate();
@@ -1668,7 +1668,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
 
 SIZE CListHeaderItemUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 14);
+	if( GetFixedHeight() == 0 ) return CDuiSize(GetFixedWidth(), m_pManager->GetDefaultFontInfo()->tm.tmHeight + 14);
     return CContainerUI::EstimateSize(szAvailable);
 }
 
@@ -1961,15 +1961,21 @@ void CListElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
             else return;
         }
     }
-
-    if( !m_sBkImage.IsEmpty() ) {
-        if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
+	CDuiImage imgBk = GetBkImage();
+    if( imgBk )
+	{
+        if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 )
+		{
+            if( !DrawImage(hDC, imgBk) )
+			{
+				m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_IMAGE, _T(""));
+			}
         }
     }
-
-    if( m_sBkImage.IsEmpty() ) {
-        if( !pInfo->sBkImage.IsEmpty() ) {
+	else
+	{
+        if( !pInfo->sBkImage.IsEmpty() )
+		{
             if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
             else return;
         }
@@ -2054,8 +2060,8 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
 {
     if( m_pOwner == NULL ) return CDuiSize(0, 0);
 
-    TListInfoUI* pInfo = m_pOwner->GetListInfo();
-    SIZE cXY = m_cxyFixed;
+	TListInfoUI* pInfo = m_pOwner->GetListInfo();
+	SIZE cXY = {GetFixedWidth(), GetFixedHeight()};
     if( cXY.cy == 0 && m_pManager != NULL ) {
         cXY.cy = m_pManager->GetFontInfo(pInfo->sFont)->tm.tmHeight + 8;
         cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
@@ -2238,8 +2244,8 @@ SIZE CListTextElementUI::EstimateSize(SIZE szAvailable)
 {
     TListInfoUI* pInfo = NULL;
     if( m_pOwner ) pInfo = m_pOwner->GetListInfo();
-
-    SIZE cXY = m_cxyFixed;
+	
+	SIZE cXY = {GetFixedWidth(), GetFixedHeight()};
     if( cXY.cy == 0 && m_pManager != NULL ) {
         cXY.cy = m_pManager->GetFontInfo(pInfo->sFont)->tm.tmHeight + 8;
         if( pInfo ) cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
@@ -2566,15 +2572,22 @@ void CListContainerElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
             if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) pInfo->sHotImage.Empty();
             else return;
         }
-    }
-    if( !m_sBkImage.IsEmpty() ) {
-        if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
+	}
+	CDuiImage imgBk = GetBkImage();
+	if( imgBk )
+	{
+        if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 )
+		{
+            if( !DrawImage(hDC, imgBk) )
+			{
+				m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_IMAGE, _T(""));
+			}
         }
     }
-
-    if( m_sBkImage.IsEmpty() ) {
-        if( !pInfo->sBkImage.IsEmpty() ) {
+	else
+    {
+        if( !pInfo->sBkImage.IsEmpty() )
+		{
             if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
             else return;
         }

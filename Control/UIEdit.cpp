@@ -545,7 +545,7 @@ namespace DuiLib
 
 	SIZE CEditUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 6);
+		if( GetFixedHeight() == 0 ) return CDuiSize(GetFixedWidth(), m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 6);
 		return CControlUI::EstimateSize(szAvailable);
 	}
 

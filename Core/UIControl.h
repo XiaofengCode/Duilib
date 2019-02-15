@@ -3,12 +3,44 @@
 
 #pragma once
 namespace DuiLib {
+#define DUI_ATTR_STATUS_FOCUSED		_T("focused")
+#define DUI_ATTR_STATUS_DISABLED	_T("disabled")
+#define DUI_ATTR_STATUS_HOT			_T("hot")
+#define DUI_ATTR_STATUS_PUSHED		_T("pushed")
+
+#define DUI_ATTR_POS_FOCUSDOT		_T("focusdot")
+#define DUI_ATTR_POS_BK				_T("bk")
+#define DUI_ATTR_POS_FORE			_T("fore")
+#define DUI_ATTR_POS_NORMAL			_T("normal")
+#define DUI_ATTR_POS_BORDER			_T("border")
+
+#define DUI_ATTR_TEXT				_T("text")
+
+#define DUI_ATTR_WIDTH				_T("width")
+#define DUI_ATTR_HEIGHT				_T("height")
+#define DUI_ATTR_COLOR				_T("color")
+#define DUI_ATTR_POS				_T("pos")
+#define DUI_ATTR_PADDING			_T("padding")
+#define DUI_ATTR_SIZE				_T("size")
+#define DUI_ATTR_ROUND				_T("round")
+#define DUI_ATTR_FONT				_T("font")
+#define DUI_ATTR_TOOLTIP			_T("tooltip")
+#define DUI_ATTR_IMAGE				_T("image")
+//#define DUI_ATTR_USERDATA			_T("userdata")
+//#define DUI_ATTR_ENABLED			_T("enabled")
+//#define DUI_ATTR_KEYBOARD			_T("keyboard")
+//#define DUI_ATTR_VISIBLE			_T("visible")
+//#define DUI_ATTR_FLOAT				_T("float")
+//#define DUI_ATTR_SHORTCUT			_T("shortcut")
+//#define DUI_ATTR_MENU				_T("menu")
+//#define DUI_ATTR_VIRTUALWND			_T("virtualwnd")
+//#define DUI_ATTR_NAME				_T("name")
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
 #define TIMER_BK_GIF	1000
 typedef CControlUI* (CALLBACK* FINDCONTROLPROC)(CControlUI*, LPVOID);
-
+class UILIB_API CContainerUI;
 class UILIB_API CControlUI
 {
 public:
@@ -25,7 +57,7 @@ public:
     virtual bool Activate();
     virtual CPaintManagerUI* GetManager() const;
     virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
-    virtual CControlUI* GetParent() const;
+    virtual CContainerUI* GetParent() const;
 
     // 文本相关
     virtual CDuiString GetText() const;
@@ -42,7 +74,7 @@ public:
     void SetBkColor2(DWORD dwBackColor);
     DWORD GetBkColor3() const;
     void SetBkColor3(DWORD dwBackColor);
-    LPCTSTR GetBkImage();
+    const CDuiImage GetBkImage();
     void SetBkImage(LPCTSTR pStrImage);
 	DWORD GetFocusBorderColor() const;
 	void SetFocusBorderColor(DWORD dwBorderColor);
@@ -51,8 +83,10 @@ public:
     bool IsColorHSL() const;
     void SetColorHSL(bool bColorHSL);
     SIZE GetBorderRound() const;
-    void SetBorderRound(SIZE cxyRound);
-    bool DrawImage(HDC hDC, LPCTSTR pStrImage, LPCTSTR pStrModify = NULL);
+	void SetBorderRound(SIZE cxyRound);
+	bool DrawImage(HDC hDC, LPCTSTR pStrImage, LPCTSTR pStrModify = NULL);
+	bool DrawImage(HDC hDC, const CDuiImageItem& img);
+	bool DrawImage(HDC hDC, const CDuiImage& img);
 
 	//边框相关
 	int GetBorderSize() const;
@@ -186,7 +220,7 @@ public:
 
 protected:
     CPaintManagerUI* m_pManager;
-    CControlUI* m_pParent;
+    CContainerUI* m_pParent;
 	CDuiString m_sVirtualWnd;
     CDuiString m_sName;
     bool m_bUpdateNeeded;
@@ -194,7 +228,6 @@ protected:
     RECT m_rcItem;
     RECT m_rcPadding;
     SIZE m_cXY;
-    SIZE m_cxyFixed;
     SIZE m_cxyMin;
     SIZE m_cxyMax;
     bool m_bVisible;
@@ -214,11 +247,10 @@ protected:
     CDuiString m_sUserData;
     UINT_PTR m_pTag;
 
-    DWORD m_dwBackColor;
     DWORD m_dwBackColor2;
     DWORD m_dwBackColor3;
-    CDuiString m_sBkImage;
-	CDuiString m_sForeImage;
+    //CDuiString m_sBkImage;
+	//CDuiString m_sForeImage;
     DWORD m_dwBorderColor;
 	DWORD m_dwFocusBorderColor;
 	DWORD m_dwDisabledBorderColor;

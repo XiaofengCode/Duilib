@@ -106,7 +106,7 @@ namespace DuiLib
 
 	SIZE CTextUI::EstimateSize(SIZE szAvailable)
 	{
-		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : m_cxyFixed.cx, 9999 };
+		RECT rcText = { 0, 0, m_bAutoCalcWidth ? 9999 : GetFixedWidth(), 9999 };
 		rcText.left += m_rcTextPadding.left;
 		rcText.right -= m_rcTextPadding.right;
 
@@ -124,7 +124,7 @@ namespace DuiLib
 
 		if (m_bAutoCalcWidth)
 		{
-			m_cxyFixed.cx = cXY.cx;
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx);
 		}
 
 		return CControlUI::EstimateSize(szAvailable);

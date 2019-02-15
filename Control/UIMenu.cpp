@@ -740,8 +740,8 @@ m_bCheckItem(false),
 m_bShowExplandIcon(false),
 m_uTextStyle(DT_LEFT|DT_VCENTER)
 {
-	m_cxyFixed.cy = ITEM_DEFAULT_HEIGHT;
-	m_cxyFixed.cx = ITEM_DEFAULT_WIDTH;
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, ITEM_DEFAULT_WIDTH);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, ITEM_DEFAULT_HEIGHT);
 	m_szIconSize.cy = ITEM_DEFAULT_ICON_SIZE;
 	m_szIconSize.cx = ITEM_DEFAULT_ICON_SIZE;
 
@@ -771,7 +771,8 @@ void CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
 
 	if(m_bDrawLine)
 	{
-		RECT rcLine = { m_rcItem.left +  m_rcLinePadding.left, m_rcItem.top + m_cxyFixed.cy/2, m_rcItem.right - m_rcLinePadding.right, m_rcItem.top + m_cxyFixed.cy/2 };
+		int nFixedHeight = GetFixedHeight();
+		RECT rcLine = { m_rcItem.left +  m_rcLinePadding.left, m_rcItem.top + nFixedHeight/2, m_rcItem.right - m_rcLinePadding.right, m_rcItem.top + nFixedHeight/2 };
 		CRenderEngine::DrawLine(hDC, rcLine, 1, m_dwLineColor);
 	}
 	else
@@ -798,10 +799,10 @@ void CMenuElementUI::DrawItemIcon(HDC hDC, const RECT& rcItem)
 			CDuiString pStrImage;
 			pStrImage.Format(_T("file='%s' dest='%d,%d,%d,%d'"), m_strIcon.GetData(), 
 				(ITEM_DEFAULT_ICON_WIDTH - m_szIconSize.cx)/2,
-				(m_cxyFixed.cy - m_szIconSize.cy)/2,
+				(GetFixedHeight() - m_szIconSize.cy)/2,
 				(ITEM_DEFAULT_ICON_WIDTH - m_szIconSize.cx)/2 + m_szIconSize.cx,
-				(m_cxyFixed.cy - m_szIconSize.cy)/2 + m_szIconSize.cy);
-			CRenderEngine::DrawImageString(hDC, m_pManager, m_rcItem, m_rcPaint, pStrImage, _T(""));
+				(GetFixedHeight() - m_szIconSize.cy)/2 + m_szIconSize.cy);
+			DrawImage(hDC, pStrImage);
 		}			
 	}
 }
@@ -813,13 +814,15 @@ void CMenuElementUI::DrawItemExpland(HDC hDC, const RECT& rcItem)
 		CDuiString strExplandIcon;
 		strExplandIcon = GetManager()->GetDefaultAttributeList(_T("ExplandIcon"));
 		CDuiString strBkImage;
+		int nFixedWidth = GetFixedWidth();
+		int nFixedHeight = GetFixedHeight();
 		strBkImage.Format(_T("file='%s' dest='%d,%d,%d,%d'"), strExplandIcon.GetData(), 
-			m_cxyFixed.cx - ITEM_DEFAULT_EXPLAND_ICON_WIDTH + (ITEM_DEFAULT_EXPLAND_ICON_WIDTH - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2,
-			(m_cxyFixed.cy - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2,
-			m_cxyFixed.cx - ITEM_DEFAULT_EXPLAND_ICON_WIDTH + (ITEM_DEFAULT_EXPLAND_ICON_WIDTH - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2 + ITEM_DEFAULT_EXPLAND_ICON_SIZE,
-			(m_cxyFixed.cy - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2 + ITEM_DEFAULT_EXPLAND_ICON_SIZE);
+			nFixedWidth - ITEM_DEFAULT_EXPLAND_ICON_WIDTH + (ITEM_DEFAULT_EXPLAND_ICON_WIDTH - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2,
+			(nFixedHeight - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2,
+			nFixedWidth - ITEM_DEFAULT_EXPLAND_ICON_WIDTH + (ITEM_DEFAULT_EXPLAND_ICON_WIDTH - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2 + ITEM_DEFAULT_EXPLAND_ICON_SIZE,
+			(nFixedHeight - ITEM_DEFAULT_EXPLAND_ICON_SIZE)/2 + ITEM_DEFAULT_EXPLAND_ICON_SIZE);
 
-		CRenderEngine::DrawImageString(hDC, m_pManager, m_rcItem, m_rcPaint, strBkImage, _T(""));
+		DrawImage(hDC, strBkImage);
 	}
 }
 
@@ -869,10 +872,10 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 		szAvailable.cx = szAvailable.cy = -1;
 		return szAvailable;
 	}
-	if (S != 1.0 && (m_cxyFixed.cx == ITEM_DEFAULT_WIDTH || m_cxyFixed.cy == ITEM_DEFAULT_HEIGHT))
+	if (S != 1.0 && (GetFixedWidth() == ITEM_DEFAULT_WIDTH || GetFixedHeight() == ITEM_DEFAULT_HEIGHT))
 	{
-		m_cxyFixed.cx *= S;
-		m_cxyFixed.cy *= S;
+		m_attrs.SetAttribute(DUI_ATTR_WIDTH, (int)(ITEM_DEFAULT_WIDTH * S));
+		m_attrs.SetAttribute(DUI_ATTR_HEIGHT, (int)(ITEM_DEFAULT_HEIGHT * S));
 	}
 
 	SIZE cXY = {0};
@@ -901,7 +904,7 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 			iTextColor = pInfo->dwDisabledTextColor;
 		}
 
-		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
+		RECT rcText = { 0, 0, MAX(szAvailable.cx, GetFixedWidth()), 9999 };
 		rcText.left += pInfo->rcTextPadding.left;
 		rcText.right -= pInfo->rcTextPadding.right;
 		if( pInfo->bShowHtml ) {   
@@ -912,16 +915,16 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 		{
 			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->sFont, DT_CALCRECT | pInfo->uTextStyle);
 		}
-		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20* S;
+		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20;
 		cXY.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
 	}
 
-	if( m_cxyFixed.cy != 0 ) cXY.cy = m_cxyFixed.cy;
-	if ( cXY.cx < m_cxyFixed.cx )
-		cXY.cx =  m_cxyFixed.cx;
+	if( GetFixedHeight() != 0 ) cXY.cy = GetFixedHeight();
+	if ( cXY.cx < GetFixedWidth() )
+		cXY.cx = GetFixedWidth();
 
-	m_cxyFixed.cy = cXY.cy;
-	m_cxyFixed.cx = cXY.cx;
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, cXY.cy);
 	return cXY;
 }
 
@@ -959,7 +962,7 @@ void CMenuElementUI::DoEvent(TEventUI& event)
 		return;
 	}
 
-	if( event.Type == UIEVENT_BUTTONUP )
+	if( event.Type == UIEVENT_BUTTONUP || ( event.Type == UIEVENT_KEYDOWN && event.chKey == VK_SPACE))
 	{
 		if( IsEnabled() ){
 			CListContainerElementUI::DoEvent(event);
