@@ -31,12 +31,14 @@ public:
     CControlUI* Create(IDialogBuilderCallback* pCallback = NULL, CPaintManagerUI* pManager = NULL,
         CControlUI* pParent = NULL);
 
+	void _ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root);
+
     CMarkup* GetMarkup();
 
-    void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
-    void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;
+//     void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
+//     void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;
 private:
-    CControlUI* _Parse(CMarkupNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
+    CControlUI* _Parse(CDuiXmlNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
 
     CMarkup m_xml;
     IDialogBuilderCallback* m_pCallback;

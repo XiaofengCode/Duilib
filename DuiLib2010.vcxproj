@@ -1315,6 +1315,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Layout\UISliderTabLayout.cpp" />
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="UIlib.cpp" />
     <ClCompile Include="Utils\DuiTrayIcon.cpp" />
     <ClCompile Include="Utils\FileHelper.cpp" />
@@ -1440,6 +1443,8 @@
     <ClInclude Include="Core\UITimer.h" />
     <ClInclude Include="duipub.h" />
     <ClInclude Include="Layout\UISliderTabLayout.h" />
+    <ClInclude Include="pugixml\pugiconfig.hpp" />
+    <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\downloadmgr.h" />
     <ClInclude Include="Utils\DuiPointer.h" />

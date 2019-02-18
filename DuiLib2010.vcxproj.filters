@@ -37,6 +37,12 @@
       <UniqueIdentifier>{2930b2b3-f89f-42f3-99b2-0892d0f1cd8f}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{3f5e9052-2a81-46ac-bfd4-c1f713fcd925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{fb0ee695-ab82-4ef2-956d-e96aea21665e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIlib.cpp">
@@ -185,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="Utils\FileHelper.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +358,12 @@
     </ClInclude>
     <ClInclude Include="Utils\FileHelper.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugixml.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugiconfig.hpp">
+      <Filter>pugixml</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
