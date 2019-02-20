@@ -71,14 +71,15 @@ namespace DuiLib{
 	void CDuiStringTable::Parse()
 	{
 		Clear();
-		CMarkupNode root = m_xml.GetRoot();
-		if (!root.IsValid())
+		CDuiXmlNode root = m_xml.GetRoot();
+		if (!root)
 		{
 			return;
 		}
 		if (!m_strLan.GetLength())
 		{
-			LPCTSTR lpszTmp = root.GetAttributeValue(_T("default"));
+			CDuiXmlAttr attr = root.attribute(_T("default"));
+			LPCTSTR lpszTmp = attr.as_string();
 			if (lpszTmp && _tcslen(lpszTmp))
 			{
 				m_strLan = lpszTmp;
@@ -86,16 +87,16 @@ namespace DuiLib{
 		}
 		if (m_strLan.GetLength())
 		{
-			CMarkupNode node = root.GetChild(m_strLan);
-			if (node.IsValid())
+			CDuiXmlNode node = root.child(m_strLan);
+			if (node)
 			{
 				root = node;
 			}
 		}
 
-		for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) 
+		for( CDuiXmlNode node = root.first_child(); node; node = node.next_sibling() ) 
 		{
-			CDuiString strValue = node.GetValue();
+			CDuiString strValue = node.text().as_string();
 			//×ªÒå×Ö·û
 			int nLen = strValue.GetLength();
 			TCHAR* szBuf = new TCHAR[nLen + 1];
@@ -152,7 +153,7 @@ namespace DuiLib{
 			}
 
 			CDuiString* pString = new CDuiString(strValue);
-			CDuiString* pOld = (CDuiString*)m_mapStringHash.Find(node.GetName());
+			CDuiString* pOld = (CDuiString*)m_mapStringHash.Find(node.name());
 			if (pOld)
 			{
 				CDuiString sDbg(_T("Warning: Same string ID <"));
@@ -161,7 +162,7 @@ namespace DuiLib{
 				OutputDebugString(sDbg);
 				delete pOld;
 			}
-			m_mapStringHash.Set(node.GetName(), pString);
+			m_mapStringHash.Set(node.name(), pString);
 
 			delete[]szBuf;
 			szBuf = NULL;

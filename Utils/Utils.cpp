@@ -493,7 +493,7 @@ namespace DuiLib
 		{
 			ASSERT(!::IsBadStringPtrA(lpStr,-1));
 			int cchStr = (int) strlen(lpStr) + 1;
-			LPWSTR pwstr = (LPWSTR) _alloca(cchStr);
+			LPWSTR pwstr = (LPWSTR) _alloca(cchStr * 2);
 			if( pwstr != NULL ) ::MultiByteToWideChar(::GetACP(), 0, lpStr, -1, pwstr, cchStr) ;
 			Assign(pwstr);
 		}
