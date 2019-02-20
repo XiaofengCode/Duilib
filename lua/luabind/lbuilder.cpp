@@ -9,9 +9,9 @@ LBIND_DEFINE_FUNC(CDialogBuilder,LoadFile)
 	return L.lreturn(pThis->LoadFile(CDuiString(arg[2].toString())));
 LBIND_END_DEFINE_FUNC
 
-LBIND_DEFINE_FUNC(CDialogBuilder,LoadString)
-	return L.lreturn(pThis->LoadString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
+// LBIND_DEFINE_FUNC(CDialogBuilder,LoadString)
+// 	return L.lreturn(pThis->LoadString(arg[2].toString()));
+// LBIND_END_DEFINE_FUNC
 
 
 class LuaDialogBuilderCallback:public IDialogBuilderCallback
@@ -80,7 +80,7 @@ LBIND_END_DEFINE_FUNC
 
 LBIND_BEGIN_DEFINE_LIB(CDialogBuilder)
 	{"loadFile",lbind::LoadFile},
-	{"loadString",lbind::LoadString},
+	//{"loadString",lbind::LoadString},
 	{"buildControl",lbind::BuildControl},
 	{"delete",lbind::Delete},
 	{"__gc",lbind::Delete},

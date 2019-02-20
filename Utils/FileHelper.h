@@ -3,6 +3,7 @@
 namespace DuiLib {
 	bool _Failed( LPCTSTR pstrError, LPCTSTR pstrLocation = NULL);
 
+
 	class CDuiBuffer
 	{
 	public:
@@ -37,6 +38,8 @@ namespace DuiLib {
 		DWORD m_dwSize;
 	};
 
+	CDuiString DuiGetAbsFilePath(LPCTSTR pstrFilename);
+	std::string DuiGetAbsFilePath(LPCSTR pstrFilename);
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer);
 	BOOL DuiReadResourceFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer);
 }

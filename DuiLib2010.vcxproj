@@ -1459,7 +1459,7 @@
     </ClCompile>
     <ClCompile Include="lua\luabind\lwindow.cpp" />
     <ClCompile Include="lua\LuaObj\LuaBind.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1479,7 +1479,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaEngine.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1499,7 +1499,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaFunction.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1519,7 +1519,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaObject.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1539,7 +1539,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaObjectImpl.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1559,7 +1559,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaState.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1579,7 +1579,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaStateOwner.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1599,7 +1599,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaTable.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>
@@ -1639,7 +1639,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='s|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="lua\LuaObj\Utf.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='u|Win32'">NotUsing</PrecompiledHeader>

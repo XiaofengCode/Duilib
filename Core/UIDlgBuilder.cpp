@@ -70,170 +70,232 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 			pstrClass = node.name();
 			if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
 			{
-				LPCTSTR pImageName = NULL;
-				LPCTSTR pImageResType = NULL;
-				DWORD mask = 0;
-				xml_object_range<xml_attribute_iterator> attrs = node.attributes();
-				for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
-				{
-					pstrName = attr->name();
-					pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-					if( _tcsicmp(pstrName, _T("name")) == 0 )
-					{
-						pImageName = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("restype")) == 0 )
-					{
-						pImageResType = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("mask")) == 0 ) 
-					{
-						if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-						mask = _tcstoul(pstrValue, &pstr, 16);
-					}
-				}
-				if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
+				_ParseImage(node, pManager);
 			}
 			else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
 			{
-				LPCTSTR pFontID = NULL;
-				LPCTSTR pFontName = NULL;
-				int size = (int)(S * 12);
-				bool bold = false;
-				bool underline = false;
-				bool italic = false;
-				bool defaultfont = false;
-
-				LPCTSTR pFontName2 = NULL;
-				int size2 = 12;
-				bool bold2 = false;
-				bool underline2 = false;
-				bool italic2 = false;
-
-				xml_object_range<xml_attribute_iterator> attrsFont = node.attributes();
-				for( xml_attribute_iterator attr = attrsFont.begin(); attr != attrsFont.end(); attr++ )
-				{
-					pstrName = attr->name();
-					pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-					if( _tcsicmp(pstrName, _T("id")) == 0 )
-					{
-						pFontID = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("name")) == 0 )
-					{
-						pFontName = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("size")) == 0 )
-					{
-						size = (int)(S *  _tcstol(pstrValue, &pstr, 10));
-					}
-					else if( _tcsicmp(pstrName, _T("bold")) == 0 )
-					{
-						bold = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					else if( _tcsicmp(pstrName, _T("underline")) == 0 )
-					{
-						underline = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					else if( _tcsicmp(pstrName, _T("italic")) == 0 )
-					{
-						italic = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					else if( _tcsicmp(pstrName, _T("default")) == 0 )
-					{
-						defaultfont = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					if( _tcsicmp(pstrName, _T("name2")) == 0 )
-					{
-						pFontName2 = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("size2")) == 0 ) 
-					{
-						size2 = _tcstol(pstrValue, &pstr, 10);
-					}
-					else if( _tcsicmp(pstrName, _T("bold2")) == 0 )
-					{
-						bold2 = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					else if( _tcsicmp(pstrName, _T("underline2")) == 0 )
-					{
-						underline2 = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-					else if( _tcsicmp(pstrName, _T("italic2")) == 0 )
-					{
-						italic2 = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
-				}
-
-				if( pFontName ) 
-				{
-					BOOL bAllocID = FALSE;
-					if (!pFontID)
-					{
-						TCHAR* pID = new TCHAR[64];
-						_stprintf_s(pID, 64, _T("%lu"), pManager->GetCustomFontCount());
-						pFontID = pID;
-						bAllocID = TRUE;
-					}
-					if (pFontName2)
-					{
-						//支持备用字体
-						if (NULL == pManager->AddFont(pFontID, pFontName, size, bold, underline, italic, TRUE))
-						{
-							if (NULL != pManager->AddFont(pFontID, pFontName2, size2, bold2, underline2, italic2))
-							{
-								if( defaultfont )
-									pManager->SetDefaultFont(pFontName2, size2, bold2, underline2, italic2);
-							}
-						}
-						else
-						{
-							if( defaultfont )
-								pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
-						}
-					}
-					else
-					{
-						if (NULL != pManager->AddFont(pFontID, pFontName, size, bold, underline, italic))
-						{
-							if( defaultfont )
-								pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
-						}
-					}
-					if (bAllocID)
-					{
-						delete[] pFontID;
-					}
-
-				}
+				_ParseFont(pManager, node);
 			}
 			else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
 			{
-				LPCTSTR pControlName = NULL;
-				LPCTSTR pControlValue = NULL;
-				xml_object_range<xml_attribute_iterator> attrs = node.attributes();
-				for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
-				{
-					pstrName = attr->name();
-					pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-					if( _tcsicmp(pstrName, _T("name")) == 0 )
-					{
-						pControlName = pstrValue;
-					}
-					else if( _tcsicmp(pstrName, _T("value")) == 0 )
-					{
-						pControlValue = pstrValue;
-					}
-				}
-				if( pControlName )
-				{
-					pManager->AddDefaultAttributeList(pControlName, pControlValue);
-				}
+				_ParseDefault(node, pManager);
 			}
+// 			else if( _tcsicmp(pstrClass, _T("Include")) == 0 )
+// 			{
+// 				_ParseInclude(node, pManager, pParent);
+// 			}
 		}
     }
 	
-    return _Parse(&root, pParent, pManager);
+    return _ParseControl(&root, pParent, pManager);
+}
+
+void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent)
+{
+	if (!pManager)
+	{
+		return;
+	}
+	//<Event setFocus="ClickEvent.click">
+	//	<click>print("按钮点击")</click>
+	//</Event>
+	pParent->SetManager(pManager, NULL, false);
+	char nameBuf[MAX_PATH];
+	char valueBuf[MAX_PATH];
+	LuaEngine* L=LuaManager::instance()->current();
+	if(!L)
+	{
+		return;
+	}
+	try
+	{
+		for (CDuiXmlAttr attr=node.first_attribute();attr;attr=attr.next_attribute())
+		{
+			UTF16To8(nameBuf,(unsigned short*)attr.name(),sizeof(nameBuf));
+			UTF16To8(valueBuf,(unsigned short*)attr.value(),sizeof(valueBuf));
+
+			char* val="";
+			for (int i=strlen(valueBuf)-1;i>=0;--i)
+			{
+				if (valueBuf[i]=='.')
+				{
+					valueBuf[i]='\0';
+					val=&valueBuf[i+1];
+				}
+			}
+
+			LuaTable tab=L->require(valueBuf);
+			if (tab.isValid())
+			{
+				pParent->BindLuaEvent(strlwr(nameBuf),tab.getTable(val));
+			}
+		}
+
+		for( CDuiXmlNode evNode = node.first_child() ; evNode; evNode = evNode.next_sibling() )
+		{
+			UTF16To8(nameBuf,(unsigned short*)evNode.name(),sizeof(nameBuf));
+			int len=UTF16To8(NULL,(unsigned short*)evNode.text().as_string(),0);
+			char* buf=(char*)dlmalloc(len+1);
+			UTF16To8(buf,(unsigned short*)evNode.text().as_string(),len+1);
+			pParent->BindLuaEvent(strlwr(nameBuf),buf);
+			dlfree(buf);
+		}
+	}
+	catch(LuaException err)
+	{
+		OutputDebugStringA(err.what());
+		//LOGE("doString error:"<<err.what());
+	}	
+}
+
+void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
+{
+	LPCTSTR pstrName = NULL;
+	LPCTSTR pstrValue = NULL;
+
+	LPCTSTR pControlName = NULL;
+	LPCTSTR pControlValue = NULL;
+	xml_object_range<xml_attribute_iterator> attrs = node.attributes();
+	for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
+	{
+		pstrName = attr->name();
+		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		if( _tcsicmp(pstrName, _T("name")) == 0 )
+		{
+			pControlName = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("value")) == 0 )
+		{
+			pControlValue = pstrValue;
+		}
+	}
+	if( pControlName )
+	{
+		pManager->AddDefaultAttributeList(pControlName, pControlValue);
+	}
+}
+
+void CDialogBuilder::_ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node)
+{
+	double S = 1.0;
+	if (pManager)
+	{
+		S = pManager->GetDpiScale();
+	}
+	LPCTSTR pstrName = NULL;
+	LPCTSTR pstrValue = NULL;
+	LPTSTR pstr = NULL;
+
+	LPCTSTR pFontID = NULL;
+	LPCTSTR pFontName = NULL;
+	int size = (int)(S * 12);
+	bool bold = false;
+	bool underline = false;
+	bool italic = false;
+	bool defaultfont = false;
+
+	LPCTSTR pFontName2 = NULL;
+	int size2 = 12;
+	bool bold2 = false;
+	bool underline2 = false;
+	bool italic2 = false;
+
+	xml_object_range<xml_attribute_iterator> attrsFont = node.attributes();
+	for( xml_attribute_iterator attr = attrsFont.begin(); attr != attrsFont.end(); attr++ )
+	{
+		pstrName = attr->name();
+		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		if( _tcsicmp(pstrName, _T("id")) == 0 )
+		{
+			pFontID = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("name")) == 0 )
+		{
+			pFontName = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("size")) == 0 )
+		{
+			size = (int)(S *  _tcstol(pstrValue, &pstr, 10));
+		}
+		else if( _tcsicmp(pstrName, _T("bold")) == 0 )
+		{
+			bold = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("underline")) == 0 )
+		{
+			underline = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("italic")) == 0 )
+		{
+			italic = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("default")) == 0 )
+		{
+			defaultfont = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		if( _tcsicmp(pstrName, _T("name2")) == 0 )
+		{
+			pFontName2 = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("size2")) == 0 ) 
+		{
+			size2 = _tcstol(pstrValue, &pstr, 10);
+		}
+		else if( _tcsicmp(pstrName, _T("bold2")) == 0 )
+		{
+			bold2 = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("underline2")) == 0 )
+		{
+			underline2 = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+		else if( _tcsicmp(pstrName, _T("italic2")) == 0 )
+		{
+			italic2 = (_tcsicmp(pstrValue, _T("true")) == 0);
+		}
+	}
+
+	if( pFontName ) 
+	{
+		BOOL bAllocID = FALSE;
+		if (!pFontID)
+		{
+			TCHAR* pID = new TCHAR[64];
+			_stprintf_s(pID, 64, _T("%lu"), pManager->GetCustomFontCount());
+			pFontID = pID;
+			bAllocID = TRUE;
+		}
+		if (pFontName2)
+		{
+			//支持备用字体
+			if (NULL == pManager->AddFont(pFontID, pFontName, size, bold, underline, italic, TRUE))
+			{
+				if (NULL != pManager->AddFont(pFontID, pFontName2, size2, bold2, underline2, italic2))
+				{
+					if( defaultfont )
+						pManager->SetDefaultFont(pFontName2, size2, bold2, underline2, italic2);
+				}
+			}
+			else
+			{
+				if( defaultfont )
+					pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+			}
+		}
+		else
+		{
+			if (NULL != pManager->AddFont(pFontID, pFontName, size, bold, underline, italic))
+			{
+				if( defaultfont )
+					pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+			}
+		}
+		if (bAllocID)
+		{
+			delete[] pFontID;
+		}
+
+	}
 }
 
 CMarkup* CDialogBuilder::GetMarkup()
@@ -266,7 +328,7 @@ bool CDialogBuilder::LoadString(LPCSTR str)
 //     return m_xml.GetLastErrorLocation(pstrSource, cchMax);
 // }
 
-CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPaintManagerUI* pManager)
+CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParent, CPaintManagerUI* pManager)
 {
     IContainerUI* pContainer = NULL;
     CControlUI* pReturn = NULL;
@@ -281,43 +343,25 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
         CControlUI* pControl = NULL;
         if( _tcsicmp(pstrClass, _T("Include")) == 0 )
 		{
-// 			xml_object_range<xml_attribute_iterator> attrsFont = node.attributes();
-// 			for( xml_attribute_iterator attr = attrsFont.begin(); attr != attrsFont.end(); attr++ )
-// 			{
-// 				pstrName = attr->name();
-// 				pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-// 			}
-//             if( !node.HasAttributes() ) 
-// 			{
-// 				continue;
-// 			}
-            int count = 1;
-            LPTSTR pstr = NULL;
-			CDuiXmlAttr attr = node.attribute(_T("count"));
-			if (attr)
-			{
-				count = attr.as_int();
-			}
-			attr = node.attribute(_T("source"));
-			if (!attr)
-			{
-				continue;
-			}
-            for ( int i = 0; i < count; i++ )
-			{
-                CDialogBuilder builder;
-                if( m_pstrtype != NULL )
-				{ // 使用资源dll，从资源中读取
-                    WORD id = (WORD)attr.as_int();
-                    pControl = builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
-                }
-                else
-				{
-                    pControl = builder.Create(attr.as_string(), (UINT)0, m_pCallback, pManager, pParent);
-                }
-            }
+			_ParseInclude(node, pManager, pParent);
             continue;
-        }
+		}
+// 		else if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
+// 		{
+// 			_ParseImage(node, pManager);
+// 		}
+// 		else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
+// 		{
+// 			_ParseFont(pManager, node);
+// 		}
+// 		else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
+// 		{
+// 			_ParseDefault(node, pManager);
+// 		}
+		else if( _tcsicmp(pstrClass, _T("Event")) == 0 )
+		{
+			_ParseEvent(node, pManager, pParent);
+		}
 		//树控件XML解析
 		else if( _tcsicmp(pstrClass, _T("TreeNode")) == 0 )
 		{
@@ -349,14 +393,14 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
 			{
 				LPCTSTR pstrName = attr->name();
 				LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-				if (!m_pAttrbuteCallback || m_pAttrbuteCallback->SetAttribute(pControl, pstrName, pstrValue))
+				if (!m_pAttrbuteCallback || m_pAttrbuteCallback->SetAttribute(pNode, pstrName, pstrValue))
 				{
 					pNode->SetAttribute(pstrName, pstrValue);
 				}
 			}
 
 			//检索子节点及附加控件
-			_Parse(&node, pNode, pManager);
+			_ParseControl(&node, pNode, pManager);
 
 			if(!pParentNode)
 			{
@@ -446,7 +490,8 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
                     if( lpCreateControl != NULL ) 
 					{
                         pControl = lpCreateControl(pstrClass);
-                        if( pControl != NULL ) break;
+                        if( pControl != NULL )
+							break;
                     }
                 }
             }
@@ -469,7 +514,7 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
 			}
 
         // Add children
-           _Parse(&node, pControl, pManager);
+           _ParseControl(&node, pControl, pManager);
 
         // Attach to parent
         // 因为某些属性和父窗口相关，比如selected，必须先Add到父窗口
@@ -498,8 +543,8 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
             }
         }
 		// Process attributes
-		xml_object_range<xml_attribute_iterator> attrsFont = node.attributes();
-		for( xml_attribute_iterator attr = attrsFont.begin(); attr != attrsFont.end(); attr++ )
+		xml_object_range<xml_attribute_iterator> attrsCtrl = node.attributes();
+		for( xml_attribute_iterator attr = attrsCtrl.begin(); attr != attrsCtrl.end(); attr++ )
 		{
 			LPCTSTR pstrName = attr->name();
 			LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
@@ -507,6 +552,7 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
 			{
 				pControl->SetAttribute(pstrName, pstrValue);
 			}
+
 		}
         if( pManager )
 		{
@@ -516,6 +562,35 @@ CControlUI* CDialogBuilder::_Parse(CDuiXmlNode* pRoot, CControlUI* pParent, CPai
         if( pReturn == NULL ) pReturn = pControl;
     }
     return pReturn;
+}
+
+void CDialogBuilder::_ParseInclude(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent)
+{
+	int count = 1;
+	LPTSTR pstr = NULL;
+	CDuiXmlAttr attr = node.attribute(_T("count"));
+	if (attr)
+	{
+		count = attr.as_int();
+	}
+	attr = node.attribute(_T("source"));
+	if (!attr)
+	{
+		return;
+	}
+	for ( int i = 0; i < count; i++ )
+	{
+		CDialogBuilder builder;
+		if( m_pstrtype != NULL )
+		{ // 使用资源dll，从资源中读取
+			WORD id = (WORD)attr.as_int();
+			builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
+		}
+		else
+		{
+			builder.Create(attr.as_string(), (UINT)0, m_pCallback, pManager, pParent);
+		}
+	}
 }
 
 void CDialogBuilder::_ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root)
@@ -748,6 +823,37 @@ void CDialogBuilder::_ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root)
 			pManager->SetDefaultFocusDotColor(clrColor);
 		} 
 	}
+}
+
+void CDialogBuilder::_ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager)
+{
+	LPCTSTR pstrName = NULL;
+	LPCTSTR pstrValue = NULL;
+	LPTSTR pstr = NULL;
+
+	LPCTSTR pImageName = NULL;
+	LPCTSTR pImageResType = NULL;
+	DWORD mask = 0;
+	xml_object_range<xml_attribute_iterator> attrs = node.attributes();
+	for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
+	{
+		pstrName = attr->name();
+		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		if( _tcsicmp(pstrName, _T("name")) == 0 )
+		{
+			pImageName = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("restype")) == 0 )
+		{
+			pImageResType = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("mask")) == 0 ) 
+		{
+			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+			mask = _tcstoul(pstrValue, &pstr, 16);
+		}
+	}
+	if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
 }
 
 } // namespace DuiLib

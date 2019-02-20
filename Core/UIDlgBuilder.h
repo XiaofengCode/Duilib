@@ -32,6 +32,14 @@ public:
     CControlUI* Create(IDialogBuilderCallback* pCallback = NULL, CPaintManagerUI* pManager = NULL,
         CControlUI* pParent = NULL);
 
+	void _ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent);
+
+	void _ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager);
+
+	void _ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node);
+
+	void _ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager);
+
 	void _ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root);
 
     CMarkup* GetMarkup();
@@ -44,7 +52,9 @@ public:
 //     void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
 //     void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;
 private:
-    CControlUI* _Parse(CDuiXmlNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
+    CControlUI* _ParseControl(CDuiXmlNode* parent, CControlUI* pParent = NULL, CPaintManagerUI* pManager = NULL);
+
+	void _ParseInclude(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent);
 
     CMarkup m_xml;
     IDialogBuilderCallback* m_pCallback;

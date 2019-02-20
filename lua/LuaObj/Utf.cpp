@@ -1,3 +1,4 @@
+#include "duipub.h"
 #include "Utf.h"
 #include <stdlib.h>
 

@@ -10,15 +10,15 @@ namespace lbind
 			pThis->ShowWindow(arg[2].toBool());
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(WindowImplBase,ShowMin)
+	LBIND_DEFINE_FUNC(WindowImplBase,ShowMin)
 		::ShowWindow(pThis->GetHWND(),SW_MINIMIZE);
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(WindowImplBase,ShowMax)
+	LBIND_DEFINE_FUNC(WindowImplBase,ShowMax)
 		::ShowWindow(pThis->GetHWND(),SW_MAXIMIZE);
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(WindowImplBase,ShowRestore)
+	LBIND_DEFINE_FUNC(WindowImplBase,ShowRestore)
 		::ShowWindow(pThis->GetHWND(),SW_RESTORE);
 	LBIND_END_DEFINE_FUNC
 
@@ -26,21 +26,29 @@ namespace lbind
 		pThis->Close();
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(WindowImplBase,CenterWindow)
+	LBIND_DEFINE_FUNC(WindowImplBase,CenterWindow)
 		pThis->CenterWindow();
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(WindowImplBase,ResizeClient)
+	LBIND_DEFINE_FUNC(WindowImplBase,ResizeClient)
 		pThis->ResizeClient(arg[2].toInt(),arg[3].toInt());
 	LBIND_END_DEFINE_FUNC
 
 
-		LBIND_DEFINE_FUNC(WindowImplBase,GetDlgItem)
+	LBIND_DEFINE_FUNC(WindowImplBase,GetDlgItem)
 		CControlUI* ctl=pThis->GetDlgItem(CDuiString(arg[2].toString()));
-	if(ctl)
-		return L.lreturn(ctl->_lbindCToLua(&L));
+		if(ctl)
+			return L.lreturn(ctl->_lbindCToLua(&L));
 	LBIND_END_DEFINE_FUNC
 
+	LBIND_DEFINE_FUNC(WindowImplBase,LoadString)
+		LPCTSTR lpsz = pThis->LoadString(CDuiString(arg[2].toString()));
+		return L.lreturn(DUI_T2A(lpsz).c_str());
+	LBIND_END_DEFINE_FUNC
+
+	LBIND_DEFINE_FUNC(WindowImplBase,DoString)
+		L.doString(arg[2].toString());
+	LBIND_END_DEFINE_FUNC
 }
 
 LBIND_BEGIN_DEFINE_LIB(WindowImplBase)
@@ -53,6 +61,7 @@ LBIND_BEGIN_DEFINE_LIB(WindowImplBase)
 {"centerWindow",lbind::CenterWindow},
 {"resizeClient",lbind::ResizeClient},
 {"getDlgItem",lbind::GetDlgItem},
+{"doString",lbind::DoString},
 LBIND_END_DEFINE_LIB
 
 

@@ -379,28 +379,32 @@ namespace DuiLib
 	}
 
 #ifdef _UNICODE
-	CDuiString::CDuiString(LPCSTR lpsz, int nLen /*= -1*/)
+	CDuiString::CDuiString(LPCSTR lpsz, int nLen /*= -1*/) : m_pstr(m_szBuffer)
 	{
-		if ( lpsz )
+		m_szBuffer[0] = '\0';
+		if (!lpsz )
 		{
-			ASSERT(!::IsBadStringPtrA(lpsz, nLen));
-			int cchStr = nLen == -1 ? ((int) strlen(lpsz) * 2) + 1 : nLen + 1;
-			LPWSTR pwstr = (LPWSTR) _alloca(cchStr * 2);
-			if( pwstr != NULL ) ::MultiByteToWideChar(::GetACP(), 0, lpsz, nLen, pwstr, cchStr) ;
-			Assign(pwstr);
+			return;
 		}
+		ASSERT(!::IsBadStringPtrA(lpsz, nLen));
+		int cchStr = nLen == -1 ? ((int) strlen(lpsz) * 2) + 2 : nLen + 2;
+		LPWSTR pwstr = (LPWSTR) _alloca(cchStr);
+		if( pwstr != NULL ) ::MultiByteToWideChar(::GetACP(), 0, lpsz, nLen, pwstr, cchStr) ;
+		Assign(pwstr);
 	}
 #else
-	CDuiString::CDuiString(LPCWSTR lpwStr, int nLen /*= -1*/)
+	CDuiString::CDuiString(LPCWSTR lpwStr, int nLen /*= -1*/) : m_pstr(m_szBuffer)
 	{
-		if ( lpwStr )
+		m_szBuffer[0] = '\0';
+		if ( !lpwStr )
 		{
-			ASSERT(!::IsBadStringPtrW(lpwStr,-1));
-			int cchStr = nLen == -1 ? (int)wcslen(lpwStr) * 2 + 1 : nLen + 1;
-			LPSTR pstr = (LPSTR) _alloca(cchStr);
-			if( pstr != NULL ) ::WideCharToMultiByte(::GetACP(), 0, lpwStr, -1, pstr, cchStr, NULL, NULL);
-			Assign(pstr);
+			return;
 		}
+		ASSERT(!::IsBadStringPtrW(lpwStr,-1));
+		int cchStr = nLen == -1 ? (int)wcslen(lpwStr) * 2 + 1 : nLen + 1;
+		LPSTR pstr = (LPSTR) _alloca(cchStr);
+		if( pstr != NULL ) ::WideCharToMultiByte(::GetACP(), 0, lpwStr, -1, pstr, cchStr, NULL, NULL);
+		Assign(pstr);
 	}
 #endif
 
@@ -551,7 +555,7 @@ namespace DuiLib
 		if ( lpwStr )
 		{
 			ASSERT(!::IsBadStringPtrW(lpwStr,-1));
-			int cchStr = ((int) wcslen(lpwStr) * 2) + 1;
+			int cchStr = ((int) wcslen(lpwStr) * 2) + 2;
 			LPSTR pstr = (LPSTR) _alloca(cchStr);
 			if( pstr != NULL ) ::WideCharToMultiByte(::GetACP(), 0, lpwStr, -1, pstr, cchStr, NULL, NULL);
 			Assign(pstr);

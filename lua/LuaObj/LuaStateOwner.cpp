@@ -1,3 +1,4 @@
+#include "duipub.h"
 #include "LuaStateOwner.h"
 
 

@@ -1,3 +1,4 @@
+#include "duipub.h"
 #include "LuaEngine.h"
 
 LuaManager s_LuaManager;

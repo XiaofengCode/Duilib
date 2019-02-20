@@ -9,20 +9,38 @@ namespace DuiLib {
 		return false;
 	}
 
+	CDuiString DuiGetAbsFilePath(LPCTSTR pstrFilename)
+	{
+		CDuiString sPath = CPaintManagerUI::GetResourcePath() + pstrFilename;
+		if (_taccess(sPath, 0) == 0)
+		{
+			return sPath;
+		}
+		sPath = pstrFilename;
+		if (_taccess(sPath, 0) == 0)
+		{
+			return sPath;
+		}
+		sPath = CPaintManagerUI::GetInstancePath() + pstrFilename;
+		if (_taccess(sPath, 0) == 0)
+		{
+			return sPath;
+		}
+		return pstrFilename;
+	}
+
+	std::string DuiGetAbsFilePath(LPCSTR pstrFilename)
+	{
+		CDuiString sPath = DuiGetAbsFilePath(CDuiString(pstrFilename));
+		return DUI_T2A(sPath);
+	}
+
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer)
 	{
-		HANDLE hFile = CreateFile(CPaintManagerUI::GetResourcePath() + pstrFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE hFile = CreateFile(DuiGetAbsFilePath(pstrFilename), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if( hFile == INVALID_HANDLE_VALUE )
 		{
-			hFile = CreateFile(pstrFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-			if( hFile == INVALID_HANDLE_VALUE )
-			{
-				hFile = CreateFile(CPaintManagerUI::GetInstancePath() + pstrFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-				if( hFile == INVALID_HANDLE_VALUE )
-				{
-					return _Failed(_T("Error opening file"));
-				}
-			}
+			return _Failed(_T("Error opening file"));
 		}
 		DWORD dwSize = ::GetFileSize(hFile, NULL);
 		if( dwSize == 0 )
@@ -63,19 +81,11 @@ namespace DuiLib {
 				hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
 			if (hz == NULL)
 			{
-				hz = OpenZip((void*)(LPCTSTR)(CPaintManagerUI::GetResourcePath() + CPaintManagerUI::GetResourceZip()), 0, 2);
+				hz = OpenZip((void*)(LPCTSTR)(DuiGetAbsFilePath(CPaintManagerUI::GetResourceZip())), 0, 2);
 				if (hz == NULL)
 				{
-					hz = OpenZip((void*)(LPCTSTR)CPaintManagerUI::GetResourceZip(), 0, 2);
-					if (hz == NULL)
-					{
-						hz = OpenZip((void*)(LPCTSTR)(CPaintManagerUI::GetInstancePath() + CPaintManagerUI::GetResourceZip()), 0, 2);
-						if (hz == NULL)
-						{
-							return DuiReadFileData(pstrFilename, buffer);
-							//return _Failed(_T("Error opening zip file"));
-						}
-					}
+					return DuiReadFileData(pstrFilename, buffer);
+					//return _Failed(_T("Error opening zip file"));
 				}
 			}
 

@@ -87,7 +87,7 @@ CControlUI::~CControlUI()
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
-bool CControlUI::DoLuaEvent(const char* evName)
+bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lParam, LuaObject event)
 {
 	ASSERT(evName);
 	if (GetManager())
@@ -100,9 +100,18 @@ bool CControlUI::DoLuaEvent(const char* evName)
 			if (evData.isFunction())
 			{
 				LuaFunction func=evData;
-				try{
-					LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()));
-					return rtn.toBool();
+				try
+				{
+					if (event.toInt())
+					{
+						LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam, event);
+						return rtn.toBool();
+					}
+					else
+					{
+						LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam);
+						return rtn.toBool();
+					}
 				}
 				catch(LuaException err)
 				{
@@ -117,6 +126,9 @@ bool CControlUI::DoLuaEvent(const char* evName)
 					LuaState* L=LuaManager::instance()->current();
 					LuaObject lthis=_lbindCToLua(L);
 					L->setGlobal("this",lthis);
+					L->setGlobal("wParam",wParam);
+					L->setGlobal("lParam",lParam);
+					L->setGlobal("nEvent",event);
 					const char* script=evData.toString();
 					L->doString(script);
 				}
@@ -131,94 +143,13 @@ bool CControlUI::DoLuaEvent(const char* evName)
 	return false;
 }
 
-bool CControlUI::DoLuaEvent(const char* evName,LuaObject param)
-{
-	ASSERT(evName);
-	if (GetManager())
-	{
-		//LOGI("DoLuaEvent:"<<evName);
-		LuaTable tab=GetManager()->GetControlEventMap(this,false);
-		if (tab.isValid())
-		{
-			LuaObject evData=tab.getTable(evName);
-			if (evData.isFunction())
-			{
-				LuaFunction func=evData;
-				try{
-					LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()),param);
-					return rtn.toBool();
-				}
-				catch(LuaException err)
-				{
-					OutputDebugStringA(err.what());
-					//LOGE("exec function error:"<<err.what());
-				}
-				return false;
-			}
-			else if(evData.isString())
-			{
-				try{
-					LuaState* L=LuaManager::instance()->current();
-					LuaObject lthis=_lbindCToLua(L);
-					L->setGlobal("this",lthis);
-					L->setGlobal("param",param);
-					const char* script=evData.toString();
-					L->doString(script);
-				}
-				catch(LuaException err)
-				{
-					OutputDebugStringA(err.what());
-					//LOGE("doString error:"<<err.what());
-				}
-			}
-		}
-	}
-	return false;
-}
-
-bool CControlUI::DoLuaEvent(const char* evName,lua_Integer param)
+bool CControlUI::DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer lParam, lua_Integer nEvent/* = 0*/)
 {
 	LuaEngine* L=LuaManager::instance()->current();
 	if (L)
 	{
 		//LOGI("DoLuaEvent:"<<evName);
-		return DoLuaEvent(evName,L->newInt(param));
-	}
-	return false;
-}
-
-
-bool CControlUI::DoLuaEvent(const char* evName,const char* param)
-{
-	LuaEngine* L=LuaManager::instance()->current();
-	if (L)
-	{
-		//LOGI("DoLuaEvent:"<<evName);
-		return DoLuaEvent(evName,L->newString(param));
-	}
-
-	return false;
-}
-
-
-bool CControlUI::DoLuaEvent(const char* evName,const wchar_t* param)
-{
-	LuaEngine* L=LuaManager::instance()->current();
-	if (L)
-	{
-		//LOGI("DoLuaEvent:"<<evName);
-		return DoLuaEvent(evName,L->newString(param));
-	}
-	return false;
-}
-
-bool CControlUI::DoLuaEvent(const char* evName,bool param)
-{
-	LuaEngine* L=LuaManager::instance()->current();
-	if (L)
-	{
-		//LOGI("DoLuaEvent:"<<evName);
-		return DoLuaEvent(evName,L->newBool(param));
+		return DoLuaEvent(evName, L->newInt(wParam),L->newInt(lParam), L->newInt(nEvent));
 	}
 	return false;
 }
@@ -233,7 +164,6 @@ void CControlUI::BindLuaEvent(const char* evName,LuaObject func)
 		tab.setTable(evName,func);
 	}
 }
-
 
 void CControlUI::BindLuaEvent(const char* evName,const char* luaSrc)
 {
@@ -837,6 +767,7 @@ bool CControlUI::IsKeyboardEnabled() const
 {
 	return m_bKeyboardEnabled ;
 }
+
 void CControlUI::SetKeyboardEnabled(bool bEnabled)
 {
 	m_bKeyboardEnabled = bEnabled ; 
@@ -947,7 +878,10 @@ void CControlUI::DoInit()
 
 void CControlUI::Event(TEventUI& event)
 {
-    if( OnEvent(&event) ) DoEvent(event);
+	DoLuaEvent("preevent", event.wParam, event.lParam, event.Type);
+	if( OnEvent(&event) ) DoEvent(event);
+	DoLuaEvent("event", event.wParam, event.lParam, event.Type);
+	DoLuaEvent("postevent", event.wParam, event.lParam, event.Type);
 }
 
 void CControlUI::DoEvent(TEventUI& event)
@@ -1251,6 +1185,41 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		LPTSTR pstr = NULL;
 		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 		SetFocusDotColor(clrColor);
+	}
+	else
+	{
+		LuaEngine* L=LuaManager::instance()->current();
+		//如果不是常规属性，可能是事件
+		if (L && _tcslen(pstrName) > 2 && _tcsnicmp(pstrName, _T("on"), 2) == 0)
+		{
+			try
+			{
+				char nameBuf[128];
+				char valueBuf[128];
+				UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
+				UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
+				char* val="";
+				for (int i=strlen(valueBuf)-1;i>=0;--i)
+				{
+					if (valueBuf[i]=='.')
+					{
+						valueBuf[i]='\0';
+						val=&valueBuf[i+1];
+					}
+				}
+
+				LuaTable tab=L->require(valueBuf);
+				if (tab.isValid())
+				{
+					BindLuaEvent(strlwr(nameBuf) + 2,tab.getTable(val));
+				}
+			}
+			catch(LuaException err)
+			{
+				OutputDebugStringA(err.what());
+				//LOGE("doString error:"<<err.what());
+			}
+		}
 	}
 }
 

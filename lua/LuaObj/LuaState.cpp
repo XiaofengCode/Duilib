@@ -1,3 +1,4 @@
+#include "duipub.h"
 #include "LuaState.h"
 #include "LuaObjectImpl.h"
 #include "LuaTable.h"

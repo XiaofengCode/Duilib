@@ -183,8 +183,11 @@
 
 #	pragma message("Link duilib name:" DUILIB_NAME)
 #	pragma comment(lib, DUILIB_NAME)
+
+#	define LUALIB_NAME	"lua51_" MSC_VERSION "_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT RT_LINK_TYPE ".lib"
+
+#	pragma message("Link lua5.1 name:" LUALIB_NAME)
+#	pragma comment(lib, LUALIB_NAME)
 	
 #endif
 #pragma message("MSC version:" STR_MACRO(_MSC_VER))
-
-#	pragma comment(lib, "lua51.lib")

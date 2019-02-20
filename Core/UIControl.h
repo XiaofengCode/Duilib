@@ -49,12 +49,8 @@ public:
     virtual ~CControlUI();
 
 	//lua
-	bool DoLuaEvent(const char* evName);
-	bool DoLuaEvent(const char* evName,LuaObject param);//调用lua处理事件
-	bool DoLuaEvent(const char* evName,lua_Integer param);//调用lua处理事件
-	bool DoLuaEvent(const char* evName,const char* param);//调用lua处理事件
-	bool DoLuaEvent(const char* evName,const wchar_t* param);//调用lua处理事件
-	bool DoLuaEvent(const char* evName,bool param);//调用lua处理事件
+	bool DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer lParam, lua_Integer nEvent = 0);
+	bool DoLuaEvent(const char* evName, LuaObject wParam, LuaObject lParam, LuaObject event);//调用lua处理事件
 	//绑定控件事件
 	void BindLuaEvent(const char* evName,LuaObject func);//绑定event配置的事件函数
 	void BindLuaEvent(const char* evName,const char* luaSrc);//绑定lua脚本进行处理

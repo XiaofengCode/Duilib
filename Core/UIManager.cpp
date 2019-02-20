@@ -36,6 +36,40 @@ typedef struct tagTIMERINFO
     bool bKilled;
 } TIMERINFO;
 
+int MsgBox(LuaState& L,LuaTable &arg)
+{
+	if (arg.count() == 0)
+	{
+		return 0;
+	}
+	LPCSTR lpszText = NULL;
+	LPCSTR lpszCation = NULL;
+	UINT uType = MB_OK;
+	if (arg[1].isString())
+	{
+		lpszText = arg[1].toString();
+		if (arg[2].isString())
+		{
+			lpszCation = arg[2].toString();
+			if (arg[3].isNumber())
+			{
+				uType = arg[3].toInt();
+			}
+		}
+		else if (arg[2].isNumber())
+		{
+			uType = arg[2].toInt();
+		}
+	}
+	else
+	{
+		return 0;
+	}
+	LuaObject obj = L.getGlobal("manager");
+	CPaintManagerUI* pMgr = CPaintManagerUI::_lbindLuaToC(obj);
+	int n = MessageBoxA(pMgr ? pMgr->GetPaintWindow() : NULL, lpszText, lpszCation, uType);
+	return L.lreturn(L.newInt(n));
+}
 
 HPEN m_hUpdateRectPen = NULL;
 HINSTANCE CPaintManagerUI::m_hInstance = NULL;
@@ -87,7 +121,9 @@ m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false)
 {
 	m_threadId=GetCurrentThreadId();
+	LuaState* L=LuaManager::instance()->current();
 	m_lua.setGlobal("UI",m_lua.newTable());
+	m_lua.setGlobal("msgBox",m_lua.newFunction(MsgBox));
 	m_lua.setGlobal("manager", _lbindCToLua(&m_lua));
 
 	LBIND_REGISTER_CLASS(CPaintManagerUI,&m_lua);
@@ -110,6 +146,12 @@ m_bNeedShowFocusDot(false)
 	LBIND_REGISTER_CLASS(CComboUI,&m_lua);
 	LBIND_REGISTER_CLASS(CRichEditUI,&m_lua);
 	LBIND_REGISTER_CLASS(CDialogBuilder,&m_lua);
+
+	LuaEngine* luaVm=LuaManager::instance()->current();
+	if (luaVm)
+	{
+		luaVm->setRegistry(this,luaVm->newTable());
+	}
 
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
@@ -1586,44 +1628,7 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.wParam = wParam;
     Msg.lParam = lParam;
     SendNotify(Msg, bAsync);
-
-
-	//LOGI("DoLuaEvent:"<<evName);
-	LuaTable tab = GetControlEventMap(pControl, false);
-	if (tab.isValid())
-	{
-		LuaObject evData = tab.getTable(DUI_T2A(pstrMessage).c_str());
-		if (evData.isFunction())
-		{
-			LuaFunction func = evData;
-			try
-			{
-				LuaObject rtn = func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam);
-				//return rtn.toBool();
-				return;
-			}
-			catch(LuaException err)
-			{
-				//LOGE("exec function error:"<<err.what());
-			}
-			//return false;
-			return;
-		}
-		else if(evData.isString())
-		{
-			try{
-				LuaState* L = LuaManager::instance()->current();
-				LuaObject lthis = _lbindCToLua(L);
-				L->setGlobal("this",lthis);
-				const char* script = evData.toString();
-				L->doString(script);
-			}
-			catch(LuaException err)
-			{
-				//LOGE("doString error:"<<err.what());
-			}
-		}
-	}
+	pControl->DoLuaEvent(DUI_T2A(pstrMessage).c_str(), wParam, lParam);
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)

@@ -1334,6 +1334,7 @@ void CRichEditUI::SetText(LPCTSTR pstrText)
 
 	if (m_sText.GetLength() == 0  && m_sTipValue.GetLength() && !IsFocused())
 	{
+		m_bTip = true;
 		m_sText = m_sTipValue;
 		dwTextColor = m_dwTipValueColor;
 	}
