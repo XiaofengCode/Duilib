@@ -66,8 +66,7 @@
 
 
 //ANSI--》UNICODE
-//调用者自己释放内存
-inline wchar_t* AnsiToUnicode( const char * szStr )
+inline std::wstring AnsiToUnicode( const char * szStr )
 {
 	int nLen = MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, szStr, -1, NULL, 0 );
 	if (nLen == 0)
@@ -76,12 +75,14 @@ inline wchar_t* AnsiToUnicode( const char * szStr )
 	}
 	wchar_t* pResult = new wchar_t[nLen];
 	MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, szStr, -1, pResult, nLen );
-	return pResult;
+
+	std::wstring str(pResult);
+	delete[] pResult;
+	return str;
 }
 
 //UNICODE--》ANSI
-//调用者自己释放内存
-inline char* UnicodeToAnsi( const wchar_t * szStr )
+inline std::string UnicodeToAnsi( const wchar_t * szStr )
 {
 	int nLen = WideCharToMultiByte( CP_ACP, 0, szStr, -1, NULL, 0, NULL, NULL );
 	if (nLen == 0)
@@ -90,9 +91,15 @@ inline char* UnicodeToAnsi( const wchar_t * szStr )
 	}
 	char* pResult = new char[nLen];
 	WideCharToMultiByte( CP_ACP, 0, szStr, -1, pResult, nLen, NULL, NULL );
-	return pResult;
+	std::string str(pResult);
+	delete[] pResult;
+	return str;
 }
-
+#ifdef _UNICODE
+#define DUI_T2A(t)	UnicodeToAnsi(t)
+#else
+#define DUI_T2A(t)	std::string(t)
+#endif
 
 
 

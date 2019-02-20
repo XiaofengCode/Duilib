@@ -25,6 +25,7 @@ namespace DuiLib
 	class UILIB_API CSliderUI : public CProgressUI
 	{
 	public:
+		LBIND_CLASS_DEFINE(CSliderUI, CProgressUI);
 		CSliderUI();
 
 		LPCTSTR GetClass() const;

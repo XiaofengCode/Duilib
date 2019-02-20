@@ -189,13 +189,21 @@ namespace DuiLib
 	typedef CDuiArray<CDuiString> CDuiStringArray;
 	class UILIB_API CDuiString
 	{
-	public:
+	protected:
 		enum { MAX_LOCAL_STRING_LEN = 63 };
+		LPTSTR m_pstr;
+		TCHAR m_szBuffer[MAX_LOCAL_STRING_LEN + 1];
+	public:
 
 		CDuiString();
 		CDuiString(const TCHAR ch);
 		CDuiString(const CDuiString& src);
 		CDuiString(LPCTSTR lpsz, int nLen = -1);
+#ifdef _UNICODE
+		CDuiString(LPCSTR lpsz, int nLen = -1);
+#else
+		CDuiString(LPCWSTR lpsz, int nLen = -1);
+#endif
 		~CDuiString();
 
 		void Empty();
@@ -253,9 +261,6 @@ namespace DuiLib
 		int __cdecl SmallFormat(LPCTSTR pstrFormat, ...);
 		int Delete(int iPos, int iCount = 1);
 		CDuiStringArray Split(TCHAR cSplit);
-	protected:
-		LPTSTR m_pstr;
-		TCHAR m_szBuffer[MAX_LOCAL_STRING_LEN + 1];
 	};
 
 

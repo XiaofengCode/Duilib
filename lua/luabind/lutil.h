@@ -1,4 +1,5 @@
-#include "LuaObj/Luaobj.h"
+#pragma once
+#include "../LuaObj/Luaobj.h"
 
 
 namespace lbind

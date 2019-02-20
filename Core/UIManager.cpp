@@ -86,6 +86,31 @@ m_bUseGdiplusText(false),
 m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false)
 {
+	m_threadId=GetCurrentThreadId();
+	m_lua.setGlobal("UI",m_lua.newTable());
+	m_lua.setGlobal("manager", _lbindCToLua(&m_lua));
+
+	LBIND_REGISTER_CLASS(CPaintManagerUI,&m_lua);
+	LBIND_REGISTER_CLASS(WindowImplBase,&m_lua);
+	LBIND_REGISTER_CLASS(CControlUI,&m_lua);
+	LBIND_REGISTER_CLASS(CLabelUI,&m_lua);
+	LBIND_REGISTER_CLASS(CButtonUI,&m_lua);
+	LBIND_REGISTER_CLASS(COptionUI,&m_lua);
+	LBIND_REGISTER_CLASS(CTextUI,&m_lua);
+	LBIND_REGISTER_CLASS(CProgressUI,&m_lua);
+	LBIND_REGISTER_CLASS(CSliderUI,&m_lua);
+	LBIND_REGISTER_CLASS(CEditUI,&m_lua);
+	LBIND_REGISTER_CLASS(CScrollBarUI,&m_lua);
+
+	LBIND_REGISTER_CLASS(CContainerUI,&m_lua);
+	LBIND_REGISTER_CLASS(CVerticalLayoutUI,&m_lua);
+	LBIND_REGISTER_CLASS(CHorizontalLayoutUI,&m_lua);
+	LBIND_REGISTER_CLASS(CTileLayoutUI,&m_lua);
+	LBIND_REGISTER_CLASS(CTabLayoutUI,&m_lua);
+	LBIND_REGISTER_CLASS(CComboUI,&m_lua);
+	LBIND_REGISTER_CLASS(CRichEditUI,&m_lua);
+	LBIND_REGISTER_CLASS(CDialogBuilder,&m_lua);
+
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
     m_dwDefaultLinkFontColor = 0xFF0000FF;
@@ -163,6 +188,57 @@ CPaintManagerUI::~CPaintManagerUI()
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
 	delete m_pMapNameToCtrl;
 	delete m_pDuiTray;
+}
+
+LuaState* CPaintManagerUI::GetLuaState()
+{
+	return &m_lua;
+}
+
+bool CPaintManagerUI::CheckAvalible()
+{
+	LuaEngine* luaVm=LuaManager::instance()->current();
+	if (luaVm)
+	{
+		LuaTable tab=luaVm->getRegistery(this);
+		return tab.isValid();
+	}
+	return false;
+}
+
+RefCountedPtr<IRunbaleUI> CPaintManagerUI::GetRunable()
+{
+	RefCountedPtr<IRunbaleUI> runable;
+	base::CritScope lock(&m_queueLock);
+	if(!m_runableQueue.empty())
+	{
+		runable=m_runableQueue.front();
+		m_runableQueue.pop();
+	}
+	return runable;
+}
+
+LuaObject CPaintManagerUI::GetControlEventMap(CControlUI* ctl,bool bCreate)
+{
+	LuaEngine* luaVm=LuaManager::instance()->current();
+	if (luaVm)
+	{
+		LuaTable tab=luaVm->getRegistery(this);
+		ASSERT(tab.isValid());
+
+		LuaObject ctlEvTable=tab.getTable((lua_Integer)ctl);
+		if (ctlEvTable.isTable())
+		{
+			return ctlEvTable;
+		}
+		else if(bCreate)
+		{
+			LuaObject objTab=luaVm->newTable();
+			tab.setTable((lua_Integer)ctl,objTab);
+			return objTab;
+		}
+	}
+	return luaNil;
 }
 
 void CPaintManagerUI::Init(HWND hWnd)
@@ -1510,6 +1586,44 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.wParam = wParam;
     Msg.lParam = lParam;
     SendNotify(Msg, bAsync);
+
+
+	//LOGI("DoLuaEvent:"<<evName);
+	LuaTable tab = GetControlEventMap(pControl, false);
+	if (tab.isValid())
+	{
+		LuaObject evData = tab.getTable(DUI_T2A(pstrMessage).c_str());
+		if (evData.isFunction())
+		{
+			LuaFunction func = evData;
+			try
+			{
+				LuaObject rtn = func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam);
+				//return rtn.toBool();
+				return;
+			}
+			catch(LuaException err)
+			{
+				//LOGE("exec function error:"<<err.what());
+			}
+			//return false;
+			return;
+		}
+		else if(evData.isString())
+		{
+			try{
+				LuaState* L = LuaManager::instance()->current();
+				LuaObject lthis = _lbindCToLua(L);
+				L->setGlobal("this",lthis);
+				const char* script = evData.toString();
+				L->doString(script);
+			}
+			catch(LuaException err)
+			{
+				//LOGE("doString error:"<<err.what());
+			}
+		}
+	}
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)

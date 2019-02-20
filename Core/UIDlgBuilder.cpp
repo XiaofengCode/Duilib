@@ -241,6 +241,21 @@ CMarkup* CDialogBuilder::GetMarkup()
     return &m_xml;
 }
 
+bool CDialogBuilder::LoadFile(LPCTSTR file)
+{
+	return m_xml.LoadFromFile(file);
+}
+
+bool CDialogBuilder::LoadString(LPCWSTR str)
+{
+	return m_xml.Load(str);
+}
+
+bool CDialogBuilder::LoadString(LPCSTR str)
+{
+	return m_xml.LoadFromMem((BYTE*)str, strlen(str)+1, XMLFILE_ENCODING_UTF8);
+}
+
 // void CDialogBuilder::GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const
 // {
 //     return m_xml.GetLastError(pstrMessage, cchMax);

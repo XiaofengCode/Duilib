@@ -6,14 +6,14 @@ using namespace DuiLib;
 namespace lbind
 {
 
-LBIND_DEFINE_FUNC(CControlUI,GetWindow)
-	CWindowUI* wnd=pThis->GetManager()->GetWindow();
-	if(wnd)
-		return L.lreturn(wnd->_lbindCToLua(&L));
+LBIND_DEFINE_FUNC(CControlUI, GetManager)
+	CPaintManagerUI* mgr = pThis->GetManager();
+	if(mgr)
+		return L.lreturn(mgr->_lbindCToLua(&L));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetWindowHandle)
-	HWND wnd=pThis->GetManager()->GetPaintWindow();
+	HWND wnd = pThis->GetManager()->GetPaintWindow();
 	if(wnd)
 		return L.lreturn((LUA_INTEGER)wnd);
 LBIND_END_DEFINE_FUNC
@@ -146,7 +146,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetToolTip)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetToolTip)
-	pThis->SetToolTip(CStdString(arg[2].toString()));
+	pThis->SetToolTip(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -173,7 +173,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetUserData)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetUserData)
-	pThis->SetUserData(CStdString(arg[2].toString()));
+	pThis->SetUserData(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetTag)
@@ -246,7 +246,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetName)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetName)
-	pThis->SetName(CStdString(arg[2].toString()));
+	pThis->SetName(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetClass)
@@ -268,7 +268,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetText)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetText)
-	pThis->SetText(CStdString(arg[2].toString()));
+	pThis->SetText(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -301,7 +301,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetBkImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetBkImage)
-	pThis->SetBkImage(CStdString(arg[2].toString()));
+	pThis->SetBkImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetBorderColor)
@@ -350,7 +350,7 @@ LBIND_END_DEFINE_FUNC
 }
 
 LBIND_BEGIN_DEFINE_LIB(CControlUI)
-	{"window",lbind::GetWindow},
+	{"manager",lbind::GetManager},
 	{"windowHandle",lbind::GetWindowHandle},
 	{"text",lbind::GetText},
 	{"setText",lbind::SetText},

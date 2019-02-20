@@ -15,6 +15,13 @@ namespace DuiLib
 		DUI_ON_MSGTYPE(DUI_MSGTYPE_CLICK,OnClick)
 		DUI_END_MESSAGE_MAP()
 
+
+	WindowImplBase::WindowImplBase()
+	{
+		LuaState* L = m_PaintManager.GetLuaState();
+		L->setGlobal("window", _lbindCToLua(L));;
+		
+	}
 	void WindowImplBase::OnFinalMessage( HWND hWnd )
 	{
 		m_PaintManager.RemovePreMessageFilter(this);

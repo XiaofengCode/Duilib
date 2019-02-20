@@ -122,6 +122,7 @@ namespace DuiLib
 	class UILIB_API CTreeViewUI : public CListUI,public INotifyUI
 	{
 	public:
+		LBIND_CLASS_DEFINE(CTreeViewUI, CListUI);
 		CTreeViewUI(void);
 		~CTreeViewUI(void);
 

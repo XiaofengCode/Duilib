@@ -6,7 +6,7 @@ namespace lbind
 {
 
 LBIND_DEFINE_FUNC(CDialogBuilder,LoadFile)
-	return L.lreturn(pThis->LoadFile(CStdString(arg[2].toString())));
+	return L.lreturn(pThis->LoadFile(CDuiString(arg[2].toString())));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CDialogBuilder,LoadString)
@@ -31,7 +31,8 @@ public:
 		}
 		catch(LuaException e)
 		{
-			LOGE("call lua error:"<<e.what());
+			OutputDebugStringA(e.what());
+			//LOGE("call lua error:"<<e.what());
 		}
 		return ctl;
 	}
@@ -40,20 +41,22 @@ private:
 };
 
 //构造控件parent,callback,返回构造成功的控件
-LBIND_DEFINE_FUNC(CDialogBuilder,BuildControl)
-	if (pThis->GetManager() && pThis->GetManager()->CheckAvalible())
+LBIND_DEFINE_FUNC(CDialogBuilder, BuildControl)
+	CPaintManagerUI* pManager = CPaintManagerUI::_lbindLuaToC(arg[3]);
+	if (pManager && pManager->CheckAvalible())
 	{
-		CControlUI* buildCtl=NULL;
 		CControlUI* parent=CControlUI::_lbindLuaToC(arg[2]);
-		LuaFunction lcallback=arg[3];
+		LuaFunction lcallback = arg[4];
+
+		CControlUI* buildCtl=NULL;
 		if (lcallback.isValid())
 		{
 			LuaDialogBuilderCallback callback(lcallback);
-			buildCtl=pThis->Create(&callback,parent);
+			buildCtl=pThis->Create(&callback, pManager, parent);
 		}
 		else
 		{
-			buildCtl=pThis->Create(NULL,parent);
+			buildCtl=pThis->Create(NULL, pManager, parent);
 		}
 
 		if (buildCtl)

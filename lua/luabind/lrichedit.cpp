@@ -14,7 +14,7 @@ typedef struct FontFormat
 	}
 	bool	underline;
 	DWORD	color;
-	CStdString font;
+	CDuiString font;
 	UINT	size;
 	bool    bold;
 	bool	italic;
@@ -105,7 +105,7 @@ bool textFormatFromLua(LuaTable ltab,CHARFORMAT2 & format)
 	if(lvalue.isString())
 	{
 		mask|=CFM_FACE;
-		_tcscpy(format.szFaceName,CStdString(lvalue.toString()));//小于32个字符
+		_tcscpy(format.szFaceName, (LPCTSTR)CDuiString(lvalue.toString()));//小于32个字符
 	}
 
 	lvalue=ltab.getTable("weight");
@@ -233,7 +233,7 @@ LBIND_DEFINE_FUNC(CRichEditUI,GetWordWrap)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,SetFont)
-	pThis->SetFont(arg[2].toInt());
+	pThis->SetFont(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,GetFont)
@@ -280,11 +280,11 @@ LBIND_DEFINE_FUNC(CRichEditUI,GetTextLength)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,GetText)
-	return L.lreturn(pThis->GetText().GetString());
+	return L.lreturn(DUI_T2A(pThis->GetText()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,SetText)
-	pThis->SetText(CStdString(arg[2].toString()));
+	pThis->SetText(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,SetModify)
@@ -307,11 +307,11 @@ LBIND_DEFINE_FUNC(CRichEditUI,SetSel)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,ReplaceSel)
-	pThis->ReplaceSel(CStdString(arg[2].toString()),arg[3].toBool());
+	pThis->ReplaceSel(CDuiString(arg[2].toString()),arg[3].toBool());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,GetSelText)
-	return L.lreturn(pThis->GetSelText().GetString());
+	return L.lreturn(DUI_T2A(pThis->GetSelText()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,SetSelAll)
@@ -336,8 +336,8 @@ LBIND_DEFINE_FUNC(CRichEditUI,SetZoom)
 	pThis->SetZoom(arg[2].toInt(),arg[3].toInt());
 LBIND_END_DEFINE_FUNC
 
-LBIND_DEFINE_FUNC(CRichEditUI,SetZoomOff)
-	pThis->SetZoomOff();
+LBIND_DEFINE_FUNC(CRichEditUI,ResetZoom)
+	pThis->ResetZoom();
 LBIND_END_DEFINE_FUNC
 
 
@@ -370,11 +370,11 @@ LBIND_DEFINE_FUNC(CRichEditUI,ScrollCaret)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,InsertText)
-	pThis->InsertText(arg[2].toInt(),CStdString(arg[3].toString()),arg[4].toBool());
+	pThis->InsertText(arg[2].toInt(),CDuiString(arg[3].toString()),arg[4].toBool());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,AppendText)
-	pThis->AppendText(CStdString(arg[2].toString()),arg[3].toBool());
+	pThis->AppendText(CDuiString(arg[2].toString()),arg[3].toBool());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,Redo)
@@ -489,7 +489,7 @@ LBIND_BEGIN_DEFINE_LIB(CRichEditUI)
 	{"selectionType",lbindrichedit::GetSelectionType},
 	{"zoom",lbindrichedit::GetZoom},
 	{"setZoom",lbindrichedit::SetZoom},
-	{"setZoomOff",lbindrichedit::SetZoomOff},
+	{"setZoomOff",lbindrichedit::ResetZoom},
 
 	{"setAutoURLDetect",lbindrichedit::SetAutoURLDetect},
 	{"autoURLDetect",lbindrichedit::GetAutoURLDetect},

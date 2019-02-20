@@ -8,6 +8,7 @@ namespace DuiLib
 	class UILIB_API COptionUI : public CButtonUI
 	{
 	public:
+		LBIND_CLASS_DEFINE(COptionUI, CButtonUI);
 		COptionUI();
 		~COptionUI();
 

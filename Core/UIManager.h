@@ -5,6 +5,8 @@
 
 #include <vector>
 #include <map>
+#include "../lua/base/RefBase.h"
+#include "../lua/base/Criticalsection.h"
 
 namespace DuiLib {
 
@@ -142,6 +144,11 @@ public:
 	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;
 };
 
+class IRunbaleUI:public base::RefCountedBase
+{
+public:
+	virtual void Run(LuaState* L)=0;
+};
 
 typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 
@@ -149,6 +156,7 @@ typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 class UILIB_API CPaintManagerUI
 {
 public:
+	LBIND_BASE_CLASS_DEFINE(CPaintManagerUI);
     CPaintManagerUI();
     ~CPaintManagerUI();
 
@@ -334,6 +342,13 @@ public:
 	CDuiTrayIconUI* GetTrayObject(){return m_pDuiTray;}
 	void SetWindowTitile(LPCTSTR lpTitle);
 	CDuiStringTable& GetStringTable(){return m_StringTable;}
+
+	LuaState* GetLuaState();
+	bool CheckAvalible();
+	RefCountedPtr<IRunbaleUI> GetRunable();
+	//获取Control绑定的事件表，如果存在直接返回，否则判断bCreate决定是否创建
+	LuaObject GetControlEventMap(CControlUI* ctl,bool bCreate);
+
 private:
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
@@ -498,6 +513,11 @@ private:
 
 	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
+
+	LuaEngine m_lua;
+	DWORD m_threadId;
+	std::queue<RefCountedPtr<IRunbaleUI>> m_runableQueue;
+	base::CriticalSection m_queueLock;
 public:
 	CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;

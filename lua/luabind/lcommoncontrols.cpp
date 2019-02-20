@@ -30,7 +30,7 @@ LBIND_DEFINE_FUNC(CLabelUI,GetDisabledTextColor)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CLabelUI,SetFont)
-	pThis->SetFont(arg[2].toInt());
+	pThis->SetFont(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CLabelUI,GetFont)
@@ -79,7 +79,7 @@ namespace lbind
 {
 
 LBIND_DEFINE_FUNC(CButtonUI,SetNormalImage)
-	pThis->SetNormalImage(CStdString(arg[2].toString()));
+	pThis->SetNormalImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,GetNormalImage)
@@ -91,7 +91,7 @@ LBIND_DEFINE_FUNC(CButtonUI,GetHotImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,SetHotImage)
-	pThis->SetHotImage(CStdString(arg[2].toString()));
+	pThis->SetHotImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -100,7 +100,7 @@ LBIND_DEFINE_FUNC(CButtonUI,GetPushedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,SetPushedImage)
-	pThis->SetPushedImage(CStdString(arg[2].toString()));
+	pThis->SetPushedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -109,7 +109,7 @@ LBIND_DEFINE_FUNC(CButtonUI,GetFocusedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,SetFocusedImage)
-	pThis->SetFocusedImage(CStdString(arg[2].toString()));
+	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,GetDisabledImage)
@@ -117,7 +117,7 @@ LBIND_DEFINE_FUNC(CButtonUI,GetDisabledImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,SetDisabledImage)
-	pThis->SetDisabledImage(CStdString(arg[2].toString()));
+	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CButtonUI,SetHotTextColor)
@@ -171,7 +171,7 @@ LBIND_END_DEFINE_LIB
 namespace lbind
 {
 LBIND_DEFINE_FUNC(COptionUI,SetSelectedImage)
-	pThis->SetSelectedImage(CStdString(arg[2].toString()));
+	pThis->SetSelectedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,GetSelectedImage)
@@ -179,7 +179,7 @@ LBIND_DEFINE_FUNC(COptionUI,GetSelectedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,SetForeImage)
-	pThis->SetForeImage(CStdString(arg[2].toString()));
+	pThis->SetForeImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,GetForeImage)
@@ -187,7 +187,7 @@ LBIND_DEFINE_FUNC(COptionUI,GetForeImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,SetGroup)
-	pThis->SetGroup(CStdString(arg[2].toString()));
+	pThis->SetGroup(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,GetGroup)
@@ -251,8 +251,8 @@ LBIND_DEFINE_FUNC(CProgressUI,IsHorizontal)
 	return L.lreturn(pThis->IsHorizontal());
 LBIND_END_DEFINE_FUNC
 
-LBIND_DEFINE_FUNC(CProgressUI,SetHorizontal)
-	pThis->SetHorizontal(arg[2].toBool());
+LBIND_DEFINE_FUNC(CProgressUI,SetType)
+	pThis->SetType((CProgressUI::ProgressType)arg[2].toInt());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CProgressUI,GetMinValue)
@@ -285,14 +285,14 @@ LBIND_DEFINE_FUNC(CProgressUI,GetForeImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CProgressUI,SetForeImage)
-	pThis->SetForeImage(CStdString(arg[2].toString()));
+	pThis->SetForeImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 }
 
 
 LBIND_BEGIN_DEFINE_LIB(CProgressUI)
 	{"isHorizontal",lbindprogress::IsHorizontal},
-	{"setHorizontal",lbindprogress::SetHorizontal},
+	{"setHorizontal",lbindprogress::SetType},
 	{"minValue",lbindprogress::GetMinValue},
 	{"setMinValue",lbindprogress::SetMinValue},
 	{"maxValue",lbindprogress::GetMaxValue},
@@ -330,7 +330,7 @@ LBIND_DEFINE_FUNC(CSliderUI,GetThumbImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CSliderUI,SetThumbImage)
-	pThis->SetThumbImage(CStdString(arg[2].toString()));
+	pThis->SetThumbImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CSliderUI,GetThumbHotImage)
@@ -338,7 +338,7 @@ LBIND_DEFINE_FUNC(CSliderUI,GetThumbHotImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CSliderUI,SetThumbHotImage)
-	pThis->SetThumbHotImage(CStdString(arg[2].toString()));
+	pThis->SetThumbHotImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CSliderUI,GetThumbPushedImage)
@@ -346,7 +346,7 @@ LBIND_DEFINE_FUNC(CSliderUI,GetThumbPushedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CSliderUI,SetThumbPushedImage)
-	pThis->SetThumbPushedImage(CStdString(arg[2].toString()));
+	pThis->SetThumbPushedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 }
 
@@ -404,7 +404,7 @@ LBIND_DEFINE_FUNC(CEditUI,GetNormalImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,SetNormalImage)
-	pThis->SetNormalImage(CStdString(arg[2].toString()));
+	pThis->SetNormalImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,GetHotImage)
@@ -412,7 +412,7 @@ LBIND_DEFINE_FUNC(CEditUI,GetHotImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,SetHotImage)
-	pThis->SetHotImage(CStdString(arg[2].toString()));
+	pThis->SetHotImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,GetFocusedImage)
@@ -420,7 +420,7 @@ LBIND_DEFINE_FUNC(CEditUI,GetFocusedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,SetFocusedImage)
-	pThis->SetFocusedImage(CStdString(arg[2].toString()));
+	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,GetDisabledImage)
@@ -428,7 +428,7 @@ LBIND_DEFINE_FUNC(CEditUI,GetDisabledImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,SetDisabledImage)
-	pThis->SetDisabledImage(CStdString(arg[2].toString()));
+	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CEditUI,GetNativeEditBkColor)

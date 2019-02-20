@@ -78,6 +78,9 @@
 #include "Utils/UIDelegate.h"
 #include "Utils/XUnzip.h"
 #include "Utils/GifImage.h"
+
+#include "lua/LuaObj/Luaobj.h"
+
 #include "Core/AttributeManager.h"
 #include "Core/UIDefine.h"
 #include "Core/UIStringTable.h"
@@ -183,3 +186,5 @@
 	
 #endif
 #pragma message("MSC version:" STR_MACRO(_MSC_VER))
+
+#	pragma comment(lib, "lua51.lib")

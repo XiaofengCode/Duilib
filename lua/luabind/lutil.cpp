@@ -1,5 +1,5 @@
 #include "lutil.h"
-#include "log/log4z.h"
+//#include "log/log4z.h"
 
 namespace lbind
 {
@@ -41,16 +41,16 @@ namespace lbind
 	SIZE toSize(LuaTable obj)
 	{
 		SIZE sz;
-		sz.cx=obj.getTable("x").toInt();
-		sz.cy=obj.getTable("y").toInt();
+		sz.cx=obj.getTable("w").toInt();
+		sz.cy=obj.getTable("h").toInt();
 		return sz;	
 	}
 
 	POINT toPoint(LuaTable obj)
 	{
 		POINT pt;
-		pt.x=obj.getTable("w").toInt();
-		pt.y=obj.getTable("h").toInt();
+		pt.x=obj.getTable("x").toInt();
+		pt.y=obj.getTable("y").toInt();
 		return pt;
 	}
 

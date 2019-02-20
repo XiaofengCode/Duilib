@@ -21,6 +21,7 @@ public:
 class UILIB_API CDialogBuilder
 {
 public:
+	LBIND_BASE_CLASS_DEFINE(CDialogBuilder);
     CDialogBuilder();
 
 	void SetAttrbuteCallBack(IDialogBuilderAttrbuteCallback * pAttrbuteCallback = NULL);
@@ -34,6 +35,11 @@ public:
 	void _ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root);
 
     CMarkup* GetMarkup();
+
+	bool LoadFile(LPCTSTR file);
+	bool LoadString(LPCWSTR str);
+	bool LoadString(LPCSTR str);
+
 
 //     void GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const;
 //     void GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) const;

@@ -87,6 +87,165 @@ CControlUI::~CControlUI()
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
+bool CControlUI::DoLuaEvent(const char* evName)
+{
+	ASSERT(evName);
+	if (GetManager())
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		LuaTable tab=GetManager()->GetControlEventMap(this,false);
+		if (tab.isValid())
+		{
+			LuaObject evData=tab.getTable(evName);
+			if (evData.isFunction())
+			{
+				LuaFunction func=evData;
+				try{
+					LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()));
+					return rtn.toBool();
+				}
+				catch(LuaException err)
+				{
+					OutputDebugStringA(err.what());
+					//LOGE("exec function error:"<<err.what());
+				}
+				return false;
+			}
+			else if(evData.isString())
+			{
+				try{
+					LuaState* L=LuaManager::instance()->current();
+					LuaObject lthis=_lbindCToLua(L);
+					L->setGlobal("this",lthis);
+					const char* script=evData.toString();
+					L->doString(script);
+				}
+				catch(LuaException err)
+				{
+					OutputDebugStringA(err.what());
+					//LOGE("doString error:"<<err.what());
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool CControlUI::DoLuaEvent(const char* evName,LuaObject param)
+{
+	ASSERT(evName);
+	if (GetManager())
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		LuaTable tab=GetManager()->GetControlEventMap(this,false);
+		if (tab.isValid())
+		{
+			LuaObject evData=tab.getTable(evName);
+			if (evData.isFunction())
+			{
+				LuaFunction func=evData;
+				try{
+					LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()),param);
+					return rtn.toBool();
+				}
+				catch(LuaException err)
+				{
+					OutputDebugStringA(err.what());
+					//LOGE("exec function error:"<<err.what());
+				}
+				return false;
+			}
+			else if(evData.isString())
+			{
+				try{
+					LuaState* L=LuaManager::instance()->current();
+					LuaObject lthis=_lbindCToLua(L);
+					L->setGlobal("this",lthis);
+					L->setGlobal("param",param);
+					const char* script=evData.toString();
+					L->doString(script);
+				}
+				catch(LuaException err)
+				{
+					OutputDebugStringA(err.what());
+					//LOGE("doString error:"<<err.what());
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool CControlUI::DoLuaEvent(const char* evName,lua_Integer param)
+{
+	LuaEngine* L=LuaManager::instance()->current();
+	if (L)
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		return DoLuaEvent(evName,L->newInt(param));
+	}
+	return false;
+}
+
+
+bool CControlUI::DoLuaEvent(const char* evName,const char* param)
+{
+	LuaEngine* L=LuaManager::instance()->current();
+	if (L)
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		return DoLuaEvent(evName,L->newString(param));
+	}
+
+	return false;
+}
+
+
+bool CControlUI::DoLuaEvent(const char* evName,const wchar_t* param)
+{
+	LuaEngine* L=LuaManager::instance()->current();
+	if (L)
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		return DoLuaEvent(evName,L->newString(param));
+	}
+	return false;
+}
+
+bool CControlUI::DoLuaEvent(const char* evName,bool param)
+{
+	LuaEngine* L=LuaManager::instance()->current();
+	if (L)
+	{
+		//LOGI("DoLuaEvent:"<<evName);
+		return DoLuaEvent(evName,L->newBool(param));
+	}
+	return false;
+}
+
+void CControlUI::BindLuaEvent(const char* evName,LuaObject func)
+{
+	ASSERT(evName);
+	if (GetManager())
+	{
+		LuaTable tab=GetManager()->GetControlEventMap(this,true);
+		ASSERT(tab.isValid());
+		tab.setTable(evName,func);
+	}
+}
+
+
+void CControlUI::BindLuaEvent(const char* evName,const char* luaSrc)
+{
+	ASSERT(evName);
+	if (GetManager())
+	{
+		LuaTable tab=GetManager()->GetControlEventMap(this,true);
+		ASSERT(tab.isValid());
+		tab.setTable(evName,luaSrc);
+	}
+}
+
 CDuiString CControlUI::GetName() const
 {
     return m_sName;
@@ -1080,6 +1239,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if (_tcsicmp(pstrName, _T("style")) == 0)
 	{
 		SetStyle(pstrValue);
+	}
+	else if (_tcsicmp(pstrName, _T("focusdotcolor")) == 0) {
+		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetFocusDotColor(clrColor);
 	}
 	else if (_tcsicmp(pstrName, _T("focusdotcolor")) == 0) {
 		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);

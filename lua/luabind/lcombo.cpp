@@ -14,7 +14,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetDropBoxAttributeList)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDropBoxAttributeList)
-	pThis->SetDropBoxAttributeList(CStdString(arg[2].toString()));
+	pThis->SetDropBoxAttributeList(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetDropBoxSize)
@@ -47,7 +47,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetNormalImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetNormalImage)
-	pThis->SetNormalImage(CStdString(arg[2].toString()));
+	pThis->SetNormalImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -56,7 +56,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetHotImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetHotImage)
-	pThis->SetHotImage(CStdString(arg[2].toString()));
+	pThis->SetHotImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 	
@@ -67,7 +67,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetPushedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetPushedImage)
-	pThis->SetPushedImage(CStdString(arg[2].toString()));
+	pThis->SetPushedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 
@@ -76,7 +76,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetFocusedImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetFocusedImage)
-	pThis->SetFocusedImage(CStdString(arg[2].toString()));
+	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetDisabledImage)
@@ -84,7 +84,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetDisabledImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDisabledImage)
-	pThis->SetDisabledImage(CStdString(arg[2].toString()));
+	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetItemTextStyle)
@@ -123,7 +123,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetItemBkColor)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetItemBkImage)
-	pThis->SetItemBkImage(CStdString(arg[2].toString()));
+	pThis->SetItemBkImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetItemBkImage)
@@ -157,7 +157,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetSelectedItemBkColor)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetSelectedItemImage)
-	pThis->SetSelectedItemImage(CStdString(arg[2].toString()));
+	pThis->SetSelectedItemImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetSelectedItemImage)
@@ -182,7 +182,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetHotItemBkColor)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetHotItemImage)
-	pThis->SetHotItemImage(CStdString(arg[2].toString()));
+	pThis->SetHotItemImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetHotItemImage)
@@ -210,7 +210,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetDisabledItemImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDisabledItemImage)
-	pThis->SetDisabledItemImage(CStdString(arg[2].toString()));
+	pThis->SetDisabledItemImage(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetItemLineColor)

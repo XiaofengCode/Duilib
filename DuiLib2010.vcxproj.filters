@@ -55,6 +55,9 @@
     <Filter Include="lua\luaobj\malloc">
       <UniqueIdentifier>{c7cc5512-6ab3-46f5-96bd-42561bb8b702}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lua\base">
+      <UniqueIdentifier>{5ca5282e-b5b7-4e45-ad6f-4d6b59caa80f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIlib.cpp">
@@ -222,12 +225,6 @@
     <ClCompile Include="lua\luabind\lutil.cpp">
       <Filter>lua\luabind</Filter>
     </ClCompile>
-    <ClCompile Include="lua\luabind\lwindow.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lapplication.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
     <ClCompile Include="lua\luabind\lbuilder.cpp">
       <Filter>lua\luabind</Filter>
     </ClCompile>
@@ -263,6 +260,15 @@
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaEngine.cpp">
       <Filter>lua\luaobj</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\luabind\lmanager.cpp">
+      <Filter>lua\luabind</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\base\RefBase.cpp">
+      <Filter>lua\base</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\luabind\lwindow.cpp">
+      <Filter>lua\luabind</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +508,12 @@
     </ClInclude>
     <ClInclude Include="lua\LuaObj\LuaCommon.h">
       <Filter>lua\luaobj</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\base\Criticalsection.h">
+      <Filter>lua\base</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\base\RefBase.h">
+      <Filter>lua\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

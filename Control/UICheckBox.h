@@ -12,6 +12,7 @@ namespace DuiLib
 	class UILIB_API CCheckBoxUI : public COptionUI
 	{
 	public:
+		LBIND_CLASS_DEFINE(CCheckBoxUI, COptionUI);
 		LPCTSTR GetClass() const;
 
 		void SetCheck(bool bCheck);

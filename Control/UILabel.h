@@ -14,6 +14,7 @@ namespace DuiLib
 	class UILIB_API CLabelUI : public CContainerUI
 	{
 	public:
+		LBIND_CLASS_DEFINE(CLabelUI, CContainerUI);
 		CLabelUI();
 		~CLabelUI();
 
