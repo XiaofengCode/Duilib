@@ -145,7 +145,7 @@ public:
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
-	void SetTipText(LPCTSTR pstrText);
+	void ShowTipText(LPCTSTR pstrText);
 	void SetDisabledTextColor(DWORD dwTextColor);
 	DWORD GetDisabledTextColor() const;
 	void SetRtfFile(LPCTSTR lpszFileName);
@@ -161,7 +161,6 @@ protected:
     bool m_bRich;
     bool m_bReadOnly;
     bool m_bWordWrap;
-    //DWORD m_dwTextColor;
     CDuiString m_sFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
@@ -177,9 +176,7 @@ protected:
 	CDuiString m_sDisabledImage;
 	RECT m_rcTextPadding;
 	CDuiString m_sTipValue;
-	DWORD m_dwTipValueColor;
 	bool m_bTip;
-	DWORD m_dwDisabledTextColor;
 	bool m_bEnableZoom;
 };
 

@@ -73,10 +73,21 @@ const CAttributeManager::PFN_ParseAttrValue CAttributeManager::pfnParseFunctions
 
 void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type)
 {
-	if (m_mapKeywords.find(lpszAttrKeyword) == m_mapKeywords.end())
+	CPairKeyword item(lpszAttrKeyword, (DWORD)MAKELONG(m_lstKeywords.size(), type));
+	int nLen = _tcslen(lpszAttrKeyword);
+	for (CListKeywords::iterator itor = m_lstKeywords.begin(); itor != m_lstKeywords.end(); itor++)
 	{
-		m_mapKeywords[lpszAttrKeyword] = (DWORD)MAKELONG(m_mapKeywords.size(), type);
+		if (itor->first.GetLength() < nLen)
+		{
+			m_lstKeywords.insert(itor, item);
+			return;
+		}
 	}
+	m_lstKeywords.push_back(item);
+// 	if (m_mapKeywords.find(lpszAttrKeyword) == m_mapKeywords.end())
+// 	{
+// 		m_mapKeywords[lpszAttrKeyword] = (DWORD)MAKELONG(m_mapKeywords.size(), type);
+// 	}
 }
 
 
@@ -159,28 +170,29 @@ bool CAttributeManager::ParseAttributeValue(LPCTSTR lpszAttr, LPCTSTR lpszValue)
 ValueType CAttributeManager::ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr) const
 {
 	std::vector<DWORD> dwAttrIDs;
-	CMapStatus::const_iterator itor = m_mapKeywords.find(lpszAttr);
-	if (itor == m_mapKeywords.end())
+// 	if (_tcsicmp(lpszAttr, _T("bkcolor")) == 0)
+// 	{
+// 		__asm int 3;
+// 	}
+	while (*lpszAttr)
 	{
-		//没找到就找前缀
-		//CDuiString strPrefix(lpszAttr);
-		while (*lpszAttr)
+		LPCTSTR lpszOldAttr = lpszAttr;
+		for (CListKeywords::const_iterator itor2 = m_lstKeywords.begin(); itor2 != m_lstKeywords.end(); itor2++)
 		{
-			for (CMapStatus::const_iterator itor2 = m_mapKeywords.begin(); itor2 != m_mapKeywords.end(); itor2++)
+			if (_tcsnicmp(lpszAttr, itor2->first, itor2->first.GetLength()) == 0)
 			{
-				if (_tcsnicmp(lpszAttr, itor2->first, itor2->first.GetLength()) == 0)
-				{
-					dwAttrIDs.push_back(itor2->second);
-					lpszAttr += itor2->first.GetLength();
-					break;
-				}
+				dwAttrIDs.push_back(itor2->second);
+				lpszAttr += itor2->first.GetLength();
+				break;
 			}
 		}
+		if (lpszOldAttr == lpszAttr)
+		{
+			//没有找到，出错
+			return TypeUnknown;
+		}
 	}
-	else
-	{
-		dwAttrIDs.push_back(itor->second);
-	}
+
 	if (!dwAttrIDs.size())
 	{
 		return TypeUnknown;

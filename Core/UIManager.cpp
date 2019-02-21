@@ -121,7 +121,7 @@ m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false)
 {
 	m_threadId=GetCurrentThreadId();
-	LuaState* L=LuaManager::instance()->current();
+	//LuaState* L=LuaManager::instance()->current();
 	m_lua.setGlobal("UI",m_lua.newTable());
 	m_lua.setGlobal("msgBox",m_lua.newFunction(MsgBox));
 	m_lua.setGlobal("manager", _lbindCToLua(&m_lua));
@@ -147,10 +147,10 @@ m_bNeedShowFocusDot(false)
 	LBIND_REGISTER_CLASS(CRichEditUI,&m_lua);
 	LBIND_REGISTER_CLASS(CDialogBuilder,&m_lua);
 
-	LuaEngine* luaVm=LuaManager::instance()->current();
-	if (luaVm)
+	//LuaEngine* luaVm=LuaManager::instance()->current();
+	//if (luaVm)
 	{
-		luaVm->setRegistry(this,luaVm->newTable());
+		m_lua.setRegistry(this, m_lua.newTable());
 	}
 
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
@@ -239,13 +239,8 @@ LuaState* CPaintManagerUI::GetLuaState()
 
 bool CPaintManagerUI::CheckAvalible()
 {
-	LuaEngine* luaVm=LuaManager::instance()->current();
-	if (luaVm)
-	{
-		LuaTable tab=luaVm->getRegistery(this);
-		return tab.isValid();
-	}
-	return false;
+	LuaTable tab=m_lua.getRegistery(this);
+	return tab.isValid();
 }
 
 RefCountedPtr<IRunbaleUI> CPaintManagerUI::GetRunable()
@@ -262,10 +257,10 @@ RefCountedPtr<IRunbaleUI> CPaintManagerUI::GetRunable()
 
 LuaObject CPaintManagerUI::GetControlEventMap(CControlUI* ctl,bool bCreate)
 {
-	LuaEngine* luaVm=LuaManager::instance()->current();
-	if (luaVm)
+// 	LuaEngine* luaVm=LuaManager::instance()->current();
+// 	if (luaVm)
 	{
-		LuaTable tab=luaVm->getRegistery(this);
+		LuaTable tab=m_lua.getRegistery(this);
 		ASSERT(tab.isValid());
 
 		LuaObject ctlEvTable=tab.getTable((lua_Integer)ctl);
@@ -275,7 +270,7 @@ LuaObject CPaintManagerUI::GetControlEventMap(CControlUI* ctl,bool bCreate)
 		}
 		else if(bCreate)
 		{
-			LuaObject objTab=luaVm->newTable();
+			LuaObject objTab= m_lua.newTable();
 			tab.setTable((lua_Integer)ctl,objTab);
 			return objTab;
 		}

@@ -56,9 +56,6 @@ namespace DuiLib
 		bool			m_bSelected;
 		CDuiString		m_sGroupName;
 
-		DWORD			m_dwSelectedBkColor;
-		DWORD			m_dwSelectedTextColor;
-
 		CDuiString		m_sSelectedImage;
 		CDuiString		m_sSelectedHotImage;
 		CDuiString		m_sSelectedPushedImage;

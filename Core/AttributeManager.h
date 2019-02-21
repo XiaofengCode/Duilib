@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include <queue>
+#include <list>
 namespace DuiLib{	
 
 class CDuiImageItem
@@ -273,7 +274,9 @@ class CAttributeManager
 {
 public:
 	typedef std::map<CDuiString, CAttrItem> CMapAttrs;
-	typedef std::map<CDuiString, DWORD> CMapStatus;
+	//typedef std::map<CDuiString, DWORD> CMapStatus;
+	typedef std::pair<CDuiString, DWORD> CPairKeyword;
+	typedef std::list<CPairKeyword> CListKeywords;
 	typedef bool (*PFN_ParseAttrValue)(LPCTSTR lpszValue, CAttrItem& item);
 	virtual ~CAttributeManager()
 	{
@@ -351,7 +354,8 @@ protected:
 	static bool ParseIntOrString(LPCTSTR lpszValue, CAttrItem& item);
 	static bool ParseImage(LPCTSTR lpszValue, CAttrItem& item);
 	const static PFN_ParseAttrValue pfnParseFunctions[TypeMax];
- 	CMapStatus m_mapKeywords;
+ 	//CMapStatus m_mapKeywords;
+	CListKeywords m_lstKeywords;
 // 	CMapAttrs m_mapAttrs;
 	CAttrTreeNode	m_AttrTreeRoot;
 };

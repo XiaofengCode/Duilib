@@ -205,7 +205,7 @@ namespace DuiLib{
 					pString->Replace(pString->Mid(nPos, nPos2 - nPos + 1), lpsz);
 				}
 			}
-			nPos = pString->Find(STRINGID_ID_2, nPos + 3);			
+			nPos = pString->Find(STRINGID_ID, nPos + 3);			
 		}
 		return *pString;
 	}

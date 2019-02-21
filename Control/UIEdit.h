@@ -77,7 +77,6 @@ namespace DuiLib
 		CDuiString m_sFocusedImage;
 		CDuiString m_sDisabledImage;
 		CDuiString m_sTipValue;
-		DWORD m_dwTipValueColor;
 		DWORD m_dwEditbkColor;
 		DWORD m_dwEditTextColor;
 		int m_iWindowStyls;

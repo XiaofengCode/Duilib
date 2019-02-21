@@ -102,7 +102,7 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 	pParent->SetManager(pManager, NULL, false);
 	char nameBuf[MAX_PATH];
 	char valueBuf[MAX_PATH];
-	LuaEngine* L=LuaManager::instance()->current();
+	LuaState* L = pManager->GetLuaState();
 	if(!L)
 	{
 		return;

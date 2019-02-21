@@ -198,8 +198,9 @@ namespace DuiLib
 
 	CEditUI::CEditUI() : m_pWindow(NULL), m_uMaxChar(255), m_bReadOnly(false), 
 		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_uButtonState(0), 
-		m_dwEditbkColor(0xFFFFFFFF), m_dwEditTextColor(0x00000000), m_iWindowStyls(0),m_dwTipValueColor(0xFFBAC0C5)
+		m_dwEditbkColor(0xFFFFFFFF), m_dwEditTextColor(0x00000000), m_iWindowStyls(0)
 	{
+		SetTipValueColor(_T("#FFBAC0C5"));
 		SetTextPadding(CDuiRect(4, 3, 4, 3));
 		SetBkColor(0xFFFFFFFF);
 	}
@@ -510,16 +511,12 @@ namespace DuiLib
 
 	void CEditUI::SetTipValueColor( LPCTSTR pStrColor )
 	{
-		if( *pStrColor == _T('#')) pStrColor = ::CharNext(pStrColor);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
-
-		m_dwTipValueColor = clrColor;
+		m_attrs.SetAttribute(DUI_ATTR_TIPVALUE DUI_ATTR_COLOR, pStrColor);
 	}
 
 	DWORD CEditUI::GetTipValueColor()
 	{
-		return m_dwTipValueColor;
+		return m_attrs.GetColor(DUI_ATTR_TIPVALUE DUI_ATTR_COLOR);
 	}
 
 	void CEditUI::SetPos(RECT rc)
@@ -611,15 +608,17 @@ namespace DuiLib
 
 	void CEditUI::PaintText(HDC hDC)
 	{
-		DWORD mCurTextColor = m_dwTextColor;
+		if( GetTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+		DWORD mCurTextColor = GetTextColor();
 
-		if( m_dwTextColor == 0 ) mCurTextColor = m_dwTextColor = m_pManager->GetDefaultFontColor();		
-		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+		if( GetDisabledTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 
 		CDuiString sText;
 		if(GetText() == m_sTipValue || GetText() == _T(""))	
 		{
-			mCurTextColor = m_dwTipValueColor;
+			mCurTextColor = GetTipValueColor();
 			sText = m_sTipValue;			
 		}
 		else
@@ -646,7 +645,7 @@ namespace DuiLib
 				m_sFont, DT_SINGLELINE | m_uTextStyle);
 		}
 		else {
-			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
+			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, GetDisabledTextColor(), \
 				m_sFont, DT_SINGLELINE | m_uTextStyle);
 		}
 	}

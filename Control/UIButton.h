@@ -58,10 +58,6 @@ namespace DuiLib
 	protected:
 		UINT m_uButtonState;
 
-		DWORD m_dwHotBkColor;
-		DWORD m_dwHotTextColor;
-		DWORD m_dwPushedTextColor;
-		DWORD m_dwFocusedTextColor;
 
 		CDuiString m_sNormalImage;
 		CDuiString m_sHotImage;

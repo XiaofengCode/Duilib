@@ -62,7 +62,6 @@ namespace DuiLib
 		int m_nMax;
 		int m_nMin;
 		int m_nValue;
-		DWORD		m_dwForeColor;
 
 		CDuiString m_sForeImage;
 		CDuiString m_sForeImageModify;

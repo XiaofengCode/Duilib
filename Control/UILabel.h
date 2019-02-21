@@ -75,8 +75,6 @@ namespace DuiLib
 		bool		GetEnabledShadow();
 		
 	protected:
-		//DWORD	m_dwTextColor;
-		DWORD	m_dwDisabledTextColor;
 		CDuiString m_sFont;
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;

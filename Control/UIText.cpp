@@ -113,11 +113,11 @@ namespace DuiLib
 		if( m_bShowHtml )
 		{
 			int nLinks = 0;
-			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
+			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, GetTextColor(), NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
 		}
 		else
 		{
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_sFont, DT_CALCRECT | m_uTextStyle);
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, GetTextColor(), m_sFont, DT_CALCRECT | m_uTextStyle);
 		}
 		SIZE cXY = {rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right,
 			rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom};
@@ -137,8 +137,10 @@ namespace DuiLib
 			return;
 		}
 
-		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
-		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+		if( GetTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+		if( GetDisabledTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 
 		if( m_sText.IsEmpty() ) return;
 
@@ -150,18 +152,18 @@ namespace DuiLib
 		rc.bottom -= m_rcTextPadding.bottom;
 		if( IsEnabled() ) {
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, GetTextColor(), \
 				m_rcLinks, m_sLinks, m_nLinks, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, GetTextColor(), \
 				m_sFont, m_uTextStyle);
 		}
 		else {
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, GetDisabledTextColor(), \
 				m_rcLinks, m_sLinks, m_nLinks, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, GetDisabledTextColor(), \
 				m_sFont, m_uTextStyle);
 		}
 	}

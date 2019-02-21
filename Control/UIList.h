@@ -272,8 +272,8 @@ public:
     void SetSepWidth(int iWidth);
 	DWORD GetTextStyle() const;
     void SetTextStyle(UINT uStyle);
-	DWORD GetTextColor() const;
-    void SetTextColor(DWORD dwTextColor);
+// 	DWORD GetTextColor() const;
+//     void SetTextColor(DWORD dwTextColor);
 	void SetTextPadding(RECT rc);
 	RECT GetTextPadding() const;
 	void SetFont(LPCTSTR lpszFontID);
@@ -306,7 +306,6 @@ protected:
     bool m_bDragable;
     UINT m_uButtonState;
     int m_iSepWidth;
-    DWORD m_dwTextColor;
     CDuiString m_sFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;

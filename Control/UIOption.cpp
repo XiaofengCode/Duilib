@@ -3,7 +3,7 @@
 
 namespace DuiLib
 {
-	COptionUI::COptionUI() : m_bSelected(false), m_dwSelectedTextColor(0), m_dwSelectedBkColor(0)
+	COptionUI::COptionUI() : m_bSelected(false)
 	{
 	}
 
@@ -154,23 +154,22 @@ namespace DuiLib
 
 	void COptionUI::SetSelectedTextColor(DWORD dwTextColor)
 	{
-		m_dwSelectedTextColor = dwTextColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_SELECTED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwTextColor);
 	}
 
 	DWORD COptionUI::GetSelectedTextColor()
 	{
-		if (m_dwSelectedTextColor == 0) m_dwSelectedTextColor = m_pManager->GetDefaultFontColor();
-		return m_dwSelectedTextColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_SELECTED DUI_ATTR_TEXT DUI_ATTR_COLOR);
 	}
 
 	void COptionUI::SetSelectedBkColor( DWORD dwBkColor )
 	{
-		m_dwSelectedBkColor = dwBkColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_SELECTED DUI_ATTR_POS_BK DUI_ATTR_COLOR, dwBkColor);
 	}
 
 	DWORD COptionUI::GetSelectBkColor()
 	{
-		return m_dwSelectedBkColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_SELECTED DUI_ATTR_POS_BK DUI_ATTR_COLOR);
 	}
 
 	LPCTSTR COptionUI::GetForeImage()
@@ -243,8 +242,8 @@ namespace DuiLib
 				if( !DrawImage(hDC, (LPCTSTR)m_sSelectedImage) ) m_sSelectedImage.Empty();
 				goto Label_ForeImage;
 			}
-			else if(m_dwSelectedBkColor != 0) {
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwSelectedBkColor));
+			else if(GetSelectBkColor() != 0) {
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(GetSelectBkColor()));
 				goto Label_ForeImage;
 			}	
 		}
@@ -265,13 +264,19 @@ Label_ForeImage:
 
 	void COptionUI::PaintText(HDC hDC)
 	{
+		if( GetTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+		if( GetDisabledTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 		if( (m_uButtonState & UISTATE_SELECTED) != 0 )
 		{
-			DWORD oldTextColor = m_dwTextColor;
-			if( m_dwSelectedTextColor != 0 ) m_dwTextColor = m_dwSelectedTextColor;
+			DWORD dwTextColor = GetTextColor();
+			if( GetSelectedTextColor() != 0 ) dwTextColor = GetSelectedTextColor();
+			if (!IsEnabled())
+			{
+				dwTextColor = GetDisabledTextColor();
+			}
 
-			if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
-			if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
 
 			if( m_sText.IsEmpty() ) return;
 			int nLinks = 0;
@@ -282,13 +287,11 @@ Label_ForeImage:
 			rc.bottom -= m_rcTextPadding.bottom;
 
 			if( m_bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, dwTextColor, \
 				NULL, NULL, nLinks, m_uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, IsEnabled()?m_dwTextColor:m_dwDisabledTextColor, \
+				CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, dwTextColor, \
 				m_sFont, m_uTextStyle);
-
-			m_dwTextColor = oldTextColor;
 		}
 		else
 			CButtonUI::PaintText(hDC);

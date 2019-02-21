@@ -1061,8 +1061,9 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
-	m_dwTipValueColor(0xFFBAC0C5),m_bTip(false),m_dwDisabledTextColor(0), m_bEnableZoom(false)
+	m_bTip(false),m_bEnableZoom(false)
 {
+	SetTipValueColor(_T("#FFBAC0C5"));
 #ifndef _UNICODE
 	m_fAccumulateDBC =true;
 #else
@@ -1197,7 +1198,7 @@ void CRichEditUI::SetEnabled(bool bEnabled)
 	if (m_bEnabled == bEnabled) return;
 
 	if( m_pTwh ) {
-		m_pTwh->SetColor(bEnabled ? m_dwTextColor : m_dwDisabledTextColor);
+		m_pTwh->SetColor(bEnabled ? GetTextColor() : GetDisabledTextColor());
 	}
 	
 	CContainerUI::SetEnabled(bEnabled);
@@ -1215,21 +1216,21 @@ void CRichEditUI::SetWinStyle(LONG lStyle)
 
 void CRichEditUI::SetTextColor(DWORD dwTextColor)
 {
-    m_dwTextColor = dwTextColor;
     if( m_pTwh ) {
         m_pTwh->SetColor(dwTextColor);
     }
+	__super::SetTextColor(dwTextColor);
 }
 
 void CRichEditUI::SetDisabledTextColor(DWORD dwTextColor)
 {
-	m_dwDisabledTextColor = dwTextColor;
+	m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwTextColor);
 	Invalidate();
 }
 
 DWORD CRichEditUI::GetDisabledTextColor() const
 {
-	return m_dwDisabledTextColor;
+	return m_attrs.GetColor(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR);
 }
 
 void CRichEditUI::SetRtfFile(LPCTSTR lpszFileName)
@@ -1317,26 +1318,24 @@ CDuiString CRichEditUI::GetText() const
     return sText;
 }
 
-void CRichEditUI::SetTipText(LPCTSTR pstrText)
+void CRichEditUI::ShowTipText(LPCTSTR pstrText)
 {
-	DWORD dwTextColor = m_dwTipValueColor;
+	m_bTip = true;
 	m_sText = pstrText;
 	if( !m_pTwh ) return;
-	m_pTwh->SetColor(m_dwTipValueColor);
+	m_pTwh->SetColor(GetTipValueColor());
 	SetSel(0, -1);
 	ReplaceSel(m_sText, FALSE);
 }
 
 void CRichEditUI::SetText(LPCTSTR pstrText)
 {
-	DWORD dwTextColor = m_dwTextColor;
+	DWORD dwTextColor = GetTextColor();
     m_sText = pstrText;
 
 	if (m_sText.GetLength() == 0  && m_sTipValue.GetLength() && !IsFocused())
 	{
-		m_bTip = true;
-		m_sText = m_sTipValue;
-		dwTextColor = m_dwTipValueColor;
+		ShowTipText(m_sTipValue);
 	}
 	else
 	{
@@ -1750,8 +1749,10 @@ long CRichEditUI::StreamOut(int nFormat, EDITSTREAM &es)
 
 void CRichEditUI::DoInit()
 {
-	if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
-	if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+	if( GetTextColor() == 0 )
+		m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+	if( GetDisabledTextColor() == 0 )
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 	if(m_bInited)
 		return ;
 
@@ -1771,17 +1772,15 @@ void CRichEditUI::DoInit()
         m_pManager->AddMessageFilter(this);
 		if (!m_bEnabled)
 		{
-			m_pTwh->SetColor(m_dwDisabledTextColor);
+			m_pTwh->SetColor(GetDisabledTextColor());
 		}
 		else if (GetText() == _T("") && !m_sTipValue.IsEmpty())
 		{
-			m_bTip = true;
-			SetTipText(m_sTipValue);
-			m_pTwh->SetColor(m_dwTipValueColor);
+			ShowTipText(m_sTipValue);
 		}
 		else
 		{
-			SetTextColor(m_dwTextColor);
+			SetTextColor(GetTextColor());
 		}
     }
 
@@ -1975,8 +1974,8 @@ void CRichEditUI::DoEvent(TEventUI& event)
 			if (m_bTip)
 			{
 				m_bTip = false;
-				SetTipText(_T(""));
-				m_pTwh->SetColor(m_dwTextColor);
+				ShowTipText(_T(""));
+				m_pTwh->SetColor(GetTextColor());
 			}
 			m_pTwh->GetTextServices()->TxSendMessage(WM_SETFOCUS, 0, 0, 0);
 		}
@@ -1989,9 +1988,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 			m_pTwh->OnTxInPlaceActivate(NULL);
 			if (GetText() == _T("") && !m_sTipValue.IsEmpty())
 			{
-				m_bTip = true;
-				SetTipText(m_sTipValue);
-				m_pTwh->SetColor(m_dwTipValueColor);
+				ShowTipText(m_sTipValue);
 			}
 			m_pTwh->GetTextServices()->TxSendMessage(WM_KILLFOCUS, 0, 0, 0);
 		}
@@ -2113,16 +2110,12 @@ LPCTSTR CRichEditUI::GetTipValue()
 
 void CRichEditUI::SetTipValueColor( LPCTSTR pStrColor )
 {
-	if( *pStrColor == _T('#')) pStrColor = ::CharNext(pStrColor);
-	LPTSTR pstr = NULL;
-	DWORD clrColor = _tcstoul(pStrColor, &pstr, 16);
-
-	m_dwTipValueColor = clrColor;
+	m_attrs.SetAttribute(DUI_ATTR_TIPVALUE DUI_ATTR_COLOR, pStrColor);
 }
 
 DWORD CRichEditUI::GetTipValueColor()
 {
-	return m_dwTipValueColor;
+	return m_attrs.GetColor(DUI_ATTR_TIPVALUE DUI_ATTR_COLOR);
 }
 
 void CRichEditUI::PaintStatusImage(HDC hDC)

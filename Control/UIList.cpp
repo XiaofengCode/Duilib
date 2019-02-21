@@ -1344,7 +1344,7 @@ bool CListHeaderUI::IsScaleHeader() const
 //
 
 CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_uButtonState(0), m_iSepWidth(4),
-m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_dwTextColor(0), m_bShowHtml(false),m_nScale(0)
+m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_bShowHtml(false),m_nScale(0)
 {
 	SetTextPadding(CDuiRect(2, 0, 2, 0));
     ptLastMouse.x = ptLastMouse.y = 0;
@@ -1408,16 +1408,16 @@ void CListHeaderItemUI::SetTextStyle(UINT uStyle)
     Invalidate();
 }
 
-DWORD CListHeaderItemUI::GetTextColor() const
-{
-	return m_dwTextColor;
-}
-
-
-void CListHeaderItemUI::SetTextColor(DWORD dwTextColor)
-{
-    m_dwTextColor = dwTextColor;
-}
+// DWORD CListHeaderItemUI::GetTextColor() const
+// {
+// 	return m_dwTextColor;
+// }
+// 
+// 
+// void CListHeaderItemUI::SetTextColor(DWORD dwTextColor)
+// {
+//     m_dwTextColor = dwTextColor;
+// }
 
 RECT CListHeaderItemUI::GetTextPadding() const
 {
@@ -1721,7 +1721,8 @@ void CListHeaderItemUI::PaintStatusImage(HDC hDC)
 
 void CListHeaderItemUI::PaintText(HDC hDC)
 {
-    if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
+	if( GetTextColor() == 0 )
+		m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
 
 	RECT rcText = m_rcItem;
 	rcText.left += m_rcTextPadding.left;
@@ -1732,10 +1733,10 @@ void CListHeaderItemUI::PaintText(HDC hDC)
     if( m_sText.IsEmpty() ) return;
     int nLinks = 0;
     if( m_bShowHtml )
-        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
+        CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, GetTextColor(), \
         NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
     else
-        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
+        CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, GetTextColor(), \
         m_sFont, DT_SINGLELINE | m_uTextStyle);
 }
 

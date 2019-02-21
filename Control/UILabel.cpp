@@ -15,8 +15,7 @@ namespace DuiLib
 	//	return Color(255, r, g, b);
 	//}
 
-	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), 		
-		m_dwDisabledTextColor(0),
+	CLabelUI::CLabelUI() : m_uTextStyle(DT_VCENTER), 
 		m_bShowHtml(false),
 
 		m_EnableEffect(false),
@@ -84,13 +83,13 @@ namespace DuiLib
 
 	void CLabelUI::SetDisabledTextColor(DWORD dwTextColor)
 	{
-		m_dwDisabledTextColor = dwTextColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwTextColor);
 		Invalidate();
 	}
 
 	DWORD CLabelUI::GetDisabledTextColor() const
 	{
-		return m_dwDisabledTextColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR);
 	}
 
 	void CLabelUI::SetFont(LPCTSTR lpszFontID)
@@ -136,11 +135,11 @@ namespace DuiLib
 		if( m_bShowHtml )
 		{
 			int nLinks = 0;
-			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
+			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, GetTextColor(), NULL, NULL, nLinks, DT_CALCRECT | m_uTextStyle);
 		}
 		else
 		{
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_sFont, DT_CALCRECT | m_uTextStyle);
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, GetTextColor(), m_sFont, DT_CALCRECT | m_uTextStyle);
 		}
 		if (m_bAutoCalcWidth)
 		{
@@ -295,8 +294,10 @@ namespace DuiLib
 
 	void CLabelUI::PaintText(HDC hDC)
 	{
-		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
-		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+		if( GetTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+		if( GetDisabledTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 
 		RECT rc = m_rcItem;
 		rc.left += m_rcTextPadding.left;
@@ -310,18 +311,18 @@ namespace DuiLib
 			int nLinks = 0;
 			if( IsEnabled() ) {
 				if( m_bShowHtml )
-					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, GetTextColor(), \
 					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, GetTextColor(), \
 					m_sFont, DT_SINGLELINE | m_uTextStyle);
 			}
 			else {
 				if( m_bShowHtml )
-					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, GetDisabledTextColor(), \
 					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, GetDisabledTextColor(), \
 					m_sFont, DT_SINGLELINE | m_uTextStyle);
 			}
 		}

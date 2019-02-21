@@ -6,7 +6,6 @@ namespace DuiLib
 	CProgressUI::CProgressUI() : m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true),
 		m_Type(TypeNormol), m_nCirFinishedWidth(0), m_nCirLastWidth(0), m_nCirSpace(0), m_nStartAngle(-90),m_nSweepAngle(0), m_bButton(false)
 	{
-		m_dwForeColor = 0;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
 	}
@@ -85,15 +84,15 @@ namespace DuiLib
 		Invalidate();
 	}
 
-	void CProgressUI::SetForeColor(DWORD dwTextColor)
+	void CProgressUI::SetForeColor(DWORD dwColor)
 	{
-		m_dwForeColor = dwTextColor;
+		m_attrs.SetAttribute(DUI_ATTR_POS_FORE DUI_ATTR_COLOR, dwColor);
 		Invalidate();
 	}
 
 	DWORD CProgressUI::GetForeColor() const
 	{
-		return m_dwForeColor;
+		return m_attrs.GetColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
 	}
 
 	int CProgressUI::GetCircularFinishedWidth() const
@@ -262,7 +261,7 @@ namespace DuiLib
 				rc.right += m_rcItem.left;
 				rc.top += m_rcItem.top;
 				rc.bottom += m_rcItem.top;
-				CRenderEngine::DrawColor(hDC, rc, m_dwForeColor);
+				CRenderEngine::DrawColor(hDC, rc, GetForeColor());
 			}
 		}
 		else
@@ -298,7 +297,7 @@ namespace DuiLib
 		}
 		CDuiRect rcValue(rcItem);
 		rcValue.Deflate(nWidth/2, nWidth/2);
-		Gdiplus::Pen pen(m_dwForeColor);
+		Gdiplus::Pen pen(GetForeColor());
 		pen.SetWidth(nWidth);
 		int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
 		//绘制已完成部分

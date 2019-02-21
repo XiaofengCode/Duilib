@@ -7,6 +7,7 @@ namespace DuiLib {
 #define DUI_ATTR_STATUS_DISABLED	_T("disabled")
 #define DUI_ATTR_STATUS_HOT			_T("hot")
 #define DUI_ATTR_STATUS_PUSHED		_T("pushed")
+#define DUI_ATTR_STATUS_SELECTED	_T("selected")
 
 #define DUI_ATTR_POS_FOCUSDOT		_T("focusdot")
 #define DUI_ATTR_POS_BK				_T("bk")
@@ -19,6 +20,8 @@ namespace DuiLib {
 #define DUI_ATTR_WIDTH				_T("width")
 #define DUI_ATTR_HEIGHT				_T("height")
 #define DUI_ATTR_COLOR				_T("color")
+#define DUI_ATTR_COLOR2				_T("color2")
+#define DUI_ATTR_COLOR3				_T("color3")
 #define DUI_ATTR_POS				_T("pos")
 #define DUI_ATTR_PADDING			_T("padding")
 #define DUI_ATTR_SIZE				_T("size")
@@ -26,6 +29,7 @@ namespace DuiLib {
 #define DUI_ATTR_FONT				_T("font")
 #define DUI_ATTR_TOOLTIP			_T("tooltip")
 #define DUI_ATTR_IMAGE				_T("image")
+#define DUI_ATTR_TIPVALUE			_T("tipvalue")
 //#define DUI_ATTR_USERDATA			_T("userdata")
 //#define DUI_ATTR_ENABLED			_T("enabled")
 //#define DUI_ATTR_KEYBOARD			_T("keyboard")
@@ -198,14 +202,14 @@ public:
     virtual SIZE EstimateSize(SIZE szAvailable);
 
     virtual void DoPaint(HDC hDC, const RECT& rcPaint);
-
-	void PaintFocusedDot(HDC hDC);
-
 	virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
-    virtual void PaintStatusImage(HDC hDC);
+	virtual void PaintStatusImage(HDC hDC);
+	virtual void PaintForeColor(HDC hDC);
+	virtual void PaintForeImage(HDC hDC);
     virtual void PaintText(HDC hDC);
-    virtual void PaintBorder(HDC hDC);
+	virtual void PaintBorder(HDC hDC);
+	virtual void PaintFocusedDot(HDC hDC);
 
     virtual void DoPostPaint(HDC hDC, const RECT& rcPaint);
 
@@ -226,6 +230,8 @@ public:
     CEventSource OnNotify;
 
 protected:
+	virtual DWORD GetStatus();
+	virtual CDuiString GetStatusString(DWORD dwStatus = 0, int nIgnorStatus = 0);
     CPaintManagerUI* m_pManager;
     CContainerUI* m_pParent;
 	CDuiString m_sVirtualWnd;
@@ -246,7 +252,6 @@ protected:
     bool m_bFloat;
     bool m_bSetPos; // ∑¿÷πSetPos—≠ª∑µ˜”√
     TRelativePosUI m_tRelativePos;
-	DWORD	m_dwTextColor;
 
     CDuiString m_sText;
     CDuiString m_sToolTip;
@@ -254,13 +259,6 @@ protected:
     CDuiString m_sUserData;
     UINT_PTR m_pTag;
 
-    DWORD m_dwBackColor2;
-    DWORD m_dwBackColor3;
-    //CDuiString m_sBkImage;
-	//CDuiString m_sForeImage;
-    DWORD m_dwBorderColor;
-	DWORD m_dwFocusBorderColor;
-	DWORD m_dwDisabledBorderColor;
     bool m_bColorHSL;
     int m_nBorderSize;
 	int m_nBorderStyle;
@@ -268,7 +266,6 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
-	DWORD m_dwFocusDotColor;
 	bool m_bShowFocusDot;
 
 	//Gif

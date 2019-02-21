@@ -18,21 +18,16 @@ m_bFloat(false),
 m_bSetPos(false),
 m_chShortcut('\0'),
 m_pTag(NULL),
-m_dwBackColor2(0),
-m_dwBackColor3(0),
-m_dwBorderColor(0),
-m_dwFocusBorderColor(0),
-m_dwDisabledBorderColor(0),
 m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
-m_nTooltipWidth(300),
-m_dwTextColor(0),
-m_dwFocusDotColor(0)
+m_nTooltipWidth(300)
 {
 //	m_attrs.AddKeyword(DUI_ATTR_NAME, TypeString);
 
 	m_attrs.AddKeyword(DUI_ATTR_COLOR, TypeColor);
+	m_attrs.AddKeyword(DUI_ATTR_COLOR2, TypeColor);
+	m_attrs.AddKeyword(DUI_ATTR_COLOR3, TypeColor);
 	m_attrs.AddKeyword(DUI_ATTR_POS, TypeRect);
 	m_attrs.AddKeyword(DUI_ATTR_PADDING, TypeRect);
 	m_attrs.AddKeyword(DUI_ATTR_SIZE, TypeRect);
@@ -42,6 +37,7 @@ m_dwFocusDotColor(0)
 	m_attrs.AddKeyword(DUI_ATTR_FONT, TypeString);
 	m_attrs.AddKeyword(DUI_ATTR_TOOLTIP, TypeString);
 	m_attrs.AddKeyword(DUI_ATTR_IMAGE, TypeImage);
+	m_attrs.AddKeyword(DUI_ATTR_TIPVALUE, TypeString);
 // 	m_attrs.AddKeyword(DUI_ATTR_USERDATA, TypeString);
 // 	m_attrs.AddKeyword(DUI_ATTR_ENABLED, TypeBool);
 // 	m_attrs.AddKeyword(DUI_ATTR_KEYBOARD, TypeBool);
@@ -63,6 +59,7 @@ m_dwFocusDotColor(0)
 	m_attrs.AddKeyword(DUI_ATTR_STATUS_DISABLED);
 	m_attrs.AddKeyword(DUI_ATTR_STATUS_HOT);
 	m_attrs.AddKeyword(DUI_ATTR_STATUS_PUSHED);
+	m_attrs.AddKeyword(DUI_ATTR_STATUS_SELECTED);
 
 	m_cXY.cx = m_cXY.cy = 0;
 	m_attrs.SetAttribute(DUI_ATTR_WIDTH, 0);
@@ -92,9 +89,10 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 	ASSERT(evName);
 	if (GetManager())
 	{
+		LuaState* L = GetManager()->GetLuaState();
 		//LOGI("DoLuaEvent:"<<evName);
 		LuaTable tab=GetManager()->GetControlEventMap(this,false);
-		if (tab.isValid())
+		if (tab.isValid() && L)
 		{
 			LuaObject evData=tab.getTable(evName);
 			if (evData.isFunction())
@@ -104,12 +102,12 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 				{
 					if (event.toInt())
 					{
-						LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam, event);
+						LuaObject rtn=func(_lbindCToLua(L), wParam, lParam, event);
 						return rtn.toBool();
 					}
 					else
 					{
-						LuaObject rtn=func(_lbindCToLua(LuaManager::instance()->current()), wParam, lParam);
+						LuaObject rtn=func(_lbindCToLua(L), wParam, lParam);
 						return rtn.toBool();
 					}
 				}
@@ -123,7 +121,6 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 			else if(evData.isString())
 			{
 				try{
-					LuaState* L=LuaManager::instance()->current();
 					LuaObject lthis=_lbindCToLua(L);
 					L->setGlobal("this",lthis);
 					L->setGlobal("wParam",wParam);
@@ -145,7 +142,11 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 
 bool CControlUI::DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer lParam, lua_Integer nEvent/* = 0*/)
 {
-	LuaEngine* L=LuaManager::instance()->current();
+	if (!GetManager())
+	{
+		return false;
+	}
+	LuaState* L=GetManager()->GetLuaState();
 	if (L)
 	{
 		//LOGI("DoLuaEvent:"<<evName);
@@ -252,12 +253,15 @@ double CControlUI::GetScaleDpi()
 
 void CControlUI::SetTextColor(DWORD dwTextColor)
 {
-	m_dwTextColor = dwTextColor;
+	if( GetTextColor() == dwTextColor ) return;
+
+	m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, dwTextColor);
+	Invalidate();
 }
 
 DWORD CControlUI::GetTextColor() const
 {
-	return m_dwTextColor;
+	return m_attrs.GetColor(DUI_ATTR_TEXT DUI_ATTR_COLOR);
 }
 
 DWORD CControlUI::GetBkColor() const
@@ -275,28 +279,28 @@ void CControlUI::SetBkColor(DWORD dwBackColor)
 
 DWORD CControlUI::GetBkColor2() const
 {
-    return m_dwBackColor2;
+	return m_attrs.GetColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR2);
 }
 
 void CControlUI::SetBkColor2(DWORD dwBackColor)
 {
-    if( m_dwBackColor2 == dwBackColor ) return;
+	if( GetBkColor2() == dwBackColor ) return;
 
-    m_dwBackColor2 = dwBackColor;
-    Invalidate();
+	m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_COLOR2, dwBackColor);
+	Invalidate();
 }
 
 DWORD CControlUI::GetBkColor3() const
 {
-    return m_dwBackColor3;
+	return m_attrs.GetColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR3);
 }
 
 void CControlUI::SetBkColor3(DWORD dwBackColor)
 {
-    if( m_dwBackColor3 == dwBackColor ) return;
+	if( GetBkColor3() == dwBackColor ) return;
 
-    m_dwBackColor3 = dwBackColor;
-    Invalidate();
+	m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_COLOR3, dwBackColor);
+	Invalidate();
 }
 
 const CDuiImage CControlUI::GetBkImage()
@@ -326,56 +330,53 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 
 DWORD CControlUI::GetBorderColor() const
 {
-    return m_dwBorderColor;
+	return m_attrs.GetColor(DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
 }
 
 void CControlUI::SetBorderColor(DWORD dwBorderColor)
 {
-    if( m_dwBorderColor == dwBorderColor ) return;
+	if( GetBorderColor() == dwBorderColor ) return;
 
-    m_dwBorderColor = dwBorderColor;
-    Invalidate();
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_COLOR, dwBorderColor);
+	Invalidate();
 }
 
 DWORD CControlUI::GetFocusDotColor() const
 {
-	return m_dwFocusDotColor;
+	return m_attrs.GetColor(DUI_ATTR_POS_FOCUSDOT DUI_ATTR_COLOR);
 }
 
 void CControlUI::SetFocusDotColor(DWORD dwColor)
 {
-	if( m_dwFocusDotColor == dwColor ) return;
+	if( GetFocusDotColor() == dwColor ) return;
 
-	m_dwFocusDotColor = dwColor;
-	if (IsFocused())
-	{
-		Invalidate();
-	}
+	m_attrs.SetAttribute(DUI_ATTR_POS_FOCUSDOT DUI_ATTR_COLOR, dwColor);
+	Invalidate();
 }
 
 DWORD CControlUI::GetFocusBorderColor() const
 {
-    return m_dwFocusBorderColor;
+	return m_attrs.GetColor(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
 }
 
 void CControlUI::SetFocusBorderColor(DWORD dwBorderColor)
 {
-    if( m_dwFocusBorderColor == dwBorderColor ) return;
+	if( GetFocusBorderColor() == dwBorderColor ) return;
 
-    m_dwFocusBorderColor = dwBorderColor;
-    Invalidate();
+	m_attrs.SetAttribute(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_POS_BORDER DUI_ATTR_COLOR, dwBorderColor);
+	Invalidate();
 }
 
 DWORD CControlUI::GetDisabledBorderColor() const
 {
-	return m_dwDisabledBorderColor;
+	return m_attrs.GetColor(DUI_ATTR_STATUS_DISABLED DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
 }
 
 void CControlUI::SetDisabledBorderColor(DWORD dwBorderColor)
 {
-	if( m_dwDisabledBorderColor == dwBorderColor ) return;
+	if( GetDisabledBorderColor() == dwBorderColor ) return;
 
-	m_dwDisabledBorderColor = dwBorderColor;
+	m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_POS_BORDER DUI_ATTR_COLOR, dwBorderColor);
 	Invalidate();
 }
 
@@ -1188,37 +1189,42 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
 	else
 	{
-		LuaEngine* L=LuaManager::instance()->current();
 		//如果不是常规属性，可能是事件
-		if (L && _tcslen(pstrName) > 2 && _tcsnicmp(pstrName, _T("on"), 2) == 0)
+		if (!GetManager())
 		{
-			try
+			return;
+		}
+		LuaState* L = GetManager()->GetLuaState();
+		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
+		{
+			return;
+		}
+		try
+		{
+			char nameBuf[128];
+			char valueBuf[128];
+			UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
+			UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
+			char* val="";
+			for (int i=strlen(valueBuf)-1;i>=0;--i)
 			{
-				char nameBuf[128];
-				char valueBuf[128];
-				UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
-				UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
-				char* val="";
-				for (int i=strlen(valueBuf)-1;i>=0;--i)
+				if (valueBuf[i]=='.')
 				{
-					if (valueBuf[i]=='.')
-					{
-						valueBuf[i]='\0';
-						val=&valueBuf[i+1];
-					}
+					valueBuf[i]='\0';
+					val=&valueBuf[i+1];
 				}
+			}
 
-				LuaTable tab=L->require(valueBuf);
-				if (tab.isValid())
-				{
-					BindLuaEvent(strlwr(nameBuf) + 2,tab.getTable(val));
-				}
-			}
-			catch(LuaException err)
+			LuaTable tab=L->require(valueBuf);
+			if (tab.isValid())
 			{
-				OutputDebugStringA(err.what());
-				//LOGE("doString error:"<<err.what());
+				BindLuaEvent(strlwr(nameBuf) + 2,tab.getTable(val));
 			}
+		}
+		catch(LuaException err)
+		{
+			OutputDebugStringA(err.what());
+			//LOGE("doString error:"<<err.what());
 		}
 	}
 }
@@ -1336,14 +1342,19 @@ void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
         CRenderClip::GenerateRoundClip(hDC, m_rcPaint,  m_rcItem, m_cxyBorderRound.cx, m_cxyBorderRound.cy, roundClip);
         PaintBkColor(hDC);
         PaintBkImage(hDC);
-        PaintStatusImage(hDC);
+		PaintStatusImage(hDC);
+		PaintForeColor(hDC);
+		PaintForeImage(hDC);
         PaintText(hDC);
         PaintBorder(hDC);
     }
-    else {
+    else
+	{
         PaintBkColor(hDC);
         PaintBkImage(hDC);
-        PaintStatusImage(hDC);
+		PaintStatusImage(hDC);
+		PaintForeColor(hDC);
+		PaintForeImage(hDC);
         PaintText(hDC);
         PaintBorder(hDC);
     }
@@ -1371,18 +1382,20 @@ void CControlUI::PaintFocusedDot(HDC hDC)
 void CControlUI::PaintBkColor(HDC hDC)
 {
 	DWORD dwBkColor = GetBkColor();
+	DWORD dwBackColor2 = GetBkColor2();
+	DWORD dwBackColor3 = GetBkColor3();
     if( dwBkColor != 0 ) {
-        if( m_dwBackColor2 != 0 ) {
-            if( m_dwBackColor3 != 0 ) {
+        if( dwBackColor2 != 0 ) {
+            if( dwBackColor3 != 0 ) {
                 RECT rc = m_rcItem;
                 rc.bottom = (rc.bottom + rc.top) / 2;
-                CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBkColor), GetAdjustColor(m_dwBackColor2), true, 8);
+                CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 8);
                 rc.top = rc.bottom;
                 rc.bottom = m_rcItem.bottom;
-                CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
+                CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBackColor2), GetAdjustColor(dwBackColor3), true, 8);
             }
             else 
-                CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwBkColor), GetAdjustColor(m_dwBackColor2), true, 16);
+                CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 16);
         }
         else if( dwBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(dwBkColor));
         else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(dwBkColor));
@@ -1412,6 +1425,16 @@ void CControlUI::PaintStatusImage(HDC hDC)
     return;
 }
 
+void CControlUI::PaintForeColor(HDC hDC)
+{
+	
+}
+
+void CControlUI::PaintForeImage(HDC hDC)
+{
+
+}
+
 void CControlUI::PaintText(HDC hDC)
 {
     return;
@@ -1419,19 +1442,25 @@ void CControlUI::PaintText(HDC hDC)
 
 void CControlUI::PaintBorder(HDC hDC)
 {
-	if(m_dwBorderColor != 0 || m_dwFocusBorderColor != 0 || m_dwDisabledBorderColor != 0)
+	DWORD dwBorderColor = GetBorderColor();
+	DWORD dwFocusBorderColor = GetFocusBorderColor();
+	DWORD dwDisabledBorderColor = GetDisabledBorderColor();
+	if(dwBorderColor != 0 || dwFocusBorderColor != 0 || dwDisabledBorderColor != 0)
 	{
-		DWORD dwBorderColor = !IsEnabled()&&m_dwDisabledBorderColor ? m_dwDisabledBorderColor : m_dwBorderColor;
+		if (!IsEnabled() && dwDisabledBorderColor)
+		{
+			dwBorderColor = dwDisabledBorderColor;
+		}
 		if(m_nBorderSize > 0 && ( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ))//画圆角边框
 		{
-			if (IsFocused() && m_dwFocusBorderColor != 0)
-				dwBorderColor = m_dwFocusBorderColor;
+			if (IsFocused() && dwFocusBorderColor != 0)
+				dwBorderColor = dwFocusBorderColor;
 			CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(dwBorderColor));
 		}
 		else
 		{
-			if (IsFocused() && m_dwFocusBorderColor != 0 && m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwFocusBorderColor));
+			if (IsFocused() && dwFocusBorderColor != 0 && m_nBorderSize > 0)
+				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(dwFocusBorderColor));
 			else if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
 			{
 				RECT rcBorder;
@@ -1557,6 +1586,50 @@ void CControlUI::SetStyle(LPCTSTR lpszStyle)
 		ApplyAttributeList(lpszAttrs);
 		strStyle.Empty();
 	}
+}
+
+DWORD CControlUI::GetStatus()
+{
+	DWORD dwStatus = 0;
+	if (!IsEnabled())
+	{
+		dwStatus |= UISTATE_DISABLED;
+	}
+	if (IsFocused())
+	{
+		dwStatus |= UISTATE_FOCUSED;
+	}
+	return dwStatus;
+}
+
+DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgnorStatus /*= 0*/)
+{
+	CDuiString sStatus;
+	if (dwStatus == 0)
+	{
+		dwStatus = GetStatus();
+	}
+	if (dwStatus & UISTATE_DISABLED && nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_STATUS_DISABLED;
+	}
+	if (dwStatus & UISTATE_FOCUSED && nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_STATUS_FOCUSED;
+	}
+	if (dwStatus & UISTATE_PUSHED && nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_STATUS_PUSHED;
+	}
+	if (dwStatus & UISTATE_HOT && nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_STATUS_HOT;
+	}
+	if (dwStatus & UISTATE_SELECTED && nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_STATUS_SELECTED;
+	}
+	return sStatus;
 }
 
 } // namespace DuiLib

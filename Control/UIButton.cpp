@@ -5,10 +5,6 @@ namespace DuiLib
 {
 	CButtonUI::CButtonUI()
 		: m_uButtonState(0)
-		, m_dwHotTextColor(0)
-		, m_dwPushedTextColor(0)
-		, m_dwFocusedTextColor(0)
-		,m_dwHotBkColor(0)
 		,m_iBindTabIndex(-1)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
@@ -131,42 +127,42 @@ namespace DuiLib
 
 	void CButtonUI::SetHotBkColor( DWORD dwColor )
 	{
-		m_dwHotBkColor = dwColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_HOT DUI_ATTR_POS_BK DUI_ATTR_COLOR, dwColor);
 	}
 
 	DWORD CButtonUI::GetHotBkColor() const
 	{
-		return m_dwHotBkColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_HOT DUI_ATTR_POS_BK DUI_ATTR_COLOR);
 	}
 
 	void CButtonUI::SetHotTextColor(DWORD dwColor)
 	{
-		m_dwHotTextColor = dwColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_HOT DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
 	}
 
 	DWORD CButtonUI::GetHotTextColor() const
 	{
-		return m_dwHotTextColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_HOT DUI_ATTR_TEXT DUI_ATTR_COLOR);
 	}
 
 	void CButtonUI::SetPushedTextColor(DWORD dwColor)
 	{
-		m_dwPushedTextColor = dwColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_PUSHED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
 	}
 
 	DWORD CButtonUI::GetPushedTextColor() const
 	{
-		return m_dwPushedTextColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_PUSHED DUI_ATTR_TEXT DUI_ATTR_COLOR);
 	}
 
 	void CButtonUI::SetFocusedTextColor(DWORD dwColor)
 	{
-		m_dwFocusedTextColor = dwColor;
+		m_attrs.SetAttribute(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
 	}
 
 	DWORD CButtonUI::GetFocusedTextColor() const
 	{
-		return m_dwFocusedTextColor;
+		return m_attrs.GetColor(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_TEXT DUI_ATTR_COLOR);
 	}
 
 	LPCTSTR CButtonUI::GetNormalImage()
@@ -360,10 +356,10 @@ namespace DuiLib
 		else
 			m_uButtonState &= ~ UISTATE_DISABLED;
 
-		if( m_dwTextColor == 0 )
-			m_dwTextColor = m_pManager->GetDefaultFontColor();
-		if( m_dwDisabledTextColor == 0 )
-			m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
+		if( GetTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
+		if( GetDisabledTextColor() == 0 )
+			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
 
 		if( m_sText.IsEmpty() )
 			return;
@@ -374,7 +370,7 @@ namespace DuiLib
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
 
-		DWORD clrColor = IsEnabled()?m_dwTextColor:m_dwDisabledTextColor;
+		DWORD clrColor = IsEnabled()?GetTextColor():GetDisabledTextColor();
 
 		if( ((m_uButtonState & UISTATE_PUSHED) != 0) && (GetPushedTextColor() != 0) )
 			clrColor = GetPushedTextColor();
@@ -431,8 +427,8 @@ namespace DuiLib
 				}
 				else goto Label_ForeImage;
 			}
-			else if(m_dwHotBkColor != 0) {
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
+			else if(GetHotBkColor() != 0) {
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(GetHotBkColor()));
 				goto Label_ForeImage;
 			}
 		}
