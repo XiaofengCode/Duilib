@@ -336,7 +336,10 @@ public:
 	static void Term();
 
     bool MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
-    bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
+
+	void OnClose();
+
+	bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 	void UsedVirtualWnd(bool bUsed);
 
 	CDuiTrayIconUI* GetTrayObject(){return m_pDuiTray;}
@@ -446,7 +449,6 @@ private:
     SIZE m_szRoundCorner;
     RECT m_rcCaption;
     UINT m_uTimerID;
-    bool m_bFirstLayout;
     bool m_bUpdateNeeded;
     bool m_bFocusNeeded;
     bool m_bOffscreenPaint;

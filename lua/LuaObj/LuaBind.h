@@ -7,15 +7,6 @@
 private:\
 	static const LuaReg _lualib[];\
 protected:\
-	static void _lbindBaseRegisterLib(const char* className,const char* baseName,const LuaReg lib[])\
-	{\
-		LuaEngine* L=LuaManager::instance()->current();\
-		LuaTable luaClass=L->newLib((LuaReg*)lib);\
-		LuaTable envTable=L->getGlobal("UI");\
-		luaClass.setMetatable(envTable.getTable(baseName));\
-		luaClass.setTable("__index",luaClass);\
-		envTable.setTable(className,luaClass);\
-	}\
 	static Class* _lbindBaseLuaToC(LuaObject obj)\
 	{\
 		typedef void* data;\
@@ -35,8 +26,7 @@ protected:\
 			return L->newNil();\
 		}\
 		LuaObject obj=L->newData(&ptr,sizeof(ptr));\
-		LuaTable envTable=L->getGlobal("UI");\
-		obj.setMetatable(envTable.getTable(className));\
+		obj.setMetatable(L->getGlobal(className));\
 		return obj;\
 	}\
 public:\
@@ -44,8 +34,7 @@ public:\
 	{\
 		LuaTable llib=L->newLib((LuaReg*)_lualib);\
 		llib.setTable("__index",llib);\
-		LuaTable envTable=L->getGlobal("UI");\
-		envTable.setTable(#Class,llib);\
+		L->setGlobal(#Class,llib);\
 	}\
 	static Class* _lbindLuaToC(LuaObject obj)\
 	{\
@@ -56,8 +45,18 @@ public:\
 		return _lbindBaseCToLua(L,this,#Class);\
 	}
 
+/*
 
 
+LuaTable luaClass=L->newLib((LuaReg*)_lualib);\
+LuaTable envTable=L->getGlobal("UI");\
+LuaTable envParentTable = envTable.getTable(#BaseClass);\
+luaClass.setMetatable(envParentTable);\
+luaClass.setTable("__index",luaClass);\
+envTable.setTable(#Class,luaClass);\
+
+envTable=L->setGlobal(#Class,luaClass);\
+*/
 
 #define LBIND_CLASS_DEFINE(Class,BaseClass)\
 private:\
@@ -65,7 +64,11 @@ static const LuaReg _lualib[];\
 public:\
 	static void _lbindRegisterLib(LuaState* L)\
 	{\
-		_lbindBaseRegisterLib(#Class,#BaseClass,_lualib);\
+		LuaTable luaClass=L->newLib((LuaReg*)_lualib);\
+		LuaTable envParentTable=L->getGlobal(#BaseClass);\
+		luaClass.setMetatable(envParentTable);\
+		luaClass.setTable("__index",luaClass);\
+		L->setGlobal(#Class,luaClass);\
 	}\
 	static Class* _lbindLuaToC(LuaObject obj)\
 	{\

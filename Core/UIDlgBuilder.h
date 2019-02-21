@@ -36,6 +36,8 @@ public:
 
 	void _ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager);
 
+	void _ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager);
+
 	void _ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node);
 
 	void _ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager);

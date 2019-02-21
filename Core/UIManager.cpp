@@ -101,7 +101,6 @@ m_pFocus(NULL),
 m_pEventHover(NULL),
 m_pEventClick(NULL),
 m_pEventKey(NULL),
-m_bFirstLayout(true),
 m_bFocusNeeded(false),
 m_bUpdateNeeded(false),
 m_bMouseTracking(false),
@@ -122,13 +121,11 @@ m_bNeedShowFocusDot(false)
 {
 	m_threadId=GetCurrentThreadId();
 	//LuaState* L=LuaManager::instance()->current();
-	m_lua.setGlobal("UI",m_lua.newTable());
-	m_lua.setGlobal("msgBox",m_lua.newFunction(MsgBox));
-	m_lua.setGlobal("manager", _lbindCToLua(&m_lua));
 
 	LBIND_REGISTER_CLASS(CPaintManagerUI,&m_lua);
 	LBIND_REGISTER_CLASS(WindowImplBase,&m_lua);
 	LBIND_REGISTER_CLASS(CControlUI,&m_lua);
+	LBIND_REGISTER_CLASS(CContainerUI,&m_lua);
 	LBIND_REGISTER_CLASS(CLabelUI,&m_lua);
 	LBIND_REGISTER_CLASS(CButtonUI,&m_lua);
 	LBIND_REGISTER_CLASS(COptionUI,&m_lua);
@@ -138,7 +135,6 @@ m_bNeedShowFocusDot(false)
 	LBIND_REGISTER_CLASS(CEditUI,&m_lua);
 	LBIND_REGISTER_CLASS(CScrollBarUI,&m_lua);
 
-	LBIND_REGISTER_CLASS(CContainerUI,&m_lua);
 	LBIND_REGISTER_CLASS(CVerticalLayoutUI,&m_lua);
 	LBIND_REGISTER_CLASS(CHorizontalLayoutUI,&m_lua);
 	LBIND_REGISTER_CLASS(CTileLayoutUI,&m_lua);
@@ -146,6 +142,8 @@ m_bNeedShowFocusDot(false)
 	LBIND_REGISTER_CLASS(CComboUI,&m_lua);
 	LBIND_REGISTER_CLASS(CRichEditUI,&m_lua);
 	LBIND_REGISTER_CLASS(CDialogBuilder,&m_lua);
+	m_lua.setGlobal("msgBox",m_lua.newFunction(MsgBox));
+	m_lua.setGlobal("duiManager", _lbindCToLua(&m_lua));
 
 	//LuaEngine* luaVm=LuaManager::instance()->current();
 	//if (luaVm)
@@ -811,26 +809,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     case WM_CLOSE:
         {
             // Make sure all matching "closing" events are sent
-            TEventUI event = { 0 };
-            event.ptMouse = m_ptLastMousePos;
-            event.dwTimestamp = ::GetTickCount();
-            if( m_pEventHover != NULL ) {
-                event.Type = UIEVENT_MOUSELEAVE;
-                event.pSender = m_pEventHover;
-                m_pEventHover->Event(event);
-            }
-            if( m_pEventClick != NULL ) {
-                event.Type = UIEVENT_BUTTONUP;
-                event.pSender = m_pEventClick;
-                m_pEventClick->Event(event);
-            }
-
-            SetFocus(NULL);
-
-            // Hmmph, the usual Windows tricks to avoid
-            // focus loss...
-            HWND hwndParent = GetWindowOwner(m_hWndPaint);
-            if( hwndParent != NULL ) ::SetFocus(hwndParent);
+			OnClose();
         }
         break;
     case WM_ERASEBKGND:
@@ -890,12 +869,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						   {
 							   pControl->SetPos(pControl->GetPos());
 						   }
-					   }
-
-					   if(m_bFirstLayout)
-					   {
-						   m_bFirstLayout = false;
-						   SendNotify(m_pRoot, _T("windowinit"), 0, 0, false);
 					   }
 				   }
 			   }
@@ -976,14 +949,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 					   {
 						   pControl->SetPos(pControl->GetPos());
 					   }
-				   }
-				   // We'll want to notify the window when it is first initialized
-				   // with the correct layout. The window form would take the time
-				   // to submit swipes/animations.
-				   if(m_bFirstLayout)
-				   {
-					   m_bFirstLayout = false;
-					   SendNotify(m_pRoot, _T("windowinit"), 0, 0, false);
 				   }
 			   }
 		   }
@@ -1222,7 +1187,6 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     m_pRoot = pControl;
     // Go ahead...
     m_bUpdateNeeded = true;
-    m_bFirstLayout = true;
     m_bFocusNeeded = true;
 
 	m_shadow.Create(this);
@@ -2974,5 +2938,28 @@ void CPaintManagerUI::SetWindowTitile( LPCTSTR lpTitle )
 	}
 }
 
+void CPaintManagerUI::OnClose()
+{
+	TEventUI event = { 0 };
+	event.ptMouse = m_ptLastMousePos;
+	event.dwTimestamp = ::GetTickCount();
+	if( m_pEventHover != NULL ) {
+		event.Type = UIEVENT_MOUSELEAVE;
+		event.pSender = m_pEventHover;
+		m_pEventHover->Event(event);
+	}
+	if( m_pEventClick != NULL ) {
+		event.Type = UIEVENT_BUTTONUP;
+		event.pSender = m_pEventClick;
+		m_pEventClick->Event(event);
+	}
+
+	SetFocus(NULL);
+
+	// Hmmph, the usual Windows tricks to avoid
+	// focus loss...
+	HWND hwndParent = GetWindowOwner(m_hWndPaint);
+	if( hwndParent != NULL ) ::SetFocus(hwndParent);
+}
 
 } // namespace DuiLib

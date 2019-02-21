@@ -431,6 +431,7 @@ namespace DuiLib
 		m_PaintManager.AttachDialog(pRoot);
 		m_PaintManager.AddNotifier(this);
 
+		m_PaintManager.SendNotify(pRoot, DUI_MSGTYPE_WINDOWINIT, 0, 0, false);
 		InitWindow();
 		return 0;
 	}

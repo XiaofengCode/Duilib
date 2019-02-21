@@ -80,6 +80,10 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 			{
 				_ParseDefault(node, pManager);
 			}
+			else if( _tcsicmp(pstrClass, _T("Script")) == 0 )
+			{
+				_ParseScript(node, pManager);
+			}
 // 			else if( _tcsicmp(pstrClass, _T("Include")) == 0 )
 // 			{
 // 				_ParseInclude(node, pManager, pParent);
@@ -114,8 +118,8 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 			UTF16To8(nameBuf,(unsigned short*)attr.name(),sizeof(nameBuf));
 			UTF16To8(valueBuf,(unsigned short*)attr.value(),sizeof(valueBuf));
 
-			char* val="";
-			for (int i=strlen(valueBuf)-1;i>=0;--i)
+			char* val = "";
+			for (int i = strlen(valueBuf)-1; i >= 0; --i)
 			{
 				if (valueBuf[i]=='.')
 				{
@@ -123,11 +127,17 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 					val=&valueBuf[i+1];
 				}
 			}
-
-			LuaTable tab=L->require(valueBuf);
-			if (tab.isValid())
+			if (!val[0])
 			{
-				pParent->BindLuaEvent(strlwr(nameBuf),tab.getTable(val));
+				pParent->BindLuaEvent(strlwr(nameBuf), L->getGlobal(valueBuf));
+			}
+			else
+			{
+				LuaTable tab=L->require(valueBuf);
+				if (tab.isValid())
+				{
+					pParent->BindLuaEvent(strlwr(nameBuf),tab.getTable(val));
+				}
 			}
 		}
 
@@ -172,6 +182,20 @@ void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
 	if( pControlName )
 	{
 		pManager->AddDefaultAttributeList(pControlName, pControlValue);
+	}
+}
+
+void CDialogBuilder::_ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager)
+{
+	LuaState* L = pManager->GetLuaState();
+	if (!L)
+	{
+		return;
+	}
+	try{
+		L->doString(DUI_T2A(node.text().as_string()).c_str());
+	}catch(LuaException err){
+		OutputDebugStringA(err.what());
 	}
 }
 

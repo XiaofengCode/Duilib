@@ -158,7 +158,7 @@ bool CControlUI::DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer 
 void CControlUI::BindLuaEvent(const char* evName,LuaObject func)
 {
 	ASSERT(evName);
-	if (GetManager())
+	if (GetManager() && func.isFunction())
 	{
 		LuaTable tab=GetManager()->GetControlEventMap(this,true);
 		ASSERT(tab.isValid());
@@ -1215,10 +1215,17 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 				}
 			}
 
-			LuaTable tab=L->require(valueBuf);
-			if (tab.isValid())
+			if (!val[0])
 			{
-				BindLuaEvent(strlwr(nameBuf) + 2,tab.getTable(val));
+				BindLuaEvent(strlwr(nameBuf) + 2, L->getGlobal(valueBuf));
+			}
+			else
+			{
+				LuaTable tab=L->require(valueBuf);
+				if (tab.isValid())
+				{
+					BindLuaEvent(strlwr(nameBuf) + 2, tab.getTable(val));
+				}
 			}
 		}
 		catch(LuaException err)
