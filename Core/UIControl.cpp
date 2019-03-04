@@ -84,7 +84,7 @@ CControlUI::~CControlUI()
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
-bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lParam, LuaObject event)
+bool CControlUI::DoLuaEvent(LPCTSTR evName,LuaObject wParam, LuaObject lParam, LuaObject event)
 {
 	ASSERT(evName);
 	if (GetManager())
@@ -94,7 +94,7 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 		LuaTable tab=GetManager()->GetControlEventMap(this,false);
 		if (tab.isValid() && L)
 		{
-			LuaObject evData=tab.getTable(evName);
+			LuaObject evData=tab.getTable(DUI_T2A(evName).c_str());
 			if (evData.isFunction())
 			{
 				LuaFunction func=evData;
@@ -140,7 +140,7 @@ bool CControlUI::DoLuaEvent(const char* evName,LuaObject wParam, LuaObject lPara
 	return false;
 }
 
-bool CControlUI::DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer lParam, lua_Integer nEvent/* = 0*/)
+bool CControlUI::DoLuaEvent(LPCTSTR evName, DWORD wParam, DWORD lParam, DWORD nEvent/* = 0*/)
 {
 	if (!GetManager())
 	{
@@ -155,25 +155,29 @@ bool CControlUI::DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer 
 	return false;
 }
 
-void CControlUI::BindLuaEvent(const char* evName,LuaObject func)
+void CControlUI::BindLuaEvent(LPCTSTR evName,LuaObject func)
 {
 	ASSERT(evName);
 	if (GetManager() && func.isFunction())
 	{
 		LuaTable tab=GetManager()->GetControlEventMap(this,true);
 		ASSERT(tab.isValid());
-		tab.setTable(evName,func);
+		CDuiString strEvent(evName);
+		strEvent.MakeLower();
+		tab.setTable(DUI_T2A(strEvent).c_str(), func);
 	}
 }
 
-void CControlUI::BindLuaEvent(const char* evName,const char* luaSrc)
+void CControlUI::BindLuaEvent(LPCTSTR evName,LPCTSTR luaSrc)
 {
 	ASSERT(evName);
 	if (GetManager())
 	{
 		LuaTable tab=GetManager()->GetControlEventMap(this,true);
 		ASSERT(tab.isValid());
-		tab.setTable(evName,luaSrc);
+		CDuiString strEvent(evName);
+		strEvent.MakeLower();
+		tab.setTable(DUI_T2A(strEvent).c_str(), DUI_T2A(luaSrc).c_str());
 	}
 }
 
@@ -879,10 +883,10 @@ void CControlUI::DoInit()
 
 void CControlUI::Event(TEventUI& event)
 {
-	DoLuaEvent("preevent", event.wParam, event.lParam, event.Type);
+	DoLuaEvent(_T("preevent"), event.wParam, event.lParam, event.Type);
 	if( OnEvent(&event) ) DoEvent(event);
-	DoLuaEvent("event", event.wParam, event.lParam, event.Type);
-	DoLuaEvent("postevent", event.wParam, event.lParam, event.Type);
+	DoLuaEvent(_T("event"), event.wParam, event.lParam, event.Type);
+	DoLuaEvent(_T("postevent"), event.wParam, event.lParam, event.Type);
 }
 
 void CControlUI::DoEvent(TEventUI& event)
@@ -956,14 +960,14 @@ void CControlUI::SetVirtualWnd(LPCTSTR pstrValue)
 	m_pManager->UsedVirtualWnd(true);
 }
 
-CDuiString CControlUI::GetVirtualWnd() const
+CDuiString CControlUI::GetVirtualWnd(bool bGetParent/* = true*/) const
 {
 	CDuiString str;
 	if( !m_sVirtualWnd.IsEmpty() )
 	{
 		str = m_sVirtualWnd;
 	}
-	else
+	else if (bGetParent)
 	{
 		CControlUI* pParent = GetParent();
 		if( pParent != NULL)
@@ -1201,30 +1205,27 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		}
 		try
 		{
-			char nameBuf[128];
-			char valueBuf[128];
-			UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
-			UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
-			char* val="";
-			for (int i=strlen(valueBuf)-1;i>=0;--i)
-			{
-				if (valueBuf[i]=='.')
-				{
-					valueBuf[i]='\0';
-					val=&valueBuf[i+1];
-				}
-			}
+// 			char nameBuf[128];
+// 			char valueBuf[128];
+// 			UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
+// 			UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
 
-			if (!val[0])
+			CDuiString strValue(pstrValue);
+			CDuiStringArray arValue = strValue.Split('.');
+			if (arValue.GetSize() == 1)
 			{
-				BindLuaEvent(strlwr(nameBuf) + 2, L->getGlobal(valueBuf));
+				std::string sFun = DuiUtf16ToAscii(strValue);
+				BindLuaEvent(pstrName + 2, L->getGlobal(sFun.c_str()));
+				//BindLuaEvent(strlwr(nameBuf) + 2, L->getGlobal(valueBuf));
 			}
 			else
 			{
-				LuaTable tab=L->require(valueBuf);
+				std::string sModule = DuiUtf16ToAscii(arValue[0]);
+				LuaTable tab=L->require(sModule.c_str());
 				if (tab.isValid())
 				{
-					BindLuaEvent(strlwr(nameBuf) + 2, tab.getTable(val));
+					std::string sFun = DuiUtf16ToAscii(arValue[1]);
+					BindLuaEvent(pstrName + 2,tab.getTable(sFun.c_str()));
 				}
 			}
 		}
@@ -1236,10 +1237,14 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
 }
 
-CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
+void CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 {
     CDuiString sItem;
     CDuiString sValue;
+	if (!pstrList)
+	{
+		return;
+	}
     while( *pstrList != _T('\0') ) {
 		
 		std::vector<TCHAR> sep;
@@ -1254,9 +1259,9 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
         }
 
         ASSERT( *pstrList == _T('=') );
-        if( *pstrList++ != _T('=') ) return this;
+        if( *pstrList++ != _T('=') ) return;
 		ASSERT(*pstrList == _T('\"') || *pstrList == _T('\''));		
-		if (*pstrList != _T('\"') && *pstrList != _T('\'')) return this;				
+		if (*pstrList != _T('\"') && *pstrList != _T('\'')) return;
 		sep.push_back(*pstrList);
 		pstrList++;
 		
@@ -1286,9 +1291,9 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
         //if( *pstrList++ != _T('\"') ) return this;
 		pstrList++;
         SetAttribute(sItem, sValue);
-        if( *pstrList++ != _T(' ') ) return this;
+        if( *pstrList++ != _T(' ') )
+			return;
     }
-    return this;
 }
 
 SIZE CControlUI::EstimateSize(SIZE szAvailable)

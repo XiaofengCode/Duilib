@@ -73,6 +73,7 @@
 #include <gdiplus.h>
 
 #include "Utils/Utils.h"
+#include "Utils/String.h"
 #include "Utils/FileHelper.h"
 #include "Utils/UIShadow.h"
 #include "Utils/UIDelegate.h"
@@ -184,7 +185,7 @@
 #	pragma message("Link duilib name:" DUILIB_NAME)
 #	pragma comment(lib, DUILIB_NAME)
 
-#	define LUALIB_NAME	"lua51_" MSC_VERSION "_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT RT_LINK_TYPE ".lib"
+#	define LUALIB_NAME	"lua51_" MSC_VERSION".lib"
 
 #	pragma message("Link lua5.1 name:" LUALIB_NAME)
 #	pragma comment(lib, LUALIB_NAME)

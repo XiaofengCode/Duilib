@@ -1587,7 +1587,7 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.wParam = wParam;
     Msg.lParam = lParam;
     SendNotify(Msg, bAsync);
-	pControl->DoLuaEvent(DUI_T2A(pstrMessage).c_str(), wParam, lParam);
+	pControl->DoLuaEvent(pstrMessage, wParam, lParam);
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)

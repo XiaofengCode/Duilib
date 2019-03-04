@@ -25,7 +25,7 @@ CMarkup::~CMarkup()
 
 bool CMarkup::IsValid() const
 {
-	return !!m_parser.root();
+	return !!GetRoot();
 }
 
 bool CMarkup::Load(LPCTSTR pstrXML)
@@ -175,7 +175,7 @@ void CMarkup::Release()
 	m_parser.reset();
 }
 
-CDuiXmlNode CMarkup::GetRoot()
+CDuiXmlNode CMarkup::GetRoot() const
 {
 	return m_parser.root().first_child();
 }

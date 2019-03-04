@@ -65,7 +65,13 @@ private:
 
 
 
+std::string DuiAcpToUtf8(const char* str, int len = -1);
 
+std::string DuiUtf8ToAcp(const char* str, int len = -1);
+
+DuiLib::CDuiString DuiUtf8ToString(const char* str, int len = -1);
+
+std::string DuiUtf16ToAscii(LPCWSTR str, int len = -1);
 
 
 

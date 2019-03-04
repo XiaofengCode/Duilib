@@ -186,7 +186,10 @@ namespace DuiLib
 		ASSERT(pstr);
 		if( pstr == NULL ) return 0;
 		::GetWindowText(m_hWnd, pstr, cchLen);
-		m_pOwner->m_sText = pstr;
+		if (m_pOwner->IsNumberOnly() && cchLen == 1)
+			m_pOwner->m_sText = _T("0");
+		else
+			m_pOwner->m_sText = pstr;
 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
 		return 0;
 	}
@@ -574,7 +577,7 @@ namespace DuiLib
 		if( IsFocused() && m_pWindow && m_pWindow->IsFocus() )
 		{
 			RECT rcParent = GetPos();
-			CRenderEngine::DrawColor(hDC, rcParent, 0xFFFFFFFF);
+			CRenderEngine::DrawColor(hDC, rcParent, GetNativeEditBkColor());
 			m_uButtonState |= UISTATE_FOCUSED;
 		}
 		else m_uButtonState &= ~ UISTATE_FOCUSED;

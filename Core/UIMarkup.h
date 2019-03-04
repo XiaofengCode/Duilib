@@ -33,7 +33,7 @@ public:
 
 	LPCTSTR GetLastError() const;
 
-    CDuiXmlNode GetRoot();
+    CDuiXmlNode GetRoot() const;
 
 private:
 	bool _Parse();

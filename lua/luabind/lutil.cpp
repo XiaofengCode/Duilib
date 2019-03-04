@@ -1,3 +1,4 @@
+#include "duipub.h"
 #include "lutil.h"
 //#include "log/log4z.h"
 

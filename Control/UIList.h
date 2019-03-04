@@ -64,7 +64,7 @@ public:
     virtual CContainerUI* GetList() const = 0;
     virtual IListCallbackUI* GetTextCallback() const = 0;
     virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
-    virtual bool ExpandItem(int iIndex, bool bExpand = true) = 0;
+    virtual bool ExpandItem(int iIndex, bool bExpand = true, bool bExpandChildren = false) = 0;
     virtual int GetExpandedItem() const = 0;
 };
 
@@ -78,7 +78,7 @@ public:
     virtual bool IsSelected() const = 0;
     virtual bool Select(bool bSelect = true) = 0;
     virtual bool IsExpanded() const = 0;
-    virtual bool Expand(bool bExpand = true) = 0;
+    virtual bool Expand(bool bExpand = true, bool bExpandChildren = false) = 0;
     virtual void DrawItemText(HDC hDC, const RECT& rcItem) = 0;
 };
 
@@ -167,7 +167,7 @@ public:
 
     void SetMultiExpanding(bool bMultiExpandable); 
     int GetExpandedItem() const;
-    bool ExpandItem(int iIndex, bool bExpand = true);
+    bool ExpandItem(int iIndex, bool bExpand = true, bool bExpandChildren = false);
 
     void SetPos(RECT rc);
     void DoEvent(TEventUI& event);
@@ -344,7 +344,7 @@ public:
     bool IsSelected() const;
     bool Select(bool bSelect = true);
     bool IsExpanded() const;
-    bool Expand(bool bExpand = true);
+    bool Expand(bool bExpand = true, bool bExpandChildren = false);
 
     void Invalidate(); // 直接CControl::Invalidate会导致滚动条刷新，重写减少刷新区域
     bool Activate();
@@ -438,7 +438,7 @@ public:
     bool IsSelected() const;
     bool Select(bool bSelect = true);
     bool IsExpanded() const;
-    bool Expand(bool bExpand = true);
+    bool Expand(bool bExpand = true, bool bExpandChildren = false);
 
     void Invalidate(); // 直接CControl::Invalidate会导致滚动条刷新，重写减少刷新区域
     bool Activate();

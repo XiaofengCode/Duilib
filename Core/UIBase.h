@@ -49,13 +49,19 @@ LPCTSTR UILIB_API DUI__TraceMsg(UINT uMsg);
 class UILIB_API CNotifyPump
 {
 public:
-	bool AddVirtualWnd(CDuiString strName,CNotifyPump* pObject);
-	bool RemoveVirtualWnd(CDuiString strName);
-	bool NotifyPump(TNotifyUI& msg);
-	bool LoopDispatch(TNotifyUI& msg);
+	CNotifyPump();
+	virtual bool AddVirtualWnd(CDuiString strName,CNotifyPump* pObject);
+	virtual bool RemoveVirtualWnd(CDuiString strName);
+	virtual bool NotifyPump(TNotifyUI& msg);
+	virtual bool LoopDispatch(TNotifyUI& msg);
+	virtual void SetRoot(CControlUI* pRoot);
+	virtual CControlUI* GetDlgItem( LPCTSTR lpszName );
+	virtual CDuiString GetDlgItemText(LPCTSTR lpszCtrlName);
+	virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 	DUI_DECLARE_MESSAGE_MAP()
 private:
 	CStdStringPtrMap m_VirtualWndMap;
+	CControlUI* m_pRoot;
 };
 
 class UILIB_API CWindowWnd

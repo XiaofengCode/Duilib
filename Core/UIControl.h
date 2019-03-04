@@ -53,11 +53,11 @@ public:
     virtual ~CControlUI();
 
 	//lua
-	bool DoLuaEvent(const char* evName, lua_Integer wParam, lua_Integer lParam, lua_Integer nEvent = 0);
-	bool DoLuaEvent(const char* evName, LuaObject wParam, LuaObject lParam, LuaObject event);//调用lua处理事件
+	bool DoLuaEvent(LPCTSTR evName, DWORD wParam, DWORD lParam, DWORD nEvent = 0);
+	bool DoLuaEvent(LPCTSTR evName, LuaObject wParam, LuaObject lParam, LuaObject event);//调用lua处理事件
 	//绑定控件事件
-	void BindLuaEvent(const char* evName,LuaObject func);//绑定event配置的事件函数
-	void BindLuaEvent(const char* evName,const char* luaSrc);//绑定lua脚本进行处理
+	void BindLuaEvent(LPCTSTR evName, LuaObject func);//绑定event配置的事件函数
+	void BindLuaEvent(LPCTSTR evName, LPCTSTR luaSrc);//绑定lua脚本进行处理
 public:
     virtual CDuiString GetName() const;
     virtual void SetName(LPCTSTR pstrName);
@@ -197,7 +197,7 @@ public:
     virtual void DoEvent(TEventUI& event);
 
     virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-    CControlUI* ApplyAttributeList(LPCTSTR pstrList);
+    void ApplyAttributeList(LPCTSTR pstrList);
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 
@@ -215,7 +215,7 @@ public:
 
 	//虚拟窗口参数
 	void SetVirtualWnd(LPCTSTR pstrValue);
-	CDuiString GetVirtualWnd() const;
+	CDuiString GetVirtualWnd(bool bGetParent = true) const;
 	int GetVirtualWnd(CDuiStringArray& arVirtualWnd) const;
 
  	virtual void  OnTimer( UINT_PTR idEvent );

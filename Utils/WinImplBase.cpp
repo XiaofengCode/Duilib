@@ -430,7 +430,7 @@ namespace DuiLib
 
 		m_PaintManager.AttachDialog(pRoot);
 		m_PaintManager.AddNotifier(this);
-
+		SetRoot(pRoot);
 		m_PaintManager.SendNotify(pRoot, DUI_MSGTYPE_WINDOWINIT, 0, 0, false);
 		InitWindow();
 		return 0;
@@ -598,30 +598,6 @@ namespace DuiLib
 	void WindowImplBase::Notify(TNotifyUI& msg)
 	{
 		CNotifyPump::NotifyPump(msg);
-	}
-
-	CControlUI* WindowImplBase::GetDlgItem( LPCTSTR lpszName )
-	{
-		return m_PaintManager.FindControl(lpszName);
-	}
-
-	void WindowImplBase::SetDlgItemText( LPCTSTR lpszCtrlName, LPCTSTR lpszText )
-	{
-		CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
-		if (pCtrl)
-		{
-			pCtrl->SetText(lpszText);
-		}
-	}
-
-	CDuiString WindowImplBase::GetDlgItemText( LPCTSTR lpszCtrlName )
-	{
-		CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
-		if (pCtrl)
-		{
-			return pCtrl->GetText();
-		}
-		return _T("");
 	}
 
 	DuiLib::CDuiString WindowImplBase::GetStringTableFile()

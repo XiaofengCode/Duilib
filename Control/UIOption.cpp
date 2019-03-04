@@ -238,14 +238,15 @@ namespace DuiLib
 			goto Label_ForeImage;
 		}
 		else if( (m_uButtonState & UISTATE_SELECTED) != 0 ) {
+			if(GetSelectBkColor() != 0) {
+				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(GetSelectBkColor()));
+				//goto Label_ForeImage;
+			}	
 			if( !m_sSelectedImage.IsEmpty() ) {
 				if( !DrawImage(hDC, (LPCTSTR)m_sSelectedImage) ) m_sSelectedImage.Empty();
-				goto Label_ForeImage;
+				//goto Label_ForeImage;
 			}
-			else if(GetSelectBkColor() != 0) {
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(GetSelectBkColor()));
-				goto Label_ForeImage;
-			}	
+			goto Label_ForeImage;
 		}
 
 		CButtonUI::PaintStatusImage(hDC);

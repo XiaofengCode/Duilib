@@ -270,6 +270,9 @@
     <ClCompile Include="lua\luabind\lwindow.cpp">
       <Filter>lua\luabind</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\String.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UIlib.h">
@@ -514,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="lua\base\RefBase.h">
       <Filter>lua\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\String.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

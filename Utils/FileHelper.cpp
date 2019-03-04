@@ -37,10 +37,13 @@ namespace DuiLib {
 
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer)
 	{
-		HANDLE hFile = CreateFile(DuiGetAbsFilePath(pstrFilename), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		CDuiString strFile = DuiGetAbsFilePath(pstrFilename);
+		HANDLE hFile = CreateFile(strFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if( hFile == INVALID_HANDLE_VALUE )
 		{
-			return _Failed(_T("Error opening file"));
+			CDuiString sErr(_T("Error opening file:"));
+			sErr += strFile;
+			return _Failed(sErr);
 		}
 		DWORD dwSize = ::GetFileSize(hFile, NULL);
 		if( dwSize == 0 )

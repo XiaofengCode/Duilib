@@ -334,7 +334,7 @@ namespace DuiLib
 		return m_bExpanded;
 	}
 
-	bool CTreeNodeUI::Expand(bool bExpand /*= true*/)
+	bool CTreeNodeUI::Expand(bool bExpand /*= true*/, bool bExpandChildren /*= false*/)
 	{		
 		if (m_bExpanding)
 			return false;
@@ -350,8 +350,10 @@ namespace DuiLib
 			{
 				CTreeNodeUI* pItem = GetChildNode(nIndex);
 				pItem->SetVisible(bExpand);
-
-				pItem->Expand(bExpand);
+				if (bExpandChildren)
+				{
+					pItem->Expand(bExpand, bExpandChildren);
+				}
 			}
 		}
 
@@ -921,14 +923,14 @@ namespace DuiLib
 		return false;
 	}
 
-	void CTreeViewUI::SetItemExpand( bool _Expanded,CTreeNodeUI* _TreeNode /*= NULL*/ )
+	void CTreeViewUI::SetItemExpand( bool _Expanded,CTreeNodeUI* _TreeNode /*= NULL*/, bool bExpandChildren /*= false*/ )
 	{
 		if(_TreeNode)
 		{
 			if ((_TreeNode->IsExpanded() && !_Expanded) ||
 				(!_TreeNode->IsExpanded() && _Expanded))
 			{
-				_TreeNode->Expand(_Expanded);
+				_TreeNode->Expand(_Expanded, bExpandChildren);
 			}
 		}
 		else
@@ -943,7 +945,7 @@ namespace DuiLib
 				if ((pItem->IsExpanded() && !_Expanded) ||
 					(!pItem->IsExpanded() && _Expanded))
 				{
-					pItem->Expand(_Expanded);
+					pItem->Expand(_Expanded, bExpandChildren);
 				}
 
 				nIndex++;

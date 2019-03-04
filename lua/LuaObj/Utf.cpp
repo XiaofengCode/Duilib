@@ -238,9 +238,74 @@ int UTF8To16( unsigned short* pwszUTF16, const char* pszUTF8, int nUTF8Count )
 	return nUTF8Len;
 }
 
+std::string DuiAcpToUtf8(const char* str, int len)
+{
+	wchar_t *strSrc;
+	char *szRes;
 
+	//获得临时变量的大小
+	int i = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
+	strSrc = (wchar_t *)malloc((i + 1) * sizeof(wchar_t));
+	memset(strSrc, 0, (i + 1) * sizeof(wchar_t));
+	MultiByteToWideChar(CP_ACP, 0, str, len, strSrc, i);
 
+	//获得临时变量的大小
+	i = WideCharToMultiByte(CP_UTF8, 0, strSrc, -1, NULL, 0, NULL, NULL);
+	szRes = (char *)malloc((i + 1) * sizeof(char));
+	memset(szRes, 0, (i + 1) * sizeof(char));
+	WideCharToMultiByte(CP_UTF8, 0, strSrc, -1, szRes, i, NULL, NULL);
 
+	free(strSrc);
+	std::string strRes(szRes);
+	free(szRes);
+	return strRes;
+}
+std::string DuiUtf8ToAcp(const char* str, int len)
+{
+	wchar_t *strSrc;
+	char *szRes;
+
+	//获得临时变量的大小
+	int i = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
+	strSrc = (wchar_t *)malloc((i + 1) * sizeof(wchar_t));
+	memset(strSrc, 0, (i + 1) * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, str, len, strSrc, i);
+
+	//获得临时变量的大小
+	i = WideCharToMultiByte(CP_ACP, 0, strSrc, -1, NULL, 0, NULL, NULL);
+	szRes = (char *)malloc((i + 1) * sizeof(char));
+	memset(szRes, 0, (i + 1) * sizeof(char));
+	WideCharToMultiByte(CP_ACP, 0, strSrc, -1, szRes, i, NULL, NULL);
+
+	free(strSrc);
+	std::string strRes(szRes);
+	free(szRes);
+	return strRes;
+}
+
+DuiLib::CDuiString DuiUtf8ToString(const char* str, int len /*= -1*/)
+{
+	wchar_t *lpszSrc;
+	int i = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
+	lpszSrc = (wchar_t *)malloc((i + 1) * sizeof(wchar_t));
+	memset(lpszSrc, 0, (i + 1) * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, str, len, lpszSrc, i);
+	DuiLib::CDuiString strRes(lpszSrc);
+	free(lpszSrc);
+	return strRes;
+}
+
+std::string DuiUtf16ToAscii(LPCWSTR str, int len /*= -1*/)
+{
+	char* szRes;
+	int i = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+	szRes = (char *)malloc((i + 1) * sizeof(char));
+	memset(szRes, 0, (i + 1) * sizeof(char));
+	WideCharToMultiByte(CP_ACP, 0, str, -1, szRes, i, NULL, NULL);
+	std::string strRes(szRes);
+	free(szRes);
+	return strRes;
+}
 
 
 

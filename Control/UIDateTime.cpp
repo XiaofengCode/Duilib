@@ -287,11 +287,15 @@ namespace DuiLib
 			}
 			else
 			{
-				GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
 				if (strFormat.Find(_T("H")) >= 0 || strFormat.Find(_T("h")) >= 0 ||
 					strFormat.Find(_T("m")) >= 0 || strFormat.Find(_T("s")) >= 0)
 				{
+					GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szDate, sizeof(szDate)/sizeof(szDate[0]));
 					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, szDate, szTime, sizeof(szTime)/sizeof(szTime[0]));
+				}
+				else
+				{
+					GetDateFormat(LOCALE_USER_DEFAULT, 0, &m_sysTime, (LPCTSTR)strFormat, szTime, sizeof(szTime)/sizeof(szTime[0]));
 				}
 			}
 		}			

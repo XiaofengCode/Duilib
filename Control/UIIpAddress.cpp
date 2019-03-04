@@ -96,7 +96,7 @@ namespace DuiLib
 		DWORD dwIP = m_pOwner->GetIP();
 		::SendMessageA(m_hWnd, WM_SETTEXT, 0, (LPARAM)inet_ntoa(*(in_addr const *)&dwIP));
 		//::SendMessage(m_hWnd, IPM_SETADDRESS, 0, m_pOwner->m_dwIP);
-		::ShowWindow(m_hWnd, SW_SHOW);
+		::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
 		//RedrawWindow(m_hWnd, NULL, NULL, 0);
 		::SetFocus(m_hWnd);
 		
@@ -407,6 +407,16 @@ namespace DuiLib
 		if( !IsEnabled() ) return CControlUI::GetControlFlags();
 
 		return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
+	}
+
+	void CIPAddressUI::SetPos(RECT rc)
+	{
+		CControlUI::SetPos(rc);
+		if( m_pWindow != NULL ) {
+			RECT rcPos = m_pWindow->CalPos();
+			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE);        
+		}
 	}
 
 }

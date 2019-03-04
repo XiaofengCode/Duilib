@@ -54,7 +54,7 @@ namespace DuiLib
 		void SetTipValueColor(LPCTSTR pStrColor);
 		DWORD GetTipValueColor();
 
-		void SetPos(RECT rc);
+		virtual void SetPos(RECT rc);
 		void SetVisible(bool bVisible = true);
 		void SetInternVisible(bool bVisible = true);
 		SIZE EstimateSize(SIZE szAvailable);

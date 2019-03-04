@@ -261,7 +261,7 @@ namespace DuiLib
 				rc.right += m_rcItem.left;
 				rc.top += m_rcItem.top;
 				rc.bottom += m_rcItem.top;
-				CRenderEngine::DrawColor(hDC, rc, GetForeColor());
+				CRenderEngine::DrawColor(hDC, rc, GetAdjustColor(GetForeColor()));
 			}
 		}
 		else

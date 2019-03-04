@@ -104,8 +104,10 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 	//	<click>print("按钮点击")</click>
 	//</Event>
 	pParent->SetManager(pManager, NULL, false);
-	char nameBuf[MAX_PATH];
-	char valueBuf[MAX_PATH];
+// 	char nameBuf[MAX_PATH];
+// 	char valueBuf[MAX_PATH];
+	std::string sName;
+	std::string sValue;
 	LuaState* L = pManager->GetLuaState();
 	if(!L)
 	{
@@ -115,40 +117,38 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 	{
 		for (CDuiXmlAttr attr=node.first_attribute();attr;attr=attr.next_attribute())
 		{
-			UTF16To8(nameBuf,(unsigned short*)attr.name(),sizeof(nameBuf));
-			UTF16To8(valueBuf,(unsigned short*)attr.value(),sizeof(valueBuf));
-
-			char* val = "";
-			for (int i = strlen(valueBuf)-1; i >= 0; --i)
+			//sName = DuiUtf16ToAscii(attr.name());
+			CDuiString strValue(attr.value());
+			//sValue = DuiUtf16ToAscii(attr.value());
+// 			UTF16To8(nameBuf,(unsigned short*)attr.name(),sizeof(nameBuf));
+// 			UTF16To8(valueBuf,(unsigned short*)attr.value(),sizeof(valueBuf));
+			//strValue.MakeLower();
+			CDuiStringArray arValue = strValue.Split('.');
+			if (arValue.GetSize() == 1)
 			{
-				if (valueBuf[i]=='.')
-				{
-					valueBuf[i]='\0';
-					val=&valueBuf[i+1];
-				}
-			}
-			if (!val[0])
-			{
-				pParent->BindLuaEvent(strlwr(nameBuf), L->getGlobal(valueBuf));
+				std::string sFun = DuiUtf16ToAscii(strValue);
+				pParent->BindLuaEvent(attr.name(), L->getGlobal(sFun.c_str()));
 			}
 			else
 			{
-				LuaTable tab=L->require(valueBuf);
+				std::string sModule = DuiUtf16ToAscii(arValue[0]);
+				LuaTable tab=L->require(sModule.c_str());
 				if (tab.isValid())
 				{
-					pParent->BindLuaEvent(strlwr(nameBuf),tab.getTable(val));
+					std::string sFun = DuiUtf16ToAscii(arValue[1]);
+					pParent->BindLuaEvent(attr.name(),tab.getTable(sFun.c_str()));
 				}
 			}
 		}
 
 		for( CDuiXmlNode evNode = node.first_child() ; evNode; evNode = evNode.next_sibling() )
 		{
-			UTF16To8(nameBuf,(unsigned short*)evNode.name(),sizeof(nameBuf));
-			int len=UTF16To8(NULL,(unsigned short*)evNode.text().as_string(),0);
-			char* buf=(char*)dlmalloc(len+1);
-			UTF16To8(buf,(unsigned short*)evNode.text().as_string(),len+1);
-			pParent->BindLuaEvent(strlwr(nameBuf),buf);
-			dlfree(buf);
+// 			UTF16To8(nameBuf,(unsigned short*)evNode.name(),sizeof(nameBuf));
+// 			int len=UTF16To8(NULL,(unsigned short*)evNode.text().as_string(),0);
+// 			char* buf=(char*)dlmalloc(len+1);
+// 			UTF16To8(buf,(unsigned short*)evNode.text().as_string(),len+1);
+			pParent->BindLuaEvent(evNode.name(), evNode.text().as_string());
+			//dlfree(buf);
 		}
 	}
 	catch(LuaException err)
@@ -389,16 +389,8 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 		//树控件XML解析
 		else if( _tcsicmp(pstrClass, _T("TreeNode")) == 0 )
 		{
-			CTreeNodeUI* pParentNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(_T("TreeNode")));
 			CTreeNodeUI* pNode			= new CTreeNodeUI();
-			if(pParentNode)
-			{
-				if(!pParentNode->Add(pNode))
-				{
-					delete pNode;
-					continue;
-				}
-			}
+			CTreeNodeUI* pParentNode	= NULL;
 
 			// 若有控件默认配置先初始化默认属性
 			if( pManager ) 
@@ -426,17 +418,30 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 			//检索子节点及附加控件
 			_ParseControl(&node, pNode, pManager);
 
-			if(!pParentNode)
+			if (pParent)
 			{
-				CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(pParent->GetInterface(_T("TreeView")));
-				ASSERT(pTreeView);
-				if( pTreeView == NULL ) return NULL;
-				if( !pTreeView->Add(pNode) )
+				pParentNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(_T("TreeNode")));
+				if(pParentNode)
 				{
-					delete pNode;
-					continue;
+					if(!pParentNode->Add(pNode))
+					{
+						delete pNode;
+						continue;
+					}
+				}
+				else
+				{
+					CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(pParent->GetInterface(_T("TreeView")));
+					if( pTreeView == NULL ) return NULL;
+					if( !pTreeView->Add(pNode) )
+					{
+						delete pNode;
+						continue;
+					}
 				}
 			}
+			// Return first item
+			if( pReturn == NULL ) pReturn = pNode;
 			continue;
 		}
         else
@@ -592,13 +597,20 @@ void CDialogBuilder::_ParseInclude(CDuiXmlNode &node, CPaintManagerUI* pManager,
 {
 	int count = 1;
 	LPTSTR pstr = NULL;
-	CDuiXmlAttr attr = node.attribute(_T("count"));
-	if (attr)
+	CDuiXmlAttr attrSrc;
+	xml_object_range<xml_attribute_iterator> attrs = node.attributes();
+	for (xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++)
 	{
-		count = attr.as_int();
+		if (_tcsicmp(attr->name(), _T("count")) == 0)
+		{
+			count = attr->as_int();
+		}
+		else if (_tcsicmp(attr->name(), _T("source")) == 0)
+		{
+			attrSrc = *attr;
+		}
 	}
-	attr = node.attribute(_T("source"));
-	if (!attr)
+	if (!attrSrc)
 	{
 		return;
 	}
@@ -607,12 +619,12 @@ void CDialogBuilder::_ParseInclude(CDuiXmlNode &node, CPaintManagerUI* pManager,
 		CDialogBuilder builder;
 		if( m_pstrtype != NULL )
 		{ // 使用资源dll，从资源中读取
-			WORD id = (WORD)attr.as_int();
+			WORD id = (WORD)attrSrc.as_int();
 			builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
 		}
 		else
 		{
-			builder.Create(attr.as_string(), (UINT)0, m_pCallback, pManager, pParent);
+			builder.Create(attrSrc.as_string(), (UINT)0, m_pCallback, pManager, pParent);
 		}
 	}
 }
@@ -636,14 +648,24 @@ void CDialogBuilder::_ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root)
 	}
 	//int nAttributes = attrsRoot.;
 	strStringTable = root.attribute(_T("stringtable")).as_string();
+	xml_object_range<xml_attribute_iterator> attrsRoot = root.attributes();
+	for( xml_attribute_iterator attr = attrsRoot.begin(); attr != attrsRoot.end(); attr++ )
+	{
+		if (_tcsicmp(attr->name(), _T("stringtable")) == 0)
+		{
+			strStringTable = attr->as_string();
+		}
+		else if (_tcsicmp(attr->name(), _T("stringtablelang")) == 0)
+		{
+			strLang = attr->as_string();
+		}
+	}
 	if (strStringTable.GetLength())
 	{
-		strLang = root.attribute(_T("stringtablelang")).as_string();
 		CDuiStringTable& st = pManager->GetStringTable();
 		pManager->GetStringTable().Load((LPCTSTR)strStringTable, 0, strLang);
 	}
 
-	xml_object_range<xml_attribute_iterator> attrsRoot = root.attributes();
 	for( xml_attribute_iterator attr = attrsRoot.begin(); attr != attrsRoot.end(); attr++ )
 	{
 		pstrName = attr->name();

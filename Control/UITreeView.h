@@ -33,7 +33,7 @@ namespace DuiLib
 		bool	Remove(CControlUI* pControl);
 
 		bool	IsExpanded() const;
-		bool	Expand(bool bExpand = true);
+		bool	Expand(bool bExpand = true, bool bExpandChildren = false);
 
 		void	SetVisibleTag(bool _IsVisible);
 		bool	GetVisibleTag();
@@ -85,11 +85,11 @@ namespace DuiLib
 		CTreeNodeUI* CalLocation(CTreeNodeUI* _pTreeNodeUI);
 
 	protected:
-		CHorizontalLayoutUI*	GetTreeNodeHoriznotal() const {return pHoriz;};
-		CCheckBoxUI*			GetFolderButton() const {return pFolderButton;};
-		CLabelUI*				GetDottedLine() const {return pDottedLine;};
-		CCheckBoxUI*			GetCheckBox() const {return pCheckBox;};
-		COptionUI*				GetItemButton() const {return pItemButton;};
+		CHorizontalLayoutUI*	GetTreeNodeHoriznotal() const {return pHoriz;}
+		CCheckBoxUI*			GetFolderButton() const {return pFolderButton;}
+		CLabelUI*				GetDottedLine() const {return pDottedLine;}
+		CCheckBoxUI*			GetCheckBox() const {return pCheckBox;}
+		COptionUI*				GetItemButton() const {return pItemButton;}
 
 	private:
 		// Status
@@ -139,7 +139,7 @@ namespace DuiLib
 		virtual bool OnFolderChanged(void* param);
 		virtual bool OnDBClickItem(void* param);
 		virtual bool SetItemCheckBox(bool _Selected,CTreeNodeUI* _TreeNode = NULL);
-		virtual void SetItemExpand(bool _Expanded,CTreeNodeUI* _TreeNode = NULL);
+		virtual void SetItemExpand(bool _Expanded,CTreeNodeUI* _TreeNode = NULL, bool bExpandChildren = false);
 		virtual void Notify(TNotifyUI& msg);
 		virtual void SetVisibleFolderBtn(bool _IsVisibled);
 		virtual bool GetVisibleFolderBtn();

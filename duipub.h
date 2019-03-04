@@ -81,22 +81,8 @@ inline std::wstring AnsiToUnicode( const char * szStr )
 	return str;
 }
 
-//UNICODE--¡·ANSI
-inline std::string UnicodeToAnsi( const wchar_t * szStr )
-{
-	int nLen = WideCharToMultiByte( CP_ACP, 0, szStr, -1, NULL, 0, NULL, NULL );
-	if (nLen == 0)
-	{
-		return NULL;
-	}
-	char* pResult = new char[nLen];
-	WideCharToMultiByte( CP_ACP, 0, szStr, -1, pResult, nLen, NULL, NULL );
-	std::string str(pResult);
-	delete[] pResult;
-	return str;
-}
 #ifdef _UNICODE
-#define DUI_T2A(t)	UnicodeToAnsi(t)
+#define DUI_T2A(t)	DuiUtf16ToAscii(t)
 #else
 #define DUI_T2A(t)	std::string(t)
 #endif

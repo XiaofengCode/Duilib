@@ -74,9 +74,6 @@ namespace DuiLib
 		virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		virtual LONG GetStyle();
 		virtual BOOL IsInStaticControl(CControlUI *pControl); // 是否在静态控件中：本身为静态控件，如果有父控件，且父控件也为静态控件，则返回TRUE，否则返回FALSE
-		virtual CControlUI* GetDlgItem(LPCTSTR lpszName);
-		virtual CDuiString GetDlgItemText(LPCTSTR lpszCtrlName);
-		virtual void SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText);
 		virtual CDuiString GetStringTableFile();
 		virtual LPCTSTR GetStringTableLang();
 		virtual LPCTSTR LoadString(LPCTSTR lpszID);

@@ -33,6 +33,8 @@ namespace DuiLib
 		static DWORD GetLocalIpAddress();
 
 		UINT GetControlFlags() const;
+
+		virtual void SetPos(RECT rc);
 	protected:
 		DWORD	m_dwIP;
 		bool       m_bReadOnly;

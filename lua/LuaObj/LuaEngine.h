@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+//#include <stdint.h>
 #include "LuaStateOwner.h"
 
 class LuaEngine;
@@ -16,7 +16,7 @@ public:
 private:
 	friend class LuaEngine;
 	void setCurrent(LuaEngine* engine);
-	uint32_t m_key;
+	DWORD m_key;
 };
 
 

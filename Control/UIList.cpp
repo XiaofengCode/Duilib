@@ -645,13 +645,13 @@ void CListUI::SetMultiExpanding(bool bMultiExpandable)
     m_ListInfo.bMultiExpandable = bMultiExpandable;
 }
 
-bool CListUI::ExpandItem(int iIndex, bool bExpand /*= true*/)
+bool CListUI::ExpandItem(int iIndex, bool bExpand /*= true*/, bool bExpandChildren /*= false*/)
 {
     if( m_iExpandedItem >= 0 && !m_ListInfo.bMultiExpandable) {
         CControlUI* pControl = GetItemAt(m_iExpandedItem);
         if( pControl != NULL ) {
             IListItemUI* pItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
-            if( pItem != NULL ) pItem->Expand(false);
+            if( pItem != NULL ) pItem->Expand(false, bExpandChildren);
         }
         m_iExpandedItem = -1;
     }
@@ -662,7 +662,7 @@ bool CListUI::ExpandItem(int iIndex, bool bExpand /*= true*/)
         IListItemUI* pItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
         if( pItem == NULL ) return false;
         m_iExpandedItem = iIndex;
-        if( !pItem->Expand(true) ) {
+        if( !pItem->Expand(true, bExpandChildren) ) {
             m_iExpandedItem = -1;
             return false;
         }
@@ -1882,7 +1882,7 @@ bool CListElementUI::IsExpanded() const
     return false;
 }
 
-bool CListElementUI::Expand(bool /*bExpand = true*/)
+bool CListElementUI::Expand(bool /*bExpand = true*/, bool bExpandChildren /*= false*/)
 {
     return false;
 }
@@ -2445,7 +2445,7 @@ bool CListContainerElementUI::IsExpanded() const
     return false;
 }
 
-bool CListContainerElementUI::Expand(bool /*bExpand = true*/)
+bool CListContainerElementUI::Expand(bool /*bExpand = true*/, bool bExpandChildren /*= false*/)
 {
     return false;
 }
@@ -2478,15 +2478,15 @@ void CListContainerElementUI::DoEvent(TEventUI& event)
 	{
 		if( IsEnabled() ){
 			//           m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
-			Select();
-			Invalidate();
 		}
 		return;
 	}
 	if( event.Type == UIEVENT_BUTTONUP ) 
 	{
 		if( IsEnabled() ){
+			Select();
 			m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMCLICK);
+			Invalidate();
 		}
 		return;
 	}

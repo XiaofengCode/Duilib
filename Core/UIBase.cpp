@@ -124,11 +124,37 @@ static const DUI_MSGMAP_ENTRY* DuiFindMessageEntry(const DUI_MSGMAP_ENTRY* lpEnt
 	return pMsgTypeEntry;
 }
 
+CNotifyPump::CNotifyPump():m_pRoot(nullptr)
+{
+
+}
+
+
+CControlUI* CALLBACK __FindControlFromVirtualWnd(CControlUI* pThis, LPVOID pData)
+{
+	LPCTSTR lpszVirWnd = static_cast<LPCTSTR>(pData);
+	if (pThis->GetVirtualWnd(false).Compare(lpszVirWnd) == 0)
+	{
+		return pThis;
+	}
+	return NULL;
+}
+
 bool CNotifyPump::AddVirtualWnd(CDuiString strName,CNotifyPump* pObject)
 {
 	if( m_VirtualWndMap.Find(strName) == NULL )
 	{
+		if (!m_pRoot)
+		{
+			return false;
+		}
+		CControlUI* pSubWnd = m_pRoot->FindControl(__FindControlFromVirtualWnd, (LPVOID)(LPCTSTR)strName, 0);
+		if (!pSubWnd)
+		{
+			return false;
+		}
 		m_VirtualWndMap.Insert(strName.GetData(),(LPVOID)pObject);
+		pObject->SetRoot(pSubWnd);
 		return true;
 	}
 	return false;
@@ -189,6 +215,44 @@ LDispatch:
 		break;
 	}
 	return bRet;
+}
+
+void CNotifyPump::SetRoot(CControlUI* pRoot)
+{
+	m_pRoot = pRoot;
+}
+
+CControlUI* CNotifyPump::GetDlgItem( LPCTSTR lpszName )
+{
+	if (!m_pRoot)
+	{
+		return nullptr;
+	}
+	CContainerUI* pContainer = (CContainerUI*)m_pRoot->GetInterface(DUI_CTR_CONTAINER);
+	if (!pContainer)
+	{
+		return nullptr;
+	}
+	return pContainer->FindSubControl(lpszName);
+}
+
+CDuiString CNotifyPump::GetDlgItemText(LPCTSTR lpszCtrlName)
+{
+	CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
+	if (pCtrl)
+	{
+		return pCtrl->GetText();
+	}
+	return _T("");
+}
+
+void CNotifyPump::SetDlgItemText(LPCTSTR lpszCtrlName, LPCTSTR lpszText)
+{
+	CControlUI* pCtrl = GetDlgItem(lpszCtrlName);
+	if (pCtrl)
+	{
+		pCtrl->SetText(lpszText);
+	}
 }
 
 bool CNotifyPump::NotifyPump(TNotifyUI& msg)

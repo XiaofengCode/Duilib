@@ -66,6 +66,7 @@ protected:
 
 	LuaObjectImpl * m_ptr;
 	friend class LuaObjectImpl;
+	std::string m_strTmp;
 };
 
 
