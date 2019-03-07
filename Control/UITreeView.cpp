@@ -118,7 +118,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
 			if( IsEnabled()) {
-				if(m_bSelected && GetSelItemHotTextColor())
+				if((m_dwStatus & UISTATE_SELECTED) && GetSelItemHotTextColor())
 					pItemButton->SetTextColor(GetSelItemHotTextColor());
 				else
 					pItemButton->SetTextColor(GetItemHotTextColor());
@@ -131,9 +131,9 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
 			if( IsEnabled()) {
-				if(m_bSelected && GetSelItemTextColor())
+				if((m_dwStatus & UISTATE_SELECTED) && GetSelItemTextColor())
 					pItemButton->SetTextColor(GetSelItemTextColor());
-				else if(!m_bSelected)
+				else if(!(m_dwStatus & UISTATE_SELECTED))
 					pItemButton->SetTextColor(GetItemTextColor());
 			}
 			else 
@@ -191,7 +191,7 @@ namespace DuiLib
 	bool CTreeNodeUI::Select( bool bSelect /*= true*/ )
 	{
 		bool nRet = CListContainerElementUI::Select(bSelect);
-		if(m_bSelected)
+		if(IsSelected())
 			pItemButton->SetTextColor(GetSelItemTextColor());
 		else 
 			pItemButton->SetTextColor(GetItemTextColor());

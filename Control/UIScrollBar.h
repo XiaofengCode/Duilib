@@ -71,22 +71,13 @@ namespace DuiLib
 		LPCTSTR GetRailDisabledImage();
 		void SetRailDisabledImage(LPCTSTR pStrImage);
 
-		LPCTSTR GetBkNormalImage();
-		void SetBkNormalImage(LPCTSTR pStrImage);
-		LPCTSTR GetBkHotImage();
-		void SetBkHotImage(LPCTSTR pStrImage);
-		LPCTSTR GetBkPushedImage();
-		void SetBkPushedImage(LPCTSTR pStrImage);
-		LPCTSTR GetBkDisabledImage();
-		void SetBkDisabledImage(LPCTSTR pStrImage);
 
 		void SetPos(RECT rc);
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
-		void DoPaint(HDC hDC, const RECT& rcPaint);
+		void PaintNormalImage(HDC hDC);
 
-		void PaintBk(HDC hDC);
 		void PaintButton1(HDC hDC);
 		void PaintButton2(HDC hDC);
 		void PaintThumb(HDC hDC);
@@ -110,10 +101,10 @@ namespace DuiLib
 		int m_nLastScrollOffset;
 		int m_nScrollRepeatDelay;
 
-		CDuiString m_sBkNormalImage;
-		CDuiString m_sBkHotImage;
-		CDuiString m_sBkPushedImage;
-		CDuiString m_sBkDisabledImage;
+// 		CDuiString m_sBkNormalImage;
+// 		CDuiString m_sBkHotImage;
+// 		CDuiString m_sBkPushedImage;
+// 		CDuiString m_sBkDisabledImage;
 
 		bool m_bShowButton1;
 		RECT m_rcButton1;

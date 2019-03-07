@@ -67,8 +67,8 @@ namespace DuiLib
 	{
 //		if( m_bSelected == bSelected ) return;
 		m_bSelected = bSelected;
-		if( m_bSelected ) m_uButtonState |= UISTATE_SELECTED;
-		else m_uButtonState &= ~UISTATE_SELECTED;
+		if( m_bSelected ) m_dwStatus |= UISTATE_SELECTED;
+		else m_dwStatus &= ~UISTATE_SELECTED;
 
 		if( m_pManager != NULL ) 
 		{
@@ -113,10 +113,10 @@ namespace DuiLib
 	void COptionUI::SetEnabled(bool bEnable)
 	{
 		CButtonUI::SetEnabled(bEnable);
-		if( !IsEnabled() ) {
-			if( m_bSelected ) m_uButtonState = UISTATE_SELECTED;
-			else m_uButtonState = 0;
-		}
+// 		if( !IsEnabled() ) {
+// 			if( m_bSelected ) m_uButtonState = UISTATE_SELECTED;
+// 			else m_uButtonState = 0;
+// 		}
 	}
 
 	SIZE COptionUI::EstimateSize(SIZE szAvailable)

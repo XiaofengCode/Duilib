@@ -32,8 +32,8 @@ namespace DuiLib
 		void PaintText(HDC hDC);
 
 	protected:
-		virtual DWORD GetStatus();
-		UINT m_uButtonState;
+// 		virtual DWORD GetStatus();
+// 		UINT m_uButtonState;
 		int			m_iBindTabIndex;
 		CDuiString	m_sBindTabLayoutName;
 	};

@@ -279,14 +279,6 @@ public:
 	void SetFont(LPCTSTR lpszFontID);
     bool IsShowHtml();
     void SetShowHtml(bool bShowHtml = true);
-    LPCTSTR GetNormalImage() const;
-    void SetNormalImage(LPCTSTR pStrImage);
-    LPCTSTR GetHotImage() const;
-    void SetHotImage(LPCTSTR pStrImage);
-    LPCTSTR GetPushedImage() const;
-    void SetPushedImage(LPCTSTR pStrImage);
-    LPCTSTR GetFocusedImage() const;
-    void SetFocusedImage(LPCTSTR pStrImage);
     LPCTSTR GetSepImage() const;
     void SetSepImage(LPCTSTR pStrImage);
 	//开启百分比表头功能,百分比 redrain 2014.12.29
@@ -299,21 +291,21 @@ public:
     RECT GetThumbRect() const;
 
     void PaintText(HDC hDC);
-    void PaintStatusImage(HDC hDC);
+    void PaintForeImage(HDC hDC);
 
 protected:
     POINT ptLastMouse;
     bool m_bDragable;
-    UINT m_uButtonState;
+//    UINT m_uButtonState;
     int m_iSepWidth;
     CDuiString m_sFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;
-    CDuiString m_sNormalImage;
-    CDuiString m_sHotImage;
-    CDuiString m_sPushedImage;
-    CDuiString m_sFocusedImage;
+//     CDuiString m_sNormalImage;
+//     CDuiString m_sHotImage;
+//     CDuiString m_sPushedImage;
+//     CDuiString m_sFocusedImage;
     CDuiString m_sSepImage;
     CDuiString m_sSepImageModify;
 	int m_nScale;
@@ -356,8 +348,8 @@ public:
 
 protected:
     int m_iIndex;
-    bool m_bSelected;
-    UINT m_uButtonState;
+//     bool m_bSelected;
+//     UINT m_uButtonState;
     IListOwnerUI* m_pOwner;
 };
 
@@ -454,8 +446,8 @@ public:
 	
 protected:
     int m_iIndex;
-    bool m_bSelected;
-    UINT m_uButtonState;
+    //bool m_bSelected;
+    //UINT m_uButtonState;
     IListOwnerUI* m_pOwner;
 
 };

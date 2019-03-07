@@ -42,9 +42,8 @@ namespace DuiLib
 		InitGifBkImage();
 	}
 
-	void CGifAnimUI::DoPaint( HDC hDC, const RECT& rcPaint )
+	void CGifAnimUI::PaintNormalImage( HDC hDC)
 	{
-		if( !::IntersectRect( &m_rcPaint, &rcPaint, &m_rcItem ) ) return;
 		if ( NULL == m_pGifBkImage )
 		{		
 			InitGifBkImage();

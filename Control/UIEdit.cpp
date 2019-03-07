@@ -233,7 +233,7 @@ namespace DuiLib
 	//
 
 	CEditUI::CEditUI() : m_pWindow(NULL), m_uMaxChar(255), m_bReadOnly(false), 
-		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_uButtonState(0), 
+		m_bPasswordMode(false), m_cPasswordChar(_T('*')), 
 		m_dwEditbkColor(0xFFFFFFFF), m_dwEditTextColor(0x00000000), m_iWindowStyls(0),
 		m_dwMin(-1), m_dwMax(-1)
 	{
@@ -349,7 +349,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
 			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
+				m_dwStatus |= UISTATE_HOT;
 				Invalidate();
 			}
 			return;
@@ -357,7 +357,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
 			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
+				m_dwStatus &= ~UISTATE_HOT;
 				Invalidate();
 			}
 			return;
@@ -368,9 +368,9 @@ namespace DuiLib
 	void CEditUI::SetEnabled(bool bEnable)
 	{
 		CControlUI::SetEnabled(bEnable);
-		if( !IsEnabled() ) {
-			m_uButtonState = 0;
-		}
+// 		if( !IsEnabled() ) {
+// 			m_uButtonState = 0;
+// 		}
 	}
 
 	void CEditUI::SetText(LPCTSTR pstrText)

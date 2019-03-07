@@ -56,17 +56,17 @@ namespace DuiLib
 		void PaintText(HDC hDC);
 
 	protected:
-		virtual DWORD GetStatus()
-		{
-			return __super::GetStatus() | m_uButtonState;
-		}
+// 		virtual DWORD GetStatus()
+// 		{
+// 			return __super::GetStatus() | m_uButtonState;
+// 		}
 		CEditWnd* m_pWindow;
 
 		UINT m_uMaxChar;
 		bool m_bReadOnly;
 		bool m_bPasswordMode;
 		TCHAR m_cPasswordChar;
-		UINT m_uButtonState;
+		//UINT m_uButtonState;
 		CDuiString m_sTipValue;
 		DWORD m_dwEditbkColor;
 		DWORD m_dwEditTextColor;

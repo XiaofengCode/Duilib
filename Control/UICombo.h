@@ -88,18 +88,17 @@ public:
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     
-    void DoPaint(HDC hDC, const RECT& rcPaint);
     void PaintText(HDC hDC);
 
 protected:
-	virtual DWORD GetStatus();
+	//virtual DWORD GetStatus();
     CComboWnd* m_pWindow;
 
     int m_iCurSel;
     RECT m_rcTextPadding;
     CDuiString m_sDropBoxAttributes;
     SIZE m_szDropBox;
-    UINT m_uButtonState;
+    //UINT m_uButtonState;
 
     TListInfoUI m_ListInfo;
 	bool m_bItemWndBkTrans;

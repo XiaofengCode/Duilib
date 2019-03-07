@@ -52,7 +52,7 @@ namespace DuiLib
 
 		bool v = IsVisible();
 		m_bVisible = bVisible;
-		if( m_bFocused ) m_bFocused = false;
+		if( m_dwStatus & UISTATE_FOCUSED) m_dwStatus &= ~UISTATE_FOCUSED;
 	}
 
 	void CScrollBarUI::SetEnabled(bool bEnable)
@@ -337,50 +337,6 @@ namespace DuiLib
 	void CScrollBarUI::SetRailDisabledImage(LPCTSTR pStrImage)
 	{
 		m_sRailDisabledImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CScrollBarUI::GetBkNormalImage()
-	{
-		return m_sBkNormalImage;
-	}
-
-	void CScrollBarUI::SetBkNormalImage(LPCTSTR pStrImage)
-	{
-		m_sBkNormalImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CScrollBarUI::GetBkHotImage()
-	{
-		return m_sBkHotImage;
-	}
-
-	void CScrollBarUI::SetBkHotImage(LPCTSTR pStrImage)
-	{
-		m_sBkHotImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CScrollBarUI::GetBkPushedImage()
-	{
-		return m_sBkPushedImage;
-	}
-
-	void CScrollBarUI::SetBkPushedImage(LPCTSTR pStrImage)
-	{
-		m_sBkPushedImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CScrollBarUI::GetBkDisabledImage()
-	{
-		return m_sBkDisabledImage;
-	}
-
-	void CScrollBarUI::SetBkDisabledImage(LPCTSTR pStrImage)
-	{
-		m_sBkDisabledImage = pStrImage;
 		Invalidate();
 	}
 
@@ -787,10 +743,6 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("railhotimage")) == 0 ) SetRailHotImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("railpushedimage")) == 0 ) SetRailPushedImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("raildisabledimage")) == 0 ) SetRailDisabledImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("bknormalimage")) == 0 ) SetBkNormalImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("bkhotimage")) == 0 ) SetBkHotImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("bkpushedimage")) == 0 ) SetBkPushedImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("bkdisabledimage")) == 0 ) SetBkDisabledImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("hor")) == 0 ) SetHorizontal(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcsicmp(pstrName, _T("linesize")) == 0 ) SetLineSize(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("range")) == 0 ) SetScrollRange(_ttoi(pstrValue));
@@ -800,48 +752,14 @@ namespace DuiLib
 		else CControlUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CScrollBarUI::DoPaint(HDC hDC, const RECT& rcPaint)
+	void CScrollBarUI::PaintNormalImage(HDC hDC)
 	{
-		if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-		PaintBk(hDC);
 		PaintButton1(hDC);
 		PaintButton2(hDC);
 		PaintThumb(hDC);
 		PaintRail(hDC);
 	}
-
-	void CScrollBarUI::PaintBk(HDC hDC)
-	{
-		if( !IsEnabled() ) m_uThumbState |= UISTATE_DISABLED;
-		else m_uThumbState &= ~ UISTATE_DISABLED;
-
-		if( (m_uThumbState & UISTATE_DISABLED) != 0 )
-		{
-			if( !m_sBkDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sBkDisabledImage) )
-					m_sBkDisabledImage.Empty();
-				else return;
-			}
-		}
-		else if( (m_uThumbState & UISTATE_PUSHED) != 0 ) {
-			if( !m_sBkPushedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sBkPushedImage) ) m_sBkPushedImage.Empty();
-				else return;
-			}
-		}
-		else if( (m_uThumbState & UISTATE_HOT) != 0 ) {
-			if( !m_sBkHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sBkHotImage) ) m_sBkHotImage.Empty();
-				else return;
-			}
-		}
-
-		if( !m_sBkNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sBkNormalImage) ) m_sBkNormalImage.Empty();
-			else return;
-		}
-	}
-
+	
 	void CScrollBarUI::PaintButton1(HDC hDC)
 	{
 		if( !m_bShowButton1 ) return;

@@ -4,8 +4,7 @@
 namespace DuiLib
 {
 	CButtonUI::CButtonUI()
-		: m_uButtonState(0)
-		,m_iBindTabIndex(-1)
+		: m_iBindTabIndex(-1)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 	}
@@ -45,25 +44,25 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK)
 		{
 			if( ::PtInRect(&m_rcItem, event.ptMouse) && IsEnabled() ) {
-				m_uButtonState |= UISTATE_PUSHED | UISTATE_CAPTURED;
+				m_dwStatus |= UISTATE_PUSHED | UISTATE_CAPTURED;
 				Invalidate();
 			}
 			return;
 		}	
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
-			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-				if( ::PtInRect(&m_rcItem, event.ptMouse) ) m_uButtonState |= UISTATE_PUSHED;
-				else m_uButtonState &= ~UISTATE_PUSHED;
+			if( (m_dwStatus & UISTATE_CAPTURED) != 0 ) {
+				if( ::PtInRect(&m_rcItem, event.ptMouse) ) m_dwStatus |= UISTATE_PUSHED;
+				else m_dwStatus &= ~UISTATE_PUSHED;
 				Invalidate();
 			}
 			return;
 		}
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
-			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+			if( (m_dwStatus & UISTATE_CAPTURED) != 0 ) {
 				if( ::PtInRect(&m_rcItem, event.ptMouse) ) Activate();				
-				m_uButtonState &= ~(UISTATE_PUSHED | UISTATE_CAPTURED);
+				m_dwStatus &= ~(UISTATE_PUSHED | UISTATE_CAPTURED);
 				Invalidate();
 			}
 			return;
@@ -78,7 +77,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
 			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
+				m_dwStatus |= UISTATE_HOT;
 				Invalidate();
 
 				if (m_pManager != NULL)
@@ -90,7 +89,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
 			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
+				m_dwStatus &= ~UISTATE_HOT;
 				Invalidate();
 
 				if (m_pManager != NULL)
@@ -120,9 +119,9 @@ namespace DuiLib
 	void CButtonUI::SetEnabled(bool bEnable)
 	{
 		__super::SetEnabled(bEnable);
-		if( !IsEnabled() ) {
-			m_uButtonState = 0;
-		}
+// 		if( !IsEnabled() ) {
+// 			m_uButtonState = 0;
+// 		}
 	}
 
 	void CButtonUI::BindTabIndex(int _BindTabIndex )
@@ -220,9 +219,9 @@ namespace DuiLib
 			m_sFont, m_uTextStyle);
 	}
 
-	DWORD CButtonUI::GetStatus()
-	{
-		return __super::GetStatus()| m_uButtonState;
-	}
+// 	DWORD CButtonUI::GetStatus()
+// 	{
+// 		return __super::GetStatus()| m_uButtonState;
+// 	}
 
 }

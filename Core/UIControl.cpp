@@ -1678,16 +1678,7 @@ void CControlUI::SetStyle(LPCTSTR lpszStyle)
 
 DWORD CControlUI::GetStatus()
 {
-	DWORD dwStatus = 0;
-	if (!IsEnabled())
-	{
-		dwStatus |= UISTATE_DISABLED;
-	}
-	if (IsFocused())
-	{
-		dwStatus |= UISTATE_FOCUSED;
-	}
-	return dwStatus;
+	return m_dwStatus;
 }
 
 DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgnorStatus /*= 0*/)

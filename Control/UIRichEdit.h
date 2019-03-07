@@ -160,7 +160,7 @@ protected:
 	// we are in this mode when we receive VK_PROCESSKEY
 	UINT m_chLeadByte; // use when we are in _fAccumulateDBC mode
 
-	UINT m_uButtonState;
+	//UINT m_uButtonState;
 	RECT m_rcTextPadding;
 	CDuiString m_sTipValue;
 	bool m_bTip;

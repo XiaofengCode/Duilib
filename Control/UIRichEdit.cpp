@@ -1060,7 +1060,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), 
-    m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),m_uButtonState(0),
+    m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),
 	m_bTip(false),m_bEnableZoom(false)
 {
 	SetTipValueColor(_T("#FFBAC0C5"));
@@ -1195,7 +1195,7 @@ void CRichEditUI::SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnd
 
 void CRichEditUI::SetEnabled(bool bEnabled)
 {
-	if (m_bEnabled == bEnabled) return;
+	if (!IsEnabled() == !bEnabled) return;
 
 	if( m_pTwh ) {
 		m_pTwh->SetColor(bEnabled ? GetTextColor() : GetDisabledTextColor());
@@ -1770,7 +1770,7 @@ void CRichEditUI::DoInit()
         m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
         m_pTwh->OnTxInPlaceActivate(NULL);
         m_pManager->AddMessageFilter(this);
-		if (!m_bEnabled)
+		if (!IsEnabled())
 		{
 			m_pTwh->SetColor(GetDisabledTextColor());
 		}
@@ -1979,7 +1979,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 			}
 			m_pTwh->GetTextServices()->TxSendMessage(WM_SETFOCUS, 0, 0, 0);
 		}
-		m_bFocused = true;
+		m_dwStatus |= UISTATE_FOCUSED;
 		Invalidate();
 		return;
 	}
@@ -1992,7 +1992,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 			}
 			m_pTwh->GetTextServices()->TxSendMessage(WM_KILLFOCUS, 0, 0, 0);
 		}
-		m_bFocused = false;
+		m_dwStatus &= ~UISTATE_FOCUSED;
 		Invalidate();
 		return;
 	}
@@ -2021,7 +2021,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 	else if( event.Type == UIEVENT_MOUSEENTER )
 	{
 		if( IsEnabled() ) {
-			m_uButtonState |= UISTATE_HOT;
+			m_dwStatus |= UISTATE_HOT;
 			Invalidate();
 		}
 		return;
@@ -2029,7 +2029,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 	else if( event.Type == UIEVENT_MOUSELEAVE )
 	{
 		if( IsEnabled() ) {
-			m_uButtonState &= ~UISTATE_HOT;
+			m_dwStatus &= ~UISTATE_HOT;
 			Invalidate();
 		}
 		return;

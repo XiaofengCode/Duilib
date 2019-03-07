@@ -18,7 +18,7 @@ namespace DuiLib
 		LPCTSTR	GetClass() const;
 		LPVOID	GetInterface(LPCTSTR pstrName);
 		virtual void	DoInit();
-		virtual void	DoPaint(HDC hDC, const RECT& rcPaint);
+		virtual void	PaintNormalImage(HDC hDC);
 		virtual void	DoEvent(TEventUI& event);
 		virtual void	SetVisible(bool bVisible = true );
 		virtual void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);

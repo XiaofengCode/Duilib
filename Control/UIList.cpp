@@ -264,13 +264,13 @@ void CListUI::DoEvent(TEventUI& event)
     }
 
     if( event.Type == UIEVENT_SETFOCUS ) 
-    {
-        m_bFocused = true;
+	{
+		m_dwStatus |= UISTATE_FOCUSED;
         return;
     }
     if( event.Type == UIEVENT_KILLFOCUS ) 
-    {
-        m_bFocused = false;
+	{
+		m_dwStatus &= ~UISTATE_FOCUSED;
         return;
     }
 
@@ -1342,7 +1342,7 @@ bool CListHeaderUI::IsScaleHeader() const
 }
 //
 
-CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_uButtonState(0), m_iSepWidth(4),
+CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_iSepWidth(4),
 m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_bShowHtml(false),m_nScale(0)
 {
 	SetTextPadding(CDuiRect(2, 0, 2, 0));
@@ -1371,7 +1371,7 @@ void CListHeaderItemUI::SetEnabled(bool bEnable)
 {
     CContainerUI::SetEnabled(bEnable);
     if( !IsEnabled() ) {
-        m_uButtonState = 0;
+		m_dwStatus &= ~(UISTATE_FOCUSED|UISTATE_SELECTED);
     }
 }
 
@@ -1383,7 +1383,7 @@ bool CListHeaderItemUI::IsDragable() const
 void CListHeaderItemUI::SetDragable(bool bDragable)
 {
     m_bDragable = bDragable;
-    if ( !m_bDragable ) m_uButtonState &= ~UISTATE_CAPTURED;
+    if ( !m_bDragable ) m_dwStatus &= ~UISTATE_CAPTURED;
 }
 
 DWORD CListHeaderItemUI::GetSepWidth() const
@@ -1447,50 +1447,6 @@ void CListHeaderItemUI::SetShowHtml(bool bShowHtml)
     Invalidate();
 }
 
-LPCTSTR CListHeaderItemUI::GetNormalImage() const
-{
-	return m_sNormalImage;
-}
-
-void CListHeaderItemUI::SetNormalImage(LPCTSTR pStrImage)
-{
-    m_sNormalImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CListHeaderItemUI::GetHotImage() const
-{
-    return m_sHotImage;
-}
-
-void CListHeaderItemUI::SetHotImage(LPCTSTR pStrImage)
-{
-    m_sHotImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CListHeaderItemUI::GetPushedImage() const
-{
-    return m_sPushedImage;
-}
-
-void CListHeaderItemUI::SetPushedImage(LPCTSTR pStrImage)
-{
-    m_sPushedImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CListHeaderItemUI::GetFocusedImage() const
-{
-    return m_sFocusedImage;
-}
-
-void CListHeaderItemUI::SetFocusedImage(LPCTSTR pStrImage)
-{
-    m_sFocusedImage = pStrImage;
-    Invalidate();
-}
-
 LPCTSTR CListHeaderItemUI::GetSepImage() const
 {
     return m_sSepImage;
@@ -1551,10 +1507,6 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		SetTextPadding(rcTextPadding);
 	}
     else if( _tcsicmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcsicmp(pstrValue, _T("true")) == 0);
-    else if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
     else if( _tcsicmp(pstrName, _T("sepimage")) == 0 ) SetSepImage(pstrValue);
 	else if( _tcsicmp(pstrName, _T("scale")) == 0 ) {
 		LPTSTR pstr = NULL;
@@ -1590,12 +1542,12 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
 			rcSeparator.right+=4;
         if( ::PtInRect(&rcSeparator, event.ptMouse) ) {
             if( m_bDragable ) {
-                m_uButtonState |= UISTATE_CAPTURED;
+                m_dwStatus |= UISTATE_CAPTURED;
                 ptLastMouse = event.ptMouse;
             }
         }
         else {
-            m_uButtonState |= UISTATE_PUSHED;
+            m_dwStatus |= UISTATE_PUSHED;
             m_pManager->SendNotify(this, DUI_MSGTYPE_HEADERCLICK);
             Invalidate();
         }
@@ -1603,20 +1555,20 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
     }
     if( event.Type == UIEVENT_BUTTONUP )
     {
-        if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-            m_uButtonState &= ~UISTATE_CAPTURED;
+        if( (m_dwStatus & UISTATE_CAPTURED) != 0 ) {
+            m_dwStatus &= ~UISTATE_CAPTURED;
             if( GetParent() ) 
                 GetParent()->NeedParentUpdate();
         }
-        else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-            m_uButtonState &= ~UISTATE_PUSHED;
+        else if( (m_dwStatus & UISTATE_PUSHED) != 0 ) {
+            m_dwStatus &= ~UISTATE_PUSHED;
             Invalidate();
         }
         return;
     }
     if( event.Type == UIEVENT_MOUSEMOVE )
     {
-        if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+        if( (m_dwStatus & UISTATE_CAPTURED) != 0 ) {
             RECT rc = m_rcItem;
             if( m_iSepWidth >= 0 ) {
                 rc.right -= ptLastMouse.x - event.ptMouse.x;
@@ -1649,7 +1601,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_MOUSEENTER )
     {
         if( IsEnabled() ) {
-            m_uButtonState |= UISTATE_HOT;
+            m_dwStatus |= UISTATE_HOT;
             Invalidate();
         }
         return;
@@ -1657,7 +1609,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_MOUSELEAVE )
     {
         if( IsEnabled() ) {
-            m_uButtonState &= ~UISTATE_HOT;
+            m_dwStatus &= ~UISTATE_HOT;
             Invalidate();
         }
         return;
@@ -1677,29 +1629,9 @@ RECT CListHeaderItemUI::GetThumbRect() const
     else return CDuiRect(m_rcItem.left, m_rcItem.top, m_rcItem.left - m_iSepWidth, m_rcItem.bottom);
 }
 
-void CListHeaderItemUI::PaintStatusImage(HDC hDC)
+void CListHeaderItemUI::PaintForeImage(HDC hDC)
 {
-    if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-    else m_uButtonState &= ~ UISTATE_FOCUSED;
-
-    if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-        if( m_sPushedImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-        if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) m_sPushedImage.Empty();
-    }
-    else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-        if( m_sHotImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-        if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-    }
-    else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-        if( m_sFocusedImage.IsEmpty() && !m_sNormalImage.IsEmpty() ) DrawImage(hDC, (LPCTSTR)m_sNormalImage);
-        if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-    }
-    else {
-        if( !m_sNormalImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-        }
-    }
-
+	__super::PaintForeImage(hDC);
     if( !m_sSepImage.IsEmpty() ) {
         RECT rcThumb = GetThumbRect();
         rcThumb.left -= m_rcItem.left;
@@ -1744,9 +1676,7 @@ void CListHeaderItemUI::PaintText(HDC hDC)
 
 CListElementUI::CListElementUI() : 
 m_iIndex(-1),
-m_pOwner(NULL), 
-m_bSelected(false),
-m_uButtonState(0)
+m_pOwner(NULL)
 {
 }
 
@@ -1780,9 +1710,9 @@ void CListElementUI::SetOwner(CControlUI* pOwner)
 void CListElementUI::SetVisible(bool bVisible)
 {
     CControlUI::SetVisible(bVisible);
-    if( !IsVisible() && m_bSelected)
+    if( !IsVisible() && IsSelected())
     {
-        m_bSelected = false;
+		m_dwStatus &= ~UISTATE_SELECTED;
         if( m_pOwner != NULL ) m_pOwner->SelectItem(-1);
     }
 }
@@ -1790,8 +1720,8 @@ void CListElementUI::SetVisible(bool bVisible)
 void CListElementUI::SetEnabled(bool bEnable)
 {
     CControlUI::SetEnabled(bEnable);
-    if( !IsEnabled() ) {
-        m_uButtonState = 0;
+	if( !IsEnabled() ) {
+		m_dwStatus &= ~UISTATE_SELECTED;
     }
 }
 
@@ -1862,14 +1792,21 @@ bool CListElementUI::Activate()
 
 bool CListElementUI::IsSelected() const
 {
-    return m_bSelected;
+	return !!(m_dwStatus & UISTATE_SELECTED);
 }
 
 bool CListElementUI::Select(bool bSelect)
 {
-    if( !IsEnabled() ) return false;
-    if( bSelect == m_bSelected ) return true;
-    m_bSelected = bSelect;
+	if( !IsEnabled() ) return false;
+	if( !bSelect == !IsSelected() ) return true;
+	if (bSelect)
+	{
+		m_dwStatus |= UISTATE_SELECTED;
+	}
+	else
+	{
+		m_dwStatus &= ~UISTATE_SELECTED;
+	}
     if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex);
     Invalidate();
 
@@ -1929,7 +1866,7 @@ void CListElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     DWORD iBackColor = 0;
     if( !pInfo->bAlternateBk || m_iIndex % 2 == 0 ) iBackColor = pInfo->dwBkColor;
-    if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+    if( (m_dwStatus & UISTATE_HOT) != 0 ) {
         iBackColor = pInfo->dwHotBkColor;
     }
     if( IsSelected() ) {
@@ -1955,7 +1892,7 @@ void CListElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
             else return;
         }
     }
-    if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+    if( (m_dwStatus & UISTATE_HOT) != 0 ) {
         if( !pInfo->sHotImage.IsEmpty() ) {
             if( !DrawImage(hDC, (LPCTSTR)pInfo->sHotImage) ) pInfo->sHotImage.Empty();
             else return;
@@ -2040,15 +1977,15 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_MOUSEENTER )
     {
         if( IsEnabled() ) {
-            m_uButtonState |= UISTATE_HOT;
+            m_dwStatus |= UISTATE_HOT;
             Invalidate();
         }
         return;
     }
     if( event.Type == UIEVENT_MOUSELEAVE )
     {
-        if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-            m_uButtonState &= ~UISTATE_HOT;
+        if( (m_dwStatus & UISTATE_HOT) != 0 ) {
+            m_dwStatus &= ~UISTATE_HOT;
             Invalidate();
         }
         return;
@@ -2097,7 +2034,7 @@ void CListLabelElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     if( m_pOwner == NULL ) return;
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     DWORD iTextColor = pInfo->dwTextColor;
-    if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+    if( (m_dwStatus & UISTATE_HOT) != 0 ) {
         iTextColor = pInfo->dwHotTextColor;
     }
     if( IsSelected() ) {
@@ -2120,7 +2057,6 @@ void CListLabelElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
         pInfo->sFont, DT_SINGLELINE | pInfo->uTextStyle);
 }
-
 
 //
 //
@@ -2260,7 +2196,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     TListInfoUI* pInfo = m_pOwner->GetListInfo();
     DWORD iTextColor = pInfo->dwTextColor;
 
-    if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+    if( (m_dwStatus & UISTATE_HOT) != 0 ) {
         iTextColor = pInfo->dwHotTextColor;
     }
     if( IsSelected() ) {
@@ -2307,9 +2243,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
 CListContainerElementUI::CListContainerElementUI() : 
 m_iIndex(-1),
-m_pOwner(NULL), 
-m_bSelected(false),
-m_uButtonState(0)
+m_pOwner(NULL)
 {
 }
 
@@ -2343,9 +2277,9 @@ void CListContainerElementUI::SetOwner(CControlUI* pOwner)
 void CListContainerElementUI::SetVisible(bool bVisible)
 {
     CContainerUI::SetVisible(bVisible);
-    if( !IsVisible() && m_bSelected)
+    if( !IsVisible() && IsSelected())
     {
-        m_bSelected = false;
+        m_dwStatus &= ~UISTATE_SELECTED;
         if( m_pOwner != NULL ) m_pOwner->SelectItem(-1);
     }
 }
@@ -2425,14 +2359,21 @@ bool CListContainerElementUI::Activate()
 
 bool CListContainerElementUI::IsSelected() const
 {
-    return m_bSelected;
+    return !!(m_dwStatus & UISTATE_SELECTED);
 }
 
 bool CListContainerElementUI::Select(bool bSelect)
 {
     if( !IsEnabled() ) return false;
-    if( bSelect == m_bSelected ) return true;
-    m_bSelected = bSelect;
+    if( !bSelect == !IsSelected() ) return true;
+	if (bSelect)
+	{
+		m_dwStatus |= UISTATE_SELECTED;
+	}
+	else
+	{
+		m_dwStatus &= ~UISTATE_SELECTED;
+	}
     if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex);
     Invalidate();
 
