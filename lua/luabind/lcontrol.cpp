@@ -264,7 +264,7 @@ LBIND_DEFINE_FUNC(CControlUI,GetParent)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetText)
-	return L.lreturn(pThis->GetText());
+	return L.lreturn(DUI_T2A(pThis->GetText()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetText)
@@ -345,6 +345,14 @@ LBIND_DEFINE_FUNC(CControlUI,SetBorderRound)
 	pThis->SetBorderRound(toSize(arg[2]));
 LBIND_END_DEFINE_FUNC
 
+LBIND_DEFINE_FUNC(CControlUI,SetAttribute)
+	pThis->SetAttribute(CDuiString(arg[2].toString()), CDuiString(arg[3].toString()));
+LBIND_END_DEFINE_FUNC
+
+LBIND_DEFINE_FUNC(CControlUI,GetAttribute)
+	return L.lreturn(DUI_T2A(pThis->GetAttribute(CDuiString(arg[2].toString()))).c_str());
+LBIND_END_DEFINE_FUNC
+
 
 
 }
@@ -352,6 +360,8 @@ LBIND_END_DEFINE_FUNC
 LBIND_BEGIN_DEFINE_LIB(CControlUI)
 	{"manager",lbind::GetManager},
 	{"windowHandle",lbind::GetWindowHandle},
+	{"attribute",lbind::GetAttribute},
+	{"setAttribute",lbind::SetAttribute},
 	{"text",lbind::GetText},
 	{"setText",lbind::SetText},
 

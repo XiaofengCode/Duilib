@@ -21,10 +21,10 @@ namespace DuiLib
 			CComboUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CComboBoxUI::PaintStatusImage(HDC hDC)
+	void CComboBoxUI::PaintNormalImage(HDC hDC)
 	{
 		if (m_sArrowImage.IsEmpty())
-			CComboUI::PaintStatusImage(hDC);
+			CComboUI::PaintNormalImage(hDC);
 		else
 		{
 			// get index
@@ -82,7 +82,7 @@ namespace DuiLib
 
 			// draw image
 			if (!DrawImage(hDC, m_sArrowImage, sModify))
-				m_sNormalImage.Empty();
+				m_sArrowImage.Empty();
 		}
 	}
 

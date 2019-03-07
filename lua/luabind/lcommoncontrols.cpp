@@ -77,115 +77,16 @@ LBIND_END_DEFINE_LIB
 
 namespace lbind
 {
-
-LBIND_DEFINE_FUNC(CButtonUI,SetNormalImage)
-	pThis->SetNormalImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetNormalImage)
-	return L.lreturn(pThis->GetNormalImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetHotImage)
-	return L.lreturn(pThis->GetHotImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetHotImage)
-	pThis->SetHotImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-
-LBIND_DEFINE_FUNC(CButtonUI,GetPushedImage)
-	return L.lreturn(pThis->GetPushedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetPushedImage)
-	pThis->SetPushedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-
-LBIND_DEFINE_FUNC(CButtonUI,GetFocusedImage)
-	return L.lreturn(pThis->GetFocusedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetFocusedImage)
-	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetDisabledImage)
-	return L.lreturn(pThis->GetDisabledImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetDisabledImage)
-	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetHotTextColor)
-	pThis->SetHotTextColor(arg[2].toInt());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetHotTextColor)
-	return L.lreturn(pThis->GetHotTextColor());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetPushedTextColor)
-	pThis->SetPushedTextColor(arg[2].toInt());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetPushedTextColor)
-	return L.lreturn(pThis->GetPushedTextColor());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,SetFocusedTextColor)
-	pThis->SetFocusedTextColor(arg[2].toInt());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CButtonUI,GetFocusedTextColor)
-	return L.lreturn(pThis->GetFocusedTextColor());
-LBIND_END_DEFINE_FUNC
-
 }
 
 
 LBIND_BEGIN_DEFINE_LIB(CButtonUI)
-	{"setNormalImage",lbind::SetNormalImage},
-	{"normalImage",lbind::GetNormalImage},
-	{"hotImage",lbind::GetHotImage},
-	{"setHotImage",lbind::SetHotImage},
-	{"pushedImage",lbind::GetPushedImage},
-	{"setPushedImage",lbind::SetPushedImage},
-	{"focusedImage",lbind::GetFocusedImage},
-	{"setFocusedImage",lbind::SetFocusedImage},
-	{"disabledImage",lbind::GetDisabledImage},
-	{"setDisabledImage",lbind::SetDisabledImage},
-	{"setHotTextColor",lbind::SetHotTextColor},
-	{"hotTextColor",lbind::GetHotTextColor},
-	{"setPushedTextColor",lbind::SetPushedTextColor},
-	{"pushedTextColor",lbind::GetPushedTextColor},
-	{"setFocusedTextColor",lbind::SetFocusedTextColor},
-	{"focusedTextColor",lbind::GetFocusedTextColor},
 LBIND_END_DEFINE_LIB
 
 
 
 namespace lbind
 {
-LBIND_DEFINE_FUNC(COptionUI,SetSelectedImage)
-	pThis->SetSelectedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(COptionUI,GetSelectedImage)
-	return L.lreturn(pThis->GetSelectedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(COptionUI,SetForeImage)
-	pThis->SetForeImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(COptionUI,GetForeImage)
-	return L.lreturn(pThis->GetForeImage());
-LBIND_END_DEFINE_FUNC
-
 LBIND_DEFINE_FUNC(COptionUI,SetGroup)
 	pThis->SetGroup(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
@@ -194,13 +95,13 @@ LBIND_DEFINE_FUNC(COptionUI,GetGroup)
 	return L.lreturn(pThis->GetGroup());
 LBIND_END_DEFINE_FUNC
 
-LBIND_DEFINE_FUNC(COptionUI,SetSelectedTextColor)
-	pThis->SetSelectedTextColor(arg[2].toInt());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(COptionUI,GetSelectedTextColor)
-	return L.lreturn(pThis->GetSelectedTextColor());
-LBIND_END_DEFINE_FUNC
+// LBIND_DEFINE_FUNC(COptionUI,SetSelectedTextColor)
+// 	pThis->SetSelectedTextColor(arg[2].toInt());
+// LBIND_END_DEFINE_FUNC
+// 
+// LBIND_DEFINE_FUNC(COptionUI,GetSelectedTextColor)
+// 	return L.lreturn(pThis->GetSelectedTextColor());
+// LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,Selected)
 	pThis->Selected(arg[2].toBool());
@@ -213,14 +114,10 @@ LBIND_END_DEFINE_FUNC
 }
 
 LBIND_BEGIN_DEFINE_LIB(COptionUI)
-	{"setSelectedImage",lbind::SetSelectedImage},
-	{"selectedImage",lbind::GetSelectedImage},
-	{"setForeImage",lbind::SetForeImage},
-	{"foreImage",lbind::GetForeImage},
 	{"setGroup",lbind::SetGroup},
 	{"group",lbind::GetGroup},
-	{"setSelectedTextColor",lbind::SetSelectedTextColor},
-	{"selectedTextColor",lbind::GetSelectedTextColor},
+// 	{"setSelectedTextColor",lbind::SetSelectedTextColor},
+// 	{"selectedTextColor",lbind::GetSelectedTextColor},
 	{"selected",lbind::Selected},
 	{"isSelected",lbind::IsSelected},
 
@@ -279,14 +176,6 @@ LBIND_DEFINE_FUNC(CProgressUI,SetValue)
 	pThis->SetValue(arg[2].toInt());
 LBIND_END_DEFINE_FUNC
 
-
-LBIND_DEFINE_FUNC(CProgressUI,GetForeImage)
-	return L.lreturn(pThis->GetForeImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CProgressUI,SetForeImage)
-	pThis->SetForeImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
 }
 
 
@@ -299,8 +188,6 @@ LBIND_BEGIN_DEFINE_LIB(CProgressUI)
 	{"setMaxValue",lbindprogress::SetMaxValue},
 	{"value",lbindprogress::GetValue},
 	{"setValue",lbindprogress::SetValue},
-	{"foreImage",lbindprogress::GetForeImage},
-	{"setForeImage",lbindprogress::SetForeImage},
 LBIND_END_DEFINE_LIB
 
 
@@ -399,38 +286,6 @@ LBIND_DEFINE_FUNC(CEditUI,SetPasswordChar)
 	pThis->SetPasswordChar(arg[2].toInt());
 LBIND_END_DEFINE_FUNC
 
-LBIND_DEFINE_FUNC(CEditUI,GetNormalImage)
-	return L.lreturn(pThis->GetNormalImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,SetNormalImage)
-	pThis->SetNormalImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,GetHotImage)
-	return L.lreturn(pThis->GetHotImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,SetHotImage)
-	pThis->SetHotImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,GetFocusedImage)
-	return L.lreturn(pThis->GetFocusedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,SetFocusedImage)
-	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,GetDisabledImage)
-	return L.lreturn(pThis->GetDisabledImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CEditUI,SetDisabledImage)
-	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
 LBIND_DEFINE_FUNC(CEditUI,GetNativeEditBkColor)
 	return L.lreturn(pThis->GetNativeEditBkColor());
 LBIND_END_DEFINE_FUNC
@@ -448,14 +303,6 @@ LBIND_BEGIN_DEFINE_LIB(CEditUI)
 	{"isPasswordMode",lbindedit::IsPasswordMode},
 	{"setPasswordMode",lbindedit::SetPasswordMode},
 	{"passwordChar",lbindedit::GetPasswordChar},
-	{"normalImage",lbindedit::GetNormalImage},
-	{"setNormalImage",lbindedit::SetNormalImage},
-	{"hotImage",lbindedit::GetHotImage},
-	{"setHotImage",lbindedit::SetHotImage},
-	{"focusedImage",lbindedit::GetFocusedImage},
-	{"setFocusedImage",lbindedit::SetFocusedImage},
-	{"disabledImage",lbindedit::GetDisabledImage},
-	{"setDisabledImage",lbindedit::SetDisabledImage},
 	{"nativeEditBkColor",lbindedit::GetNativeEditBkColor},
 	{"setNativeEditBkColor",lbindedit::SetNativeEditBkColor},
 LBIND_END_DEFINE_LIB

@@ -10,8 +10,8 @@ m_bUpdateNeeded(true),
 m_bMenuUsed(false),
 m_bVisible(true), 
 m_bInternVisible(true),
-m_bFocused(false),
-m_bEnabled(true),
+// m_bFocused(false),
+// m_bEnabled(true),
 m_bMouseEnabled(true),
 m_bKeyboardEnabled(true),
 m_bFloat(false),
@@ -21,7 +21,8 @@ m_pTag(NULL),
 m_bColorHSL(false),
 m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
-m_nTooltipWidth(300)
+m_nTooltipWidth(300),
+m_dwStatus(0)
 {
 //	m_attrs.AddKeyword(DUI_ATTR_NAME, TypeString);
 
@@ -722,8 +723,8 @@ void CControlUI::SetVisible(bool bVisible)
     if( m_bVisible == bVisible ) return;
 
     bool v = IsVisible();
-    m_bVisible = bVisible;
-    if( m_bFocused ) m_bFocused = false;
+	m_bVisible = bVisible;
+	if( m_dwStatus & UISTATE_FOCUSED ) m_dwStatus &= ~UISTATE_FOCUSED;
 	if (!bVisible && m_pManager && m_pManager->GetFocus() == this) {
 		m_pManager->SetFocus(NULL) ;
 	}
@@ -747,14 +748,26 @@ void CControlUI::SetInternVisible(bool bVisible)
 
 bool CControlUI::IsEnabled() const
 {
-    return m_bEnabled;
+	if (m_pParent && !m_pParent->IsEnabled())
+	{
+		return false;
+	}
+	return !(m_dwStatus & UISTATE_DISABLED);
 }
 
 void CControlUI::SetEnabled(bool bEnabled)
 {
-    if( m_bEnabled == bEnabled ) return;
+	DWORD dwOld = m_dwStatus;
+	if (bEnabled)
+	{
+		m_dwStatus &= ~UISTATE_DISABLED;
+	}
+	else
+	{
+		m_dwStatus |= UISTATE_DISABLED;
+	}
+    if( dwOld == m_dwStatus ) return;
 
-    m_bEnabled = bEnabled;
     Invalidate();
 }
 
@@ -780,7 +793,7 @@ void CControlUI::SetKeyboardEnabled(bool bEnabled)
 
 bool CControlUI::IsFocused() const
 {
-    return m_bFocused;
+    return !!(m_dwStatus & UISTATE_FOCUSED);
 }
 
 void CControlUI::SetFocus()
@@ -921,13 +934,13 @@ void CControlUI::DoEvent(TEventUI& event)
 			}
 		}
 
-        m_bFocused = true;
+		m_dwStatus |= UISTATE_FOCUSED;
         Invalidate();
         return;
     }
     if( event.Type == UIEVENT_KILLFOCUS ) 
-    {
-        m_bFocused = false;
+	{
+		m_dwStatus &= ~UISTATE_FOCUSED;
         Invalidate();
         return;
     }
@@ -1002,6 +1015,10 @@ int CControlUI::GetVirtualWnd(CDuiStringArray& arVirtualWnd) const
 
 CDuiString CControlUI::GetAttribute(LPCTSTR pstrName) const
 {
+	if( _tcsicmp(pstrName, _T("text")) == 0 )
+	{
+		return GetText();
+	}
 	return m_attrs.GetString(pstrName);
 }
 
@@ -1354,7 +1371,9 @@ void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
         CRenderClip::GenerateRoundClip(hDC, m_rcPaint,  m_rcItem, m_cxyBorderRound.cx, m_cxyBorderRound.cy, roundClip);
         PaintBkColor(hDC);
         PaintBkImage(hDC);
-		PaintStatusImage(hDC);
+		//PaintStatusImage(hDC);
+		PaintNormalColor(hDC);
+		PaintNormalImage(hDC);
 		PaintForeColor(hDC);
 		PaintForeImage(hDC);
         PaintText(hDC);
@@ -1364,7 +1383,9 @@ void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
 	{
         PaintBkColor(hDC);
         PaintBkImage(hDC);
-		PaintStatusImage(hDC);
+		//PaintStatusImage(hDC);
+		PaintNormalColor(hDC);
+		PaintNormalImage(hDC);
 		PaintForeColor(hDC);
 		PaintForeImage(hDC);
         PaintText(hDC);
@@ -1439,27 +1460,62 @@ void CControlUI::PaintStatusImage(HDC hDC)
     return;
 }
 
-void CControlUI::PaintForeColor(HDC hDC)
+void CControlUI::PaintNormalColor(HDC hDC)
 {
-	DWORD dwBkColor = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
-	DWORD dwBackColor2 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR2);
-	DWORD dwBackColor3 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR3);
+	DWORD dwColor = GetStatusColor(DUI_ATTR_POS_NORMAL DUI_ATTR_COLOR);
+	DWORD dwColor2 = GetStatusColor(DUI_ATTR_POS_NORMAL DUI_ATTR_COLOR2);
+	DWORD dwColor3 = GetStatusColor(DUI_ATTR_POS_NORMAL DUI_ATTR_COLOR3);
 
-	if( dwBkColor != 0 ) {
-		if( dwBackColor2 != 0 ) {
-			if( dwBackColor3 != 0 ) {
+	if( dwColor != 0 ) {
+		if( dwColor2 != 0 ) {
+			if( dwColor3 != 0 ) {
 				RECT rc = m_rcItem;
 				rc.bottom = (rc.bottom + rc.top) / 2;
-				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 8);
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwColor), GetAdjustColor(dwColor2), true, 8);
 				rc.top = rc.bottom;
 				rc.bottom = m_rcItem.bottom;
-				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBackColor2), GetAdjustColor(dwBackColor3), true, 8);
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwColor2), GetAdjustColor(dwColor3), true, 8);
 			}
 			else 
-				CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 16);
+				CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwColor), GetAdjustColor(dwColor2), true, 16);
 		}
-		else if( dwBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(dwBkColor));
-		else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(dwBkColor));
+		else if( dwColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(dwColor));
+		else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(dwColor));
+	}
+}
+
+void CControlUI::PaintNormalImage(HDC hDC)
+{
+	const CDuiImage img = GetStatusImage(DUI_ATTR_IMAGE);
+	//const CDuiImage img = GetStatusImage(DUI_ATTR_POS_NORMAL DUI_ATTR_IMAGE);
+	if(!img) return;
+
+	if( !DrawImage(hDC, img) )
+	{
+	}
+}
+
+void CControlUI::PaintForeColor(HDC hDC)
+{
+	DWORD dwColor = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
+	DWORD dwColor2 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR2);
+	DWORD dwColor3 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR3);
+
+	if( dwColor != 0 ) {
+		if( dwColor2 != 0 ) {
+			if( dwColor3 != 0 ) {
+				RECT rc = m_rcItem;
+				rc.bottom = (rc.bottom + rc.top) / 2;
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwColor), GetAdjustColor(dwColor2), true, 8);
+				rc.top = rc.bottom;
+				rc.bottom = m_rcItem.bottom;
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwColor2), GetAdjustColor(dwColor3), true, 8);
+			}
+			else 
+				CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwColor), GetAdjustColor(dwColor2), true, 16);
+		}
+		else if( dwColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(dwColor));
+		else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(dwColor));
 	}
 }
 
@@ -1640,6 +1696,10 @@ DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgn
 	if (dwStatus == 0)
 	{
 		dwStatus = GetStatus();
+	}
+	if (nIgnorStatus-- <= 0)
+	{
+		sStatus += DUI_ATTR_POS_NORMAL;
 	}
 	if (dwStatus & UISTATE_DISABLED && nIgnorStatus-- <= 0)
 	{

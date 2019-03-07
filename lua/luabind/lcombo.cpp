@@ -41,52 +41,6 @@ LBIND_DEFINE_FUNC(CComboUI,SetTextPadding)
 	pThis->SetTextPadding(toRect(arg[2]));
 LBIND_END_DEFINE_FUNC
 
-
-LBIND_DEFINE_FUNC(CComboUI,GetNormalImage)
-	return L.lreturn(pThis->GetNormalImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,SetNormalImage)
-	pThis->SetNormalImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-
-LBIND_DEFINE_FUNC(CComboUI,GetHotImage)
-	return L.lreturn(pThis->GetHotImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,SetHotImage)
-	pThis->SetHotImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-	
-
-
-LBIND_DEFINE_FUNC(CComboUI,GetPushedImage)
-	return L.lreturn(pThis->GetPushedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,SetPushedImage)
-	pThis->SetPushedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-
-LBIND_DEFINE_FUNC(CComboUI,GetFocusedImage)
-	return L.lreturn(pThis->GetFocusedImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,SetFocusedImage)
-	pThis->SetFocusedImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,GetDisabledImage)
-	return L.lreturn(pThis->GetDisabledImage());
-LBIND_END_DEFINE_FUNC
-
-LBIND_DEFINE_FUNC(CComboUI,SetDisabledImage)
-	pThis->SetDisabledImage(CDuiString(arg[2].toString()));
-LBIND_END_DEFINE_FUNC
-
 LBIND_DEFINE_FUNC(CComboUI,SetItemTextStyle)
 	pThis->SetItemTextStyle(arg[2].toInt());
 LBIND_END_DEFINE_FUNC
@@ -242,16 +196,6 @@ LBIND_BEGIN_DEFINE_LIB(CComboUI)
 	{"selectItem",lbindcombo::SelectItem},
 	{"textPadding",lbindcombo::GetTextPadding},
 	{"setTextPadding",lbindcombo::SetTextPadding},
-	{"normalImage",lbindcombo::GetNormalImage},
-	{"setNormalImage",lbindcombo::SetNormalImage},
-	{"hotImage",lbindcombo::GetHotImage},
-	{"setHotImage",lbindcombo::SetHotImage},
-	{"pushedImage",lbindcombo::GetPushedImage},
-	{"setPushedImage",lbindcombo::SetPushedImage},
-	{"focusedImage",lbindcombo::GetFocusedImage},
-	{"setFocusedImage",lbindcombo::SetFocusedImage},
-	{"disabledImage",lbindcombo::GetDisabledImage},
-	{"setDisabledImage",lbindcombo::SetDisabledImage},
 
 	{"setItemTextStyle",lbindcombo::SetItemTextStyle},
 	{"setItemFont",lbindcombo::SetItemFont},

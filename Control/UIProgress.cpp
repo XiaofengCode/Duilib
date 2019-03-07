@@ -71,30 +71,6 @@ namespace DuiLib
 		Invalidate();
 	}
 
-	LPCTSTR CProgressUI::GetForeImage() const
-	{
-		return m_sForeImage;
-	}
-
-	void CProgressUI::SetForeImage(LPCTSTR pStrImage)
-	{
-		if( m_sForeImage == pStrImage ) return;
-
-		m_sForeImage = pStrImage;
-		Invalidate();
-	}
-
-	void CProgressUI::SetForeColor(DWORD dwColor)
-	{
-		m_attrs.SetAttribute(DUI_ATTR_POS_FORE DUI_ATTR_COLOR, dwColor);
-		Invalidate();
-	}
-
-	DWORD CProgressUI::GetForeColor() const
-	{
-		return m_attrs.GetColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
-	}
-
 	int CProgressUI::GetCircularFinishedWidth() const
 	{
 		return m_nCirFinishedWidth;
@@ -170,16 +146,7 @@ namespace DuiLib
 
 	void CProgressUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcsicmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
-		else if (_tcsicmp(pstrName, _T("forecolor")) == 0)
-		{
-			while (*pstrValue > _T('\0') && *pstrValue <= _T(' ')) pstrValue = ::CharNext(pstrValue);
-			if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetForeColor(clrColor);
-		}
-		else if( _tcsicmp(pstrName, _T("hor")) == 0 )
+		if( _tcsicmp(pstrName, _T("hor")) == 0 )
 		{
 			if(_tcsicmp(pstrValue, _T("true")) == 0)
 			{
@@ -218,7 +185,87 @@ namespace DuiLib
 		else __super::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CProgressUI::PaintStatusImage(HDC hDC)
+	void CProgressUI::PaintBkColor(HDC hDC)
+	{
+		
+	}
+
+	void CProgressUI::PaintForeColor(HDC hDC)
+	{
+		if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
+		if( m_nValue > m_nMax ) m_nValue = m_nMax;
+		if( m_nValue < m_nMin ) m_nValue = m_nMin;
+		DWORD dwColor = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
+		if (GetType() != TypeCircular)
+		{
+			RECT rc = {0};
+			if( IsHorizontal() ) {
+				rc.right = (LONGLONG)(m_nValue - m_nMin) * (m_rcItem.right - m_rcItem.left) / (m_nMax - m_nMin);
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			}
+			else {
+				rc.top = (LONGLONG)(m_rcItem.bottom - m_rcItem.top) * (m_nMax - m_nValue) / (m_nMax - m_nMin);
+				rc.right = m_rcItem.right - m_rcItem.left;
+				rc.bottom = m_rcItem.bottom - m_rcItem.top;
+			}
+			rc.left += m_rcItem.left;
+			rc.right += m_rcItem.left;
+			rc.top += m_rcItem.top;
+			rc.bottom += m_rcItem.top;
+			CRenderEngine::DrawColor(hDC, rc, dwColor);
+		}
+		else
+		{
+			//if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
+			Gdiplus::Graphics g(hDC);
+			g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
+			CDuiRect rcItem(m_rcItem.left + m_rcPadding.left,
+				m_rcItem.top + m_rcPadding.top,
+				m_rcItem.right + m_rcPadding.right,
+				m_rcItem.bottom + m_rcPadding.bottom);
+			//TODO:如果有边框就先绘制边框
+			//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
+			int nWidth = GetCircularFinishedWidth();
+			if (!nWidth)
+			{
+				nWidth = rcItem.GetHeight()/5;
+			}
+			CDuiRect rcValue(rcItem);
+			rcValue.Deflate(nWidth/2, nWidth/2);
+			Gdiplus::Pen pen(dwColor);
+			pen.SetWidth(nWidth);
+			int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
+			//绘制已完成部分
+			double nStartAngle = GetCircularStartAngle() + GetCircularSpace();
+			double nSweepAngle = nSweepValue - GetCircularSpace()*0.5f;
+			if (nSweepAngle <= 0)
+			{
+				nSweepAngle = 2;
+			}
+			g.DrawArc(&pen, rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle, nSweepAngle);
+
+			nWidth = GetCircularLastWidth();
+			if (!nWidth)
+			{
+				nWidth = rcItem.GetHeight()/5;
+			}
+			CDuiRect rcLast(rcItem);
+			rcLast.Deflate(nWidth/2, nWidth/2);
+			//rcLast.Deflate(rcItem.GetWidth()*GetCircularSpace()/360, rcItem.GetWidth()*GetCircularSpace()/360);
+			//绘制剩余部分
+			pen.SetColor(GetBkColor());
+			pen.SetWidth(nWidth);
+			nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue - 1;
+			nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2 + 2;
+			if (nSweepAngle <= 0)
+			{
+				nSweepAngle = 2;
+			}
+			g.DrawArc(&pen, rcLast.left, rcLast.top, rcLast.GetWidth(), rcLast.GetHeight(), nStartAngle, nSweepAngle);
+		}
+	}
+
+	void CProgressUI::PaintNormalImage(HDC hDC)
 	{
 		if( m_nMax <= m_nMin ) m_nMax = m_nMin + 1;
 		if( m_nValue > m_nMax ) m_nValue = m_nMax;
@@ -236,8 +283,8 @@ namespace DuiLib
 				rc.right = m_rcItem.right - m_rcItem.left;
 				rc.bottom = m_rcItem.bottom - m_rcItem.top;
 			}
-
-			if( !m_sForeImage.IsEmpty() ) {
+			CDuiString sForeImage = GetAttribute(DUI_ATTR_POS_FORE DUI_ATTR_IMAGE);
+			if( !sForeImage.IsEmpty() ) {
 				m_sForeImageModify.Empty();
 				double S = GetScaleDpi();
 				if (m_bStretchForeImage)
@@ -252,104 +299,14 @@ namespace DuiLib
 						, (int)(rc.left / S), (int)(rc.top / S), (int)(rc.right / S), (int)(rc.bottom / S));
 				}
 
-				if( !DrawImage(hDC, (LPCTSTR)m_sForeImage, (LPCTSTR)m_sForeImageModify) ) m_sForeImage.Empty();
+				if( !DrawImage(hDC, (LPCTSTR)sForeImage, (LPCTSTR)m_sForeImageModify) ) sForeImage.Empty();
 				else return;
-			}
-			else
-			{
-				rc.left += m_rcItem.left;
-				rc.right += m_rcItem.left;
-				rc.top += m_rcItem.top;
-				rc.bottom += m_rcItem.top;
-				CRenderEngine::DrawColor(hDC, rc, GetAdjustColor(GetForeColor()));
 			}
 		}
 		else
 		{
-			__super::PaintStatusImage(hDC);
+			__super::PaintNormalImage(hDC);
 		}
-	}
-
-	void CProgressUI::DoPaint(HDC hDC, const RECT& rcPaint)
-	{
-		if (GetType() != TypeCircular)
-		{
-			__super::DoPaint(hDC, rcPaint);
-			return;
-		}
-		if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-// 		SIZE szRound = {(m_rcItem.right + m_rcPadding.right - m_rcItem.left - m_rcPadding.left),
-// 			(m_rcItem.bottom + m_rcPadding.bottom - m_rcItem.top - m_rcPadding.top)};
-// 		SetBorderRound(szRound);
-		PaintBkImage(hDC);
-		Gdiplus::Graphics g(hDC);
-		g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
-		CDuiRect rcItem(m_rcItem.left + m_rcPadding.left,
-			m_rcItem.top + m_rcPadding.top,
-			m_rcItem.right + m_rcPadding.right,
-			m_rcItem.bottom + m_rcPadding.bottom);
-		//TODO:如果有边框就先绘制边框
-		//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
-		int nWidth = GetCircularFinishedWidth();
-		if (!nWidth)
-		{
-			nWidth = rcItem.GetHeight()/5;
-		}
-		CDuiRect rcValue(rcItem);
-		rcValue.Deflate(nWidth/2, nWidth/2);
-		Gdiplus::Pen pen(GetForeColor());
-		pen.SetWidth(nWidth);
-		int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
-		//绘制已完成部分
-		double nStartAngle = GetCircularStartAngle() + GetCircularSpace();
-		double nSweepAngle = nSweepValue - GetCircularSpace()*0.5f;
-		if (nSweepAngle <= 0)
-		{
-			nSweepAngle = 2;
-		}
-		g.DrawArc(&pen, rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle, nSweepAngle);
-
-		nWidth = GetCircularLastWidth();
-		if (!nWidth)
-		{
-			nWidth = rcItem.GetHeight()/5;
-		}
-		CDuiRect rcLast(rcItem);
-		rcLast.Deflate(nWidth/2, nWidth/2);
-		//rcLast.Deflate(rcItem.GetWidth()*GetCircularSpace()/360, rcItem.GetWidth()*GetCircularSpace()/360);
-		//绘制剩余部分
-		pen.SetColor(GetBkColor());
-		pen.SetWidth(nWidth);
-		nStartAngle = GetCircularStartAngle() + GetCircularSpace()*1.5f + nSweepValue - 1;
-		nSweepAngle = GetCircularSweepAngle() - nSweepAngle - GetCircularSpace() * 2 + 2;
-		if (nSweepAngle <= 0)
-		{
-			nSweepAngle = 2;
-		}
-		g.DrawArc(&pen, rcLast.left, rcLast.top, rcLast.GetWidth(), rcLast.GetHeight(), nStartAngle, nSweepAngle);
-		PaintStatusImage(hDC);
-		PaintText(hDC);
-		PaintBorder(hDC);
-		PaintFocusedDot(hDC);
-		return;
-		
-// 		// 绘制循序：背景颜色->背景图->状态图->文本->边框
-// 		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ) {
-// 			CRenderClip roundClip;
-// 			CRenderClip::GenerateRoundClip(hDC, m_rcPaint,  m_rcItem, m_cxyBorderRound.cx, m_cxyBorderRound.cy, roundClip);
-// 			PaintBkColor(hDC);
-// 			PaintBkImage(hDC);
-// 			PaintStatusImage(hDC);
-// 			PaintText(hDC);
-// 			PaintBorder(hDC);
-// 		}
-// 		else {
-// 			PaintBkColor(hDC);
-// 			PaintBkImage(hDC);
-// 			PaintStatusImage(hDC);
-// 			PaintText(hDC);
-// 			PaintBorder(hDC);
-// 		}
 	}
 
 	bool CProgressUI::IsStretchForeImage()

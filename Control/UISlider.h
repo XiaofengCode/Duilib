@@ -47,7 +47,7 @@ namespace DuiLib
 
 		void DoEvent(TEventUI& event);//2014.7.28 redrain
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-		void PaintStatusImage(HDC hDC);
+		void PaintForeImage(HDC hDC);
 
 		void SetValue(int nValue);//2014.7.28 redrain
 		void SetCanSendMove(bool bCanSend);//2014.7.28 redrain

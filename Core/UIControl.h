@@ -206,6 +206,8 @@ public:
 	virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
 	virtual void PaintStatusImage(HDC hDC);
+	virtual void PaintNormalColor(HDC hDC);
+	virtual void PaintNormalImage(HDC hDC);
 	virtual void PaintForeColor(HDC hDC);
 	virtual void PaintForeImage(HDC hDC);
     virtual void PaintText(HDC hDC);
@@ -249,10 +251,10 @@ protected:
     SIZE m_cxyMax;
     bool m_bVisible;
     bool m_bInternVisible;
-    bool m_bEnabled;
+    //bool m_bEnabled;
     bool m_bMouseEnabled;
 	bool m_bKeyboardEnabled ;
-    bool m_bFocused;
+    //bool m_bFocused;
     bool m_bFloat;
     bool m_bSetPos; // ∑¿÷πSetPos—≠ª∑µ˜”√
     TRelativePosUI m_tRelativePos;
@@ -278,7 +280,7 @@ protected:
 	int  m_nHeightScale;
 	CDuiString	m_strStyle;
 
-
+	DWORD m_dwStatus;
 	CAttributeManager m_attrs;
 };
 

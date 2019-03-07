@@ -556,61 +556,6 @@ void CComboUI::SetTextPadding(RECT rc)
     Invalidate();
 }
 
-LPCTSTR CComboUI::GetNormalImage() const
-{
-    return m_sNormalImage;
-}
-
-void CComboUI::SetNormalImage(LPCTSTR pStrImage)
-{
-    m_sNormalImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CComboUI::GetHotImage() const
-{
-    return m_sHotImage;
-}
-
-void CComboUI::SetHotImage(LPCTSTR pStrImage)
-{
-    m_sHotImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CComboUI::GetPushedImage() const
-{
-    return m_sPushedImage;
-}
-
-void CComboUI::SetPushedImage(LPCTSTR pStrImage)
-{
-    m_sPushedImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CComboUI::GetFocusedImage() const
-{
-    return m_sFocusedImage;
-}
-
-void CComboUI::SetFocusedImage(LPCTSTR pStrImage)
-{
-    m_sFocusedImage = pStrImage;
-    Invalidate();
-}
-
-LPCTSTR CComboUI::GetDisabledImage() const
-{
-    return m_sDisabledImage;
-}
-
-void CComboUI::SetDisabledImage(LPCTSTR pStrImage)
-{
-    m_sDisabledImage = pStrImage;
-    Invalidate();
-}
-
 TListInfoUI* CComboUI::GetListInfo()
 {
     return &m_ListInfo;
@@ -842,11 +787,6 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		ASSERT(pstr);
         SetTextPadding(rcTextPadding);
     }
-    else if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
-    else if( _tcsicmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
     else if( _tcsicmp(pstrName, _T("dropbox")) == 0 ) SetDropBoxAttributeList(pstrValue);
 	else if( _tcsicmp(pstrName, _T("dropboxsize")) == 0)
 	{
@@ -961,44 +901,6 @@ void CComboUI::DoPaint(HDC hDC, const RECT& rcPaint)
     CControlUI::DoPaint(hDC, rcPaint);
 }
 
-void CComboUI::PaintStatusImage(HDC hDC)
-{
-    if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-    else m_uButtonState &= ~ UISTATE_FOCUSED;
-    if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-    else m_uButtonState &= ~ UISTATE_DISABLED;
-
-    if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-        if( !m_sDisabledImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-            else return;
-        }
-    }
-    else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-        if( !m_sPushedImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) m_sPushedImage.Empty();
-            else return;
-        }
-    }
-    else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-        if( !m_sHotImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-            else return;
-        }
-    }
-    else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-        if( !m_sFocusedImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-            else return;
-        }
-    }
-
-    if( !m_sNormalImage.IsEmpty() ) {
-        if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-        else return;
-    }
-}
-
 void CComboUI::PaintText(HDC hDC)
 {
     RECT rcText = m_rcItem;
@@ -1020,6 +922,11 @@ void CComboUI::PaintText(HDC hDC)
             pControl->SetPos(rcOldPos);
         }
     }
+}
+
+DWORD CComboUI::GetStatus()
+{
+	return __super::GetStatus() | m_uButtonState;
 }
 
 } // namespace DuiLib

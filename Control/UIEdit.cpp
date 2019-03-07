@@ -453,50 +453,6 @@ namespace DuiLib
 		return m_cPasswordChar;
 	}
 
-	LPCTSTR CEditUI::GetNormalImage()
-	{
-		return m_sNormalImage;
-	}
-
-	void CEditUI::SetNormalImage(LPCTSTR pStrImage)
-	{
-		m_sNormalImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CEditUI::GetHotImage()
-	{
-		return m_sHotImage;
-	}
-
-	void CEditUI::SetHotImage(LPCTSTR pStrImage)
-	{
-		m_sHotImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CEditUI::GetFocusedImage()
-	{
-		return m_sFocusedImage;
-	}
-
-	void CEditUI::SetFocusedImage(LPCTSTR pStrImage)
-	{
-		m_sFocusedImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CEditUI::GetDisabledImage()
-	{
-		return m_sDisabledImage;
-	}
-
-	void CEditUI::SetDisabledImage(LPCTSTR pStrImage)
-	{
-		m_sDisabledImage = pStrImage;
-		Invalidate();
-	}
-
 	void CEditUI::SetNativeEditBkColor(DWORD dwBkColor)
 	{
 		m_dwEditbkColor = dwBkColor;
@@ -593,10 +549,6 @@ namespace DuiLib
 		else if( _tcsicmp(pstrName, _T("maxchar")) == 0 ) SetMaxChar(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("maxnum")) == 0 ) m_dwMax = _tcstoul(pstrValue, &p, 10);
 		else if( _tcsicmp(pstrName, _T("minnum")) == 0 ) m_dwMin = _tcstoul(pstrValue, &p, 10);
-		else if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("tipvalue")) == 0 ) SetTipValue(pstrValue);
 		else if( _tcsicmp(pstrName, _T("tipvaluecolor")) == 0 ) SetTipValueColor(pstrValue);
 		else if( _tcsicmp(pstrName, _T("nativetextcolor")) == 0 ) SetNativeEditTextColor(pstrValue);
@@ -609,51 +561,11 @@ namespace DuiLib
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CEditUI::PaintStatusImage(HDC hDC)
-	{
-		if( IsFocused() && m_pWindow && m_pWindow->IsFocus() )
-		{
-			RECT rcParent = GetPos();
-			CRenderEngine::DrawColor(hDC, rcParent, GetNativeEditBkColor());
-			m_uButtonState |= UISTATE_FOCUSED;
-		}
-		else m_uButtonState &= ~ UISTATE_FOCUSED;
-		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-		else m_uButtonState &= ~ UISTATE_DISABLED;
-
-		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-			if( !m_sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-				else return;
-			}
-		}
-		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-			if( !m_sFocusedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-				else return;
-			}
-		}
-		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-				else return;
-			}
-		}
-
-		if( !m_sNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-			else return;
-		}
-	}
-
 	void CEditUI::PaintText(HDC hDC)
 	{
-		if( GetTextColor() == 0 )
-			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
-		DWORD mCurTextColor = GetTextColor();
-
-		if( GetDisabledTextColor() == 0 )
-			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
+		DWORD mCurTextColor = GetStatusColor(DUI_ATTR_TEXT DUI_ATTR_COLOR);
+		if( mCurTextColor == 0 )
+			mCurTextColor = IsEnabled() ? m_pManager->GetDefaultFontColor() : m_pManager->GetDefaultDisabledColor();
 
 		CDuiString sText;
 		if(GetText() == m_sTipValue || GetText() == _T(""))	

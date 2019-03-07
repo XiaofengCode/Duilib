@@ -123,17 +123,8 @@ public:
     SIZE EstimateSize(SIZE szAvailable);
     void SetPos(RECT rc);
     void DoEvent(TEventUI& event);
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    void PaintNormalImage(HDC hDC);
 
-	LPCTSTR GetNormalImage();
-	void SetNormalImage(LPCTSTR pStrImage);
-	LPCTSTR GetHotImage();
-	void SetHotImage(LPCTSTR pStrImage);
-	LPCTSTR GetFocusedImage();
-	void SetFocusedImage(LPCTSTR pStrImage);
-	LPCTSTR GetDisabledImage();
-	void SetDisabledImage(LPCTSTR pStrImage);
-	void PaintStatusImage(HDC hDC);
 	RECT GetTextPadding() const;
 	void SetTextPadding(RECT rc);
 
@@ -170,10 +161,6 @@ protected:
 	UINT m_chLeadByte; // use when we are in _fAccumulateDBC mode
 
 	UINT m_uButtonState;
-	CDuiString m_sNormalImage;
-	CDuiString m_sHotImage;
-	CDuiString m_sFocusedImage;
-	CDuiString m_sDisabledImage;
 	RECT m_rcTextPadding;
 	CDuiString m_sTipValue;
 	bool m_bTip;

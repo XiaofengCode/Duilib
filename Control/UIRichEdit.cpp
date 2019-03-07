@@ -2042,51 +2042,6 @@ void CRichEditUI::DoEvent(TEventUI& event)
     CContainerUI::DoEvent(event);
 }
 
-
-LPCTSTR CRichEditUI::GetNormalImage()
-{
-	return m_sNormalImage;
-}
-
-void CRichEditUI::SetNormalImage(LPCTSTR pStrImage)
-{
-	m_sNormalImage = pStrImage;
-	Invalidate();
-}
-
-LPCTSTR CRichEditUI::GetHotImage()
-{
-	return m_sHotImage;
-}
-
-void CRichEditUI::SetHotImage(LPCTSTR pStrImage)
-{
-	m_sHotImage = pStrImage;
-	Invalidate();
-}
-
-LPCTSTR CRichEditUI::GetFocusedImage()
-{
-	return m_sFocusedImage;
-}
-
-void CRichEditUI::SetFocusedImage(LPCTSTR pStrImage)
-{
-	m_sFocusedImage = pStrImage;
-	Invalidate();
-}
-
-LPCTSTR CRichEditUI::GetDisabledImage()
-{
-	return m_sDisabledImage;
-}
-
-void CRichEditUI::SetDisabledImage(LPCTSTR pStrImage)
-{
-	m_sDisabledImage = pStrImage;
-	Invalidate();
-}
-
 RECT CRichEditUI::GetTextPadding() const
 {
 	return m_rcTextPadding;
@@ -2118,37 +2073,6 @@ DWORD CRichEditUI::GetTipValueColor()
 	return m_attrs.GetColor(DUI_ATTR_TIPVALUE DUI_ATTR_COLOR);
 }
 
-void CRichEditUI::PaintStatusImage(HDC hDC)
-{
-	if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-	else m_uButtonState &= ~ UISTATE_FOCUSED;
-	if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-	else m_uButtonState &= ~ UISTATE_DISABLED;
-
-	if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-		if( !m_sDisabledImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-			else return;
-		}
-	}
-	else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-		if( !m_sFocusedImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-			else return;
-		}
-	}
-	else if( (m_uButtonState & UISTATE_HOT ) != 0 ) {
-		if( !m_sHotImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-			else return;
-		}
-	}
-
-	if( !m_sNormalImage.IsEmpty() ) {
-		if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-		else return;
-	}
-}
 
 SIZE CRichEditUI::EstimateSize(SIZE szAvailable)
 {
@@ -2225,15 +2149,9 @@ void CRichEditUI::SetPos(RECT rc)
 
 }
 
-void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CRichEditUI::PaintNormalImage(HDC hDC)
 {
-    RECT rcTemp = { 0 };
-    if( !::IntersectRect(&rcTemp, &rcPaint, &m_rcItem) ) return;
-
-    CRenderClip clip;
-    CRenderClip::GenerateClip(hDC, rcTemp, clip);
-    CControlUI::DoPaint(hDC, rcPaint);
-
+    RECT rcTemp = m_rcPaint;
     if( m_pTwh ) {
         RECT rc;
         m_pTwh->GetControlRect(&rc);
@@ -2248,7 +2166,7 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)
             NULL, 				   	// Target device HDC
             (RECTL*)&rc,			// Bounding client rectangle
             NULL, 		            // Clipping rectangle for metafiles
-            (RECT*)&rcPaint,		// Update rectangle
+            (RECT*)&m_rcPaint,		// Update rectangle
             NULL, 	   				// Call back function
             NULL,					// Call back parameter
             0);				        // What view of the object
@@ -2280,14 +2198,14 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)
         if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
         if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
-        if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
+        if( !::IntersectRect(&rcTemp, &m_rcPaint, &rc) ) {
             for( int it = 0; it < m_items.GetSize(); it++ ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
                 if( !pControl->IsVisible() ) continue;
-                if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
+                if( !::IntersectRect(&rcTemp, &m_rcPaint, &pControl->GetPos()) ) continue;
                 if( pControl ->IsFloat() ) {
                     if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
-                    pControl->DoPaint(hDC, rcPaint);
+                    pControl->DoPaint(hDC, m_rcPaint);
                 }
             }
         }
@@ -2297,30 +2215,30 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)
             for( int it = 0; it < m_items.GetSize(); it++ ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
                 if( !pControl->IsVisible() ) continue;
-                if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
+                if( !::IntersectRect(&rcTemp, &m_rcPaint, &pControl->GetPos()) ) continue;
                 if( pControl ->IsFloat() ) {
                     if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
                     CRenderClip::UseOldClipBegin(hDC, childClip);
-                    pControl->DoPaint(hDC, rcPaint);
+                    pControl->DoPaint(hDC, m_rcPaint);
                     CRenderClip::UseOldClipEnd(hDC, childClip);
                 }
                 else {
                     if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
-                    pControl->DoPaint(hDC, rcPaint);
+                    pControl->DoPaint(hDC, m_rcPaint);
                 }
             }
         }
     }
 
     if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
-        if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
-            m_pVerticalScrollBar->DoPaint(hDC, rcPaint);
+        if( ::IntersectRect(&rcTemp, &m_rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
+            m_pVerticalScrollBar->DoPaint(hDC, m_rcPaint);
         }
     }
 
     if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
-        if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
-            m_pHorizontalScrollBar->DoPaint(hDC, rcPaint);
+        if( ::IntersectRect(&rcTemp, &m_rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
+            m_pHorizontalScrollBar->DoPaint(hDC, m_rcPaint);
         }
     }
 }
@@ -2383,10 +2301,6 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetTextColor(clrColor);
     }
 	else if( _tcsicmp(pstrName, _T("maxchar")) == 0 ) SetLimitText(_ttoi(pstrValue));
-	else if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-	else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-	else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
-	else if( _tcsicmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
 	else if( _tcsicmp(pstrName, _T("textpadding")) == 0 ) {
 		RECT rcTextPadding = { 0 };
 		LPTSTR pstr = NULL;

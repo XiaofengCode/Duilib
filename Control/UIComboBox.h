@@ -18,7 +18,7 @@ namespace DuiLib
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		void PaintText(HDC hDC);
-		void PaintStatusImage(HDC hDC);
+		void PaintNormalImage(HDC hDC);
 
 	protected:
 		CDuiString m_sArrowImage;

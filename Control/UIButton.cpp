@@ -125,123 +125,6 @@ namespace DuiLib
 		}
 	}
 
-	void CButtonUI::SetHotBkColor( DWORD dwColor )
-	{
-		m_attrs.SetAttribute(DUI_ATTR_STATUS_HOT DUI_ATTR_POS_BK DUI_ATTR_COLOR, dwColor);
-	}
-
-	DWORD CButtonUI::GetHotBkColor() const
-	{
-		return m_attrs.GetColor(DUI_ATTR_STATUS_HOT DUI_ATTR_POS_BK DUI_ATTR_COLOR);
-	}
-
-	void CButtonUI::SetHotTextColor(DWORD dwColor)
-	{
-		m_attrs.SetAttribute(DUI_ATTR_STATUS_HOT DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
-	}
-
-	DWORD CButtonUI::GetHotTextColor() const
-	{
-		return m_attrs.GetColor(DUI_ATTR_STATUS_HOT DUI_ATTR_TEXT DUI_ATTR_COLOR);
-	}
-
-	void CButtonUI::SetPushedTextColor(DWORD dwColor)
-	{
-		m_attrs.SetAttribute(DUI_ATTR_STATUS_PUSHED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
-	}
-
-	DWORD CButtonUI::GetPushedTextColor() const
-	{
-		return m_attrs.GetColor(DUI_ATTR_STATUS_PUSHED DUI_ATTR_TEXT DUI_ATTR_COLOR);
-	}
-
-	void CButtonUI::SetFocusedTextColor(DWORD dwColor)
-	{
-		m_attrs.SetAttribute(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_TEXT DUI_ATTR_COLOR, dwColor);
-	}
-
-	DWORD CButtonUI::GetFocusedTextColor() const
-	{
-		return m_attrs.GetColor(DUI_ATTR_STATUS_FOCUSED DUI_ATTR_TEXT DUI_ATTR_COLOR);
-	}
-
-	LPCTSTR CButtonUI::GetNormalImage()
-	{
-		return m_sNormalImage;
-	}
-
-	void CButtonUI::SetNormalImage(LPCTSTR pStrImage)
-	{
-		m_sNormalImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetHotImage()
-	{
-		return m_sHotImage;
-	}
-
-	void CButtonUI::SetHotImage(LPCTSTR pStrImage)
-	{
-		m_sHotImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetPushedImage()
-	{
-		return m_sPushedImage;
-	}
-
-	void CButtonUI::SetPushedImage(LPCTSTR pStrImage)
-	{
-		m_sPushedImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetFocusedImage()
-	{
-		return m_sFocusedImage;
-	}
-
-	void CButtonUI::SetFocusedImage(LPCTSTR pStrImage)
-	{
-		m_sFocusedImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetDisabledImage()
-	{
-		return m_sDisabledImage;
-	}
-
-	void CButtonUI::SetDisabledImage(LPCTSTR pStrImage)
-	{
-		m_sDisabledImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetForeImage()
-	{
-		return m_sForeImage;
-	}
-
-	void CButtonUI::SetForeImage( LPCTSTR pStrImage )
-	{
-		m_sForeImage = pStrImage;
-		Invalidate();
-	}
-
-	LPCTSTR CButtonUI::GetHotForeImage()
-	{
-		return m_sHotForeImage;
-	}
-
-	void CButtonUI::SetHotForeImage( LPCTSTR pStrImage )
-	{
-		m_sHotForeImage = pStrImage;
-		Invalidate();
-	}
-
 	void CButtonUI::BindTabIndex(int _BindTabIndex )
 	{
 		if( _BindTabIndex >= 0)
@@ -291,43 +174,12 @@ namespace DuiLib
 
 	void CButtonUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("hotforeimage")) == 0 ) SetHotForeImage(pstrValue);
-		else if( _tcsicmp(pstrName, _T("bindtabindex")) == 0 ) BindTabIndex(_ttoi(pstrValue));
+		if (_tcsnicmp(pstrName, _T("normal"), 6) == 0)
+		{
+			pstrName += 6;
+		}
+		if( _tcsicmp(pstrName, _T("bindtabindex")) == 0 ) BindTabIndex(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("bindtablayoutname")) == 0 ) BindTabLayoutName(pstrValue);
-		else if( _tcsicmp(pstrName, _T("hotbkcolor")) == 0 )
-		{
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetHotBkColor(clrColor);
-		}
-		else if( _tcsicmp(pstrName, _T("hottextcolor")) == 0 )
-		{
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetHotTextColor(clrColor);
-		}
-		else if( _tcsicmp(pstrName, _T("pushedtextcolor")) == 0 )
-		{
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetPushedTextColor(clrColor);
-		}
-		else if( _tcsicmp(pstrName, _T("focusedtextcolor")) == 0 )
-		{
-			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-			SetFocusedTextColor(clrColor);
-		}
 		else if( _tcsicmp(pstrName, _T("multiline")) == 0 )
 		{
 			if( _tcsicmp(pstrValue, _T("true")) == 0)
@@ -346,21 +198,6 @@ namespace DuiLib
 
 	void CButtonUI::PaintText(HDC hDC)
 	{
-		if( IsFocused() )
-			m_uButtonState |= UISTATE_FOCUSED;
-		else
-			m_uButtonState &= ~ UISTATE_FOCUSED;
-
-		if( !IsEnabled() ) 
-			m_uButtonState |= UISTATE_DISABLED;
-		else
-			m_uButtonState &= ~ UISTATE_DISABLED;
-
-		if( GetTextColor() == 0 )
-			m_attrs.SetAttribute(DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultFontColor());
-		if( GetDisabledTextColor() == 0 )
-			m_attrs.SetAttribute(DUI_ATTR_STATUS_DISABLED DUI_ATTR_TEXT DUI_ATTR_COLOR, m_pManager->GetDefaultDisabledColor());
-
 		if( m_sText.IsEmpty() )
 			return;
 		int nLinks = 0;
@@ -370,89 +207,17 @@ namespace DuiLib
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
 
-		DWORD clrColor = IsEnabled()?GetTextColor():GetDisabledTextColor();
-
-		if( ((m_uButtonState & UISTATE_PUSHED) != 0) && (GetPushedTextColor() != 0) )
-			clrColor = GetPushedTextColor();
-		else if( ((m_uButtonState & UISTATE_HOT) != 0) && (GetHotTextColor() != 0) )
-			clrColor = GetHotTextColor();
-		else if( ((m_uButtonState & UISTATE_FOCUSED) != 0) && (GetFocusedTextColor() != 0) )
-			clrColor = GetFocusedTextColor();
-
+		DWORD clrColor = GetStatusColor(DUI_ATTR_TEXT DUI_ATTR_COLOR);
+		if (!clrColor)
+		{
+			clrColor = IsEnabled() ? m_pManager->GetDefaultFontColor() : m_pManager->GetDefaultDisabledColor();
+		}
 		if( m_bShowHtml )
 			CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, clrColor, \
 			NULL, NULL, nLinks, m_uTextStyle);
 		else
 			CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, clrColor, \
 			m_sFont, m_uTextStyle);
-	}
-
-	void CButtonUI::PaintStatusImage(HDC hDC)
-	{
-		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-		else m_uButtonState &= ~ UISTATE_FOCUSED;
-		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-		else m_uButtonState &= ~ UISTATE_DISABLED;
-
-		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-			if( !m_sDisabledImage.IsEmpty() )
-			{
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-				else goto Label_ForeImage;
-			}
-		}
-		else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-			if( !m_sPushedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ){
-					m_sPushedImage.Empty();
-				}
-				if( !m_sPushedForeImage.IsEmpty() )
-				{
-					if( !DrawImage(hDC, (LPCTSTR)m_sPushedForeImage) )
-						m_sPushedForeImage.Empty();
-					return;
-				}
-				else goto Label_ForeImage;
-			}
-		}
-		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ){
-					m_sHotImage.Empty();
-				}
-				if( !m_sHotForeImage.IsEmpty() ) {
-					if( !DrawImage(hDC, (LPCTSTR)m_sHotForeImage) )
-						m_sHotForeImage.Empty();
-					return;
-				}
-				else goto Label_ForeImage;
-			}
-			else if(GetHotBkColor() != 0) {
-				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(GetHotBkColor()));
-				goto Label_ForeImage;
-			}
-		}
-		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-			if( !m_sFocusedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-				else goto Label_ForeImage;
-			}
-		}
-
-		if( !m_sNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-			else goto Label_ForeImage;
-		}
-
-		if(!m_sForeImage.IsEmpty() )
-			goto Label_ForeImage;
-
-		return;
-
-Label_ForeImage:
-		if(!m_sForeImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage) ) m_sForeImage.Empty();
-		}
 	}
 
 	DWORD CButtonUI::GetStatus()

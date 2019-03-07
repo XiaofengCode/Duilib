@@ -42,16 +42,6 @@ public:
 
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);
-    LPCTSTR GetNormalImage() const;
-    void SetNormalImage(LPCTSTR pStrImage);
-    LPCTSTR GetHotImage() const;
-    void SetHotImage(LPCTSTR pStrImage);
-    LPCTSTR GetPushedImage() const;
-    void SetPushedImage(LPCTSTR pStrImage);
-    LPCTSTR GetFocusedImage() const;
-    void SetFocusedImage(LPCTSTR pStrImage);
-    LPCTSTR GetDisabledImage() const;
-    void SetDisabledImage(LPCTSTR pStrImage);
 
     TListInfoUI* GetListInfo();
     void SetItemFont(LPCTSTR lpszFontID);
@@ -100,9 +90,9 @@ public:
     
     void DoPaint(HDC hDC, const RECT& rcPaint);
     void PaintText(HDC hDC);
-    void PaintStatusImage(HDC hDC);
 
 protected:
+	virtual DWORD GetStatus();
     CComboWnd* m_pWindow;
 
     int m_iCurSel;
@@ -110,12 +100,6 @@ protected:
     CDuiString m_sDropBoxAttributes;
     SIZE m_szDropBox;
     UINT m_uButtonState;
-
-    CDuiString m_sNormalImage;
-    CDuiString m_sHotImage;
-    CDuiString m_sPushedImage;
-    CDuiString m_sFocusedImage;
-    CDuiString m_sDisabledImage;
 
     TListInfoUI m_ListInfo;
 	bool m_bItemWndBkTrans;

@@ -30,10 +30,6 @@ namespace DuiLib
 		void SetMaxValue(int nMax);
 		int GetValue() const;
 		void SetValue(int nValue);
-		LPCTSTR GetForeImage() const;
-		void SetForeImage(LPCTSTR pStrImage);
-		void SetForeColor(DWORD dwTextColor);
-		DWORD GetForeColor() const;
 		int GetCircularFinishedWidth() const;
 		void SetCircularFinishedWidth(int nValue);
 		int GetCircularLastWidth() const;
@@ -51,9 +47,11 @@ namespace DuiLib
 		void SetType(ProgressType type);
 
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-		void PaintStatusImage(HDC hDC);
+		void PaintBkColor(HDC hDC);
+		void PaintForeColor(HDC hDC);
+		void PaintNormalImage(HDC hDC);
 
-		void DoPaint(HDC hDC, const RECT& rcPaint);
+		//void DoPaint(HDC hDC, const RECT& rcPaint);
 		void DoEvent(TEventUI& event);
 
 	protected:
@@ -63,7 +61,7 @@ namespace DuiLib
 		int m_nMin;
 		int m_nValue;
 
-		CDuiString m_sForeImage;
+		//CDuiString m_sForeImage;
 		CDuiString m_sForeImageModify;
 		ProgressType m_Type;
 

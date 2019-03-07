@@ -352,9 +352,9 @@ namespace DuiLib
 		else CProgressUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CSliderUI::PaintStatusImage(HDC hDC)
+	void CSliderUI::PaintForeImage(HDC hDC)
 	{
-		CProgressUI::PaintStatusImage(hDC);
+		CProgressUI::PaintForeImage(hDC);
 
 		double S = GetScaleDpi();
 		RECT rcThumb = GetThumbRect();
