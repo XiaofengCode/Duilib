@@ -278,9 +278,11 @@ public:
 	typedef std::pair<CDuiString, DWORD> CPairKeyword;
 	typedef std::list<CPairKeyword> CListKeywords;
 	typedef bool (*PFN_ParseAttrValue)(LPCTSTR lpszValue, CAttrItem& item);
+	CAttributeManager();
 	virtual ~CAttributeManager()
 	{
 	}
+	void SetMetaManager(const CAttributeManager* pMgr);
 	void AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type = TypeUnknown);
 
 	bool SetAttribute(LPCTSTR lpszAttr, LPCTSTR lpszValue);
@@ -358,6 +360,7 @@ protected:
 	CListKeywords m_lstKeywords;
 // 	CMapAttrs m_mapAttrs;
 	CAttrTreeNode	m_AttrTreeRoot;
+	const CAttributeManager* m_pMetaManager;
 };
 
 }

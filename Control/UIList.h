@@ -130,7 +130,7 @@ public:
     int GetChildPadding() const;
     void SetChildPadding(int iPadding);
 
-    void SetItemFont(int index);
+    void SetItemFont(LPCTSTR lpszFontID);
     void SetItemTextStyle(UINT uStyle);
     void SetItemTextPadding(RECT rc);
     void SetItemTextColor(DWORD dwTextColor);

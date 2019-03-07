@@ -80,6 +80,8 @@ namespace DuiLib
 		DWORD m_dwEditbkColor;
 		DWORD m_dwEditTextColor;
 		int m_iWindowStyls;
+		DWORD m_dwMin;
+		DWORD m_dwMax;
 	};
 }
 #endif // __UIEDIT_H__

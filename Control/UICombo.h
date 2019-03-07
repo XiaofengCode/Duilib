@@ -54,7 +54,7 @@ public:
     void SetDisabledImage(LPCTSTR pStrImage);
 
     TListInfoUI* GetListInfo();
-    void SetItemFont(int index);
+    void SetItemFont(LPCTSTR lpszFontID);
     void SetItemTextStyle(UINT uStyle);
 	RECT GetItemTextPadding() const;
     void SetItemTextPadding(RECT rc);

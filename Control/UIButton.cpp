@@ -454,4 +454,10 @@ Label_ForeImage:
 			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage) ) m_sForeImage.Empty();
 		}
 	}
+
+	DWORD CButtonUI::GetStatus()
+	{
+		return __super::GetStatus()| m_uButtonState;
+	}
+
 }

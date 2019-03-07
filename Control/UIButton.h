@@ -56,6 +56,7 @@ namespace DuiLib
 		void PaintStatusImage(HDC hDC);
 
 	protected:
+		virtual DWORD GetStatus();
 		UINT m_uButtonState;
 
 

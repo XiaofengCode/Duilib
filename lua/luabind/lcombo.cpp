@@ -92,7 +92,7 @@ LBIND_DEFINE_FUNC(CComboUI,SetItemTextStyle)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetItemFont)
-	pThis->SetItemFont(arg[2].toInt());
+	pThis->SetItemFont(CDuiString(arg[2].toString()));
 LBIND_END_DEFINE_FUNC
 
 

@@ -1850,6 +1850,7 @@ HFONT CPaintManagerUI::GetFont(LPCTSTR lpszID)
 	TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_mapFont.Find(lpszID));
     if(!pFontInfo)
 	{
+		if( m_pParentResourcePM ) return m_pParentResourcePM->GetFont(lpszID);
 		return GetDefaultFontInfo()->hFont;
 	}
     return pFontInfo->hFont;

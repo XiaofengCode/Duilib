@@ -2,60 +2,7 @@
 #include "AttributeManager.h"
 
 namespace DuiLib{
-	
-/*
-采用数字表示属性
-	状态相关：
-		focused		0x00000001
-		selected	0x00000002
-		disabled	0x00000004
-		hot			0x00000008
-		pushed		0x00000010
-		readonly	0x00000020
-		captured	0x00000040
 
-	位置相关：
-		back/bk/bg	0x00000001
-		fore		0x00000002
-		normal		0x00000004
-		border		0x00000008
-		left		0x00000010
-		top			0x00000020
-		right		0x00000040
-		bottom		0x00000080
-		text		0x00000100
-	
-	附加：
-		min
-		max
-		relative
-
-		可修饰属性：
-		color
-		pos/position
-		padding
-		colorhsl
-		size
-		style
-		round
-		width
-		height
-		font
-
-	独立属性：
-		tooltip
-		userdata
-		enabled
-		keyboard
-		visible
-		float
-		shortcut
-		menu
-		virtualwnd
-		style
-
-	name
-*/
 const CAttributeManager::PFN_ParseAttrValue CAttributeManager::pfnParseFunctions[TypeMax] = {
 	NULL,
 	CAttributeManager::ParseInt,
@@ -71,10 +18,23 @@ const CAttributeManager::PFN_ParseAttrValue CAttributeManager::pfnParseFunctions
 	CAttributeManager::ParseImage
 };
 
+CAttributeManager::CAttributeManager():m_pMetaManager(nullptr)
+{
+
+}
+
+void CAttributeManager::SetMetaManager(const CAttributeManager* pMgr)
+{
+	m_pMetaManager = pMgr;
+}
+
 void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type)
 {
 	CPairKeyword item(lpszAttrKeyword, (DWORD)MAKELONG(m_lstKeywords.size(), type));
 	int nLen = _tcslen(lpszAttrKeyword);
+	/*
+	关键字按照长度从长到短插入，为了查找属性时候最常匹配，如bkcolor2，解析出来应该是bk color2而不是bk color 2
+	*/
 	for (CListKeywords::iterator itor = m_lstKeywords.begin(); itor != m_lstKeywords.end(); itor++)
 	{
 		if (itor->first.GetLength() < nLen)
@@ -84,10 +44,6 @@ void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type)
 		}
 	}
 	m_lstKeywords.push_back(item);
-// 	if (m_mapKeywords.find(lpszAttrKeyword) == m_mapKeywords.end())
-// 	{
-// 		m_mapKeywords[lpszAttrKeyword] = (DWORD)MAKELONG(m_mapKeywords.size(), type);
-// 	}
 }
 
 
@@ -122,13 +78,13 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, int value)
 bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType type /*= TypeColor*/)
 {
 	CAttrIDQueue attrIds;
-	ValueType typeOld = ParseStatus(lpszAttr, attrIds);
-	if (typeOld == TypeUnknown)
+	ValueType typeAttr = ParseStatus(lpszAttr, attrIds);
+	if (typeAttr == TypeUnknown)
 	{
 		return false;
 	}
 	CAttrItem item;
-	item.type = typeOld;
+	item.type = typeAttr;
 	item.realtype = type;
 	if (type == TypeColor)
 	{
@@ -212,6 +168,10 @@ bool CAttributeManager::GetAttributeItem(LPCTSTR lpszAttr, CAttrItem& item) cons
 	ValueType type = ParseStatus(lpszAttr, attrIds);
 	if (type == TypeUnknown)
 	{
+		if (m_pMetaManager)
+		{
+			return m_pMetaManager->GetAttributeItem(lpszAttr, item);
+		}
 		return false;
 	}
 	item = m_AttrTreeRoot.GetSubValue(attrIds);

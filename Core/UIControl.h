@@ -196,6 +196,7 @@ public:
     virtual void Event(TEventUI& event);
     virtual void DoEvent(TEventUI& event);
 
+	virtual CDuiString GetAttribute(LPCTSTR pstrName) const;
     virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     void ApplyAttributeList(LPCTSTR pstrList);
 
@@ -232,6 +233,9 @@ public:
 protected:
 	virtual DWORD GetStatus();
 	virtual CDuiString GetStatusString(DWORD dwStatus = 0, int nIgnorStatus = 0);
+	virtual DWORD GetStatusColor(LPCTSTR lpszAttr);
+	virtual CDuiImage GetStatusImage(LPCTSTR lpszAttr);
+
     CPaintManagerUI* m_pManager;
     CContainerUI* m_pParent;
 	CDuiString m_sVirtualWnd;

@@ -14,7 +14,6 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     CVerticalLayoutUI::Add(m_pList);
 
     m_ListInfo.nColumns = 0;
-    m_ListInfo.sFont = -1;
     m_ListInfo.uTextStyle = DT_VCENTER; // m_uTextStyle(DT_VCENTER | DT_END_ELLIPSIS)
     m_ListInfo.dwTextColor = 0xFF000000;
     m_ListInfo.dwBkColor = 0;
@@ -451,9 +450,9 @@ void CListUI::SetChildPadding(int iPadding)
     m_pList->SetChildPadding(iPadding);
 }
 
-void CListUI::SetItemFont(int index)
+void CListUI::SetItemFont(LPCTSTR lpszFontID)
 {
-    m_ListInfo.sFont = index;
+    m_ListInfo.sFont = lpszFontID;
     NeedUpdate();
 }
 

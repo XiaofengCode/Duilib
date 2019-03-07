@@ -186,10 +186,39 @@ namespace DuiLib
 		ASSERT(pstr);
 		if( pstr == NULL ) return 0;
 		::GetWindowText(m_hWnd, pstr, cchLen);
-		if (m_pOwner->IsNumberOnly() && cchLen == 1)
-			m_pOwner->m_sText = _T("0");
-		else
-			m_pOwner->m_sText = pstr;
+		if (m_pOwner->IsNumberOnly())
+		{
+			if (cchLen == 1)
+			{
+				if (m_pOwner->m_dwMin == (DWORD)-1)
+				{
+					m_pOwner->m_sText = _T("0");
+				}
+				else
+				{
+					m_pOwner->m_sText.SmallFormat(_T("%lu"), m_pOwner->m_dwMin);
+				}
+			}
+			else
+			{
+				PTSTR p;
+				DWORD dwValue = _tcstoul(pstr, &p, 10);
+				if (m_pOwner->m_dwMin != (DWORD)-1 && dwValue < m_pOwner->m_dwMin)
+				{
+					m_pOwner->m_sText.SmallFormat(_T("%lu"), m_pOwner->m_dwMin);
+					//dwValue = m_dwMin;	//不能修改，比如设置最小值是10，用户想输入11，结果刚输入一个1就别修改了
+				}
+				else if (m_pOwner->m_dwMax != (DWORD)-1 && dwValue > m_pOwner->m_dwMax)
+				{
+					m_pOwner->m_sText.SmallFormat(_T("%lu"), m_pOwner->m_dwMax);
+					SetWindowText(m_hWnd, m_pOwner->m_sText);
+				}
+				else
+				{
+					m_pOwner->m_sText = pstr;
+				}
+			}
+		}
 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
 		return 0;
 	}
@@ -201,7 +230,8 @@ namespace DuiLib
 
 	CEditUI::CEditUI() : m_pWindow(NULL), m_uMaxChar(255), m_bReadOnly(false), 
 		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_uButtonState(0), 
-		m_dwEditbkColor(0xFFFFFFFF), m_dwEditTextColor(0x00000000), m_iWindowStyls(0)
+		m_dwEditbkColor(0xFFFFFFFF), m_dwEditTextColor(0x00000000), m_iWindowStyls(0),
+		m_dwMin(-1), m_dwMax(-1)
 	{
 		SetTipValueColor(_T("#FFBAC0C5"));
 		SetTextPadding(CDuiRect(4, 3, 4, 3));
@@ -551,11 +581,14 @@ namespace DuiLib
 
 	void CEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
+		PTSTR p;
 		if( _tcsicmp(pstrName, _T("readonly")) == 0 ) SetReadOnly(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcsicmp(pstrName, _T("numberonly")) == 0 ) SetNumberOnly(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcsicmp(pstrName, _T("password")) == 0 ) SetPasswordMode(_tcsicmp(pstrValue, _T("true")) == 0);
 		else if( _tcsicmp(pstrName, _T("passwordchar")) == 0 ) SetPasswordChar(*pstrValue);
 		else if( _tcsicmp(pstrName, _T("maxchar")) == 0 ) SetMaxChar(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("maxnum")) == 0 ) m_dwMax = _tcstoul(pstrValue, &p, 10);
+		else if( _tcsicmp(pstrName, _T("minnum")) == 0 ) m_dwMin = _tcstoul(pstrValue, &p, 10);
 		else if( _tcsicmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
 		else if( _tcsicmp(pstrName, _T("focusedimage")) == 0 ) SetFocusedImage(pstrValue);

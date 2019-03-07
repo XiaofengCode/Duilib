@@ -30,7 +30,7 @@ m_nTooltipWidth(300)
 	m_attrs.AddKeyword(DUI_ATTR_COLOR3, TypeColor);
 	m_attrs.AddKeyword(DUI_ATTR_POS, TypeRect);
 	m_attrs.AddKeyword(DUI_ATTR_PADDING, TypeRect);
-	m_attrs.AddKeyword(DUI_ATTR_SIZE, TypeRect);
+	m_attrs.AddKeyword(DUI_ATTR_SIZE, TypeIntOrRect);
 	m_attrs.AddKeyword(DUI_ATTR_ROUND, TypeRect);
 	m_attrs.AddKeyword(DUI_ATTR_WIDTH, TypeInt);
 	m_attrs.AddKeyword(DUI_ATTR_HEIGHT, TypeInt);
@@ -1000,6 +1000,11 @@ int CControlUI::GetVirtualWnd(CDuiStringArray& arVirtualWnd) const
 	return arVirtualWnd.GetSize();
 }
 
+CDuiString CControlUI::GetAttribute(LPCTSTR pstrName) const
+{
+	return m_attrs.GetString(pstrName);
+}
+
 void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
 	double S = 1.0;
@@ -1201,22 +1206,17 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		LuaState* L = GetManager()->GetLuaState();
 		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
 		{
+			m_attrs.SetAttribute(pstrName, pstrValue);
 			return;
 		}
 		try
 		{
-// 			char nameBuf[128];
-// 			char valueBuf[128];
-// 			UTF16To8(nameBuf, (const unsigned short*)pstrName, sizeof(nameBuf));
-// 			UTF16To8(valueBuf, (const unsigned short*)pstrValue, sizeof(valueBuf));
-
 			CDuiString strValue(pstrValue);
 			CDuiStringArray arValue = strValue.Split('.');
 			if (arValue.GetSize() == 1)
 			{
 				std::string sFun = DuiUtf16ToAscii(strValue);
 				BindLuaEvent(pstrName + 2, L->getGlobal(sFun.c_str()));
-				//BindLuaEvent(strlwr(nameBuf) + 2, L->getGlobal(valueBuf));
 			}
 			else
 			{
@@ -1393,9 +1393,10 @@ void CControlUI::PaintFocusedDot(HDC hDC)
 
 void CControlUI::PaintBkColor(HDC hDC)
 {
-	DWORD dwBkColor = GetBkColor();
-	DWORD dwBackColor2 = GetBkColor2();
-	DWORD dwBackColor3 = GetBkColor3();
+	DWORD dwBkColor = GetStatusColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR);
+	DWORD dwBackColor2 = GetStatusColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR2);
+	DWORD dwBackColor3 = GetStatusColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR3);
+	
     if( dwBkColor != 0 ) {
         if( dwBackColor2 != 0 ) {
             if( dwBackColor3 != 0 ) {
@@ -1416,7 +1417,8 @@ void CControlUI::PaintBkColor(HDC hDC)
 
 void CControlUI::PaintBkImage(HDC hDC)
 {
-	const CDuiImage img = GetBkImage();
+	const CDuiImage img = GetStatusImage(DUI_ATTR_POS_BK DUI_ATTR_IMAGE);
+	//const CDuiImage img = GetBkImage();
     if(!img) return;
 
 	if (m_gifBk.IsValid())
@@ -1427,7 +1429,7 @@ void CControlUI::PaintBkImage(HDC hDC)
 
     if( !DrawImage(hDC, img) )
 	{
-		m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_IMAGE, _T(""));
+		//m_attrs.SetAttribute(DUI_ATTR_POS_BK DUI_ATTR_IMAGE, _T(""));
 		//m_sBkImage.Empty();
 	}
 }
@@ -1439,12 +1441,36 @@ void CControlUI::PaintStatusImage(HDC hDC)
 
 void CControlUI::PaintForeColor(HDC hDC)
 {
-	
+	DWORD dwBkColor = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR);
+	DWORD dwBackColor2 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR2);
+	DWORD dwBackColor3 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR3);
+
+	if( dwBkColor != 0 ) {
+		if( dwBackColor2 != 0 ) {
+			if( dwBackColor3 != 0 ) {
+				RECT rc = m_rcItem;
+				rc.bottom = (rc.bottom + rc.top) / 2;
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 8);
+				rc.top = rc.bottom;
+				rc.bottom = m_rcItem.bottom;
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(dwBackColor2), GetAdjustColor(dwBackColor3), true, 8);
+			}
+			else 
+				CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(dwBkColor), GetAdjustColor(dwBackColor2), true, 16);
+		}
+		else if( dwBkColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(dwBkColor));
+		else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(dwBkColor));
+	}
 }
 
 void CControlUI::PaintForeImage(HDC hDC)
 {
+	const CDuiImage img = GetStatusImage(DUI_ATTR_POS_FORE DUI_ATTR_IMAGE);
+	if(!img) return;
 
+	if( !DrawImage(hDC, img) )
+	{
+	}
 }
 
 void CControlUI::PaintText(HDC hDC)
@@ -1454,29 +1480,23 @@ void CControlUI::PaintText(HDC hDC)
 
 void CControlUI::PaintBorder(HDC hDC)
 {
-	DWORD dwBorderColor = GetBorderColor();
-	DWORD dwFocusBorderColor = GetFocusBorderColor();
-	DWORD dwDisabledBorderColor = GetDisabledBorderColor();
-	if(dwBorderColor != 0 || dwFocusBorderColor != 0 || dwDisabledBorderColor != 0)
+	DWORD dwBorderColor = GetStatusColor(DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
+// 	DWORD dwBackColor2 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR2);
+// 	DWORD dwBackColor3 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR3);
+//	DWORD dwBorderColor = GetBorderColor();
+// 	DWORD dwFocusBorderColor = GetFocusBorderColor();
+// 	DWORD dwDisabledBorderColor = GetDisabledBorderColor();
+	if(dwBorderColor != 0)
 	{
-		if (!IsEnabled() && dwDisabledBorderColor)
-		{
-			dwBorderColor = dwDisabledBorderColor;
-		}
 		if(m_nBorderSize > 0 && ( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ))//»­Ô²½Ç±ß¿ò
 		{
-			if (IsFocused() && dwFocusBorderColor != 0)
-				dwBorderColor = dwFocusBorderColor;
 			CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(dwBorderColor));
 		}
 		else
 		{
-			if (IsFocused() && dwFocusBorderColor != 0 && m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(dwFocusBorderColor));
-			else if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
+			if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
 			{
 				RECT rcBorder;
-
 				if(m_rcBorderSize.left > 0){
 					rcBorder		= m_rcItem;
 					rcBorder.right	= m_rcItem.left;
@@ -1642,6 +1662,38 @@ DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgn
 		sStatus += DUI_ATTR_STATUS_SELECTED;
 	}
 	return sStatus;
+}
+
+DWORD CControlUI::GetStatusColor(LPCTSTR lpszAttr)
+{
+	CDuiString sStatus = GetStatusString(GetStatus());
+	int nIgnorStatus = 0;
+	while (sStatus.GetLength())
+	{
+		DWORD dwColor = m_attrs.GetColor(sStatus + lpszAttr);
+		if (dwColor)
+		{
+			return dwColor;
+		}
+		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
+	}
+	return m_attrs.GetColor(lpszAttr);
+}
+
+DuiLib::CDuiImage CControlUI::GetStatusImage(LPCTSTR lpszAttr)
+{
+	CDuiString sStatus = GetStatusString(GetStatus());
+	int nIgnorStatus = 0;
+	while (sStatus.GetLength())
+	{
+		CDuiImage img = m_attrs.GetImage(sStatus + lpszAttr);
+		if (img)
+		{
+			return img;
+		}
+		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
+	}
+	return m_attrs.GetImage(lpszAttr);
 }
 
 } // namespace DuiLib

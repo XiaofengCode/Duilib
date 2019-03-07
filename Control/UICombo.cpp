@@ -77,7 +77,7 @@ void CComboWnd::Init(CComboUI* pOwner)
         ::MapWindowRect(pOwner->GetManager()->GetPaintWindow(), HWND_DESKTOP, &rc);
     }
     
-    Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
+	Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
     // HACK: Don't deselect the parent's caption
     HWND hWndParent = m_hWnd;
     while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
@@ -217,7 +217,6 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 
     m_ListInfo.nColumns = 0;
-    m_ListInfo.sFont = -1;
     m_ListInfo.uTextStyle = DT_VCENTER;
     m_ListInfo.dwTextColor = 0xFF000000;
     m_ListInfo.dwBkColor = 0;
@@ -617,9 +616,9 @@ TListInfoUI* CComboUI::GetListInfo()
     return &m_ListInfo;
 }
 
-void CComboUI::SetItemFont(int index)
+void CComboUI::SetItemFont(LPCTSTR lpszFontID)
 {
-    m_ListInfo.sFont = index;
+    m_ListInfo.sFont = lpszFontID;
     Invalidate();
 }
 
@@ -859,7 +858,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		ASSERT(pstr);
 		SetDropBoxSize(szDropBoxSize);
 	}
-    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.sFont = _ttoi(pstrValue);
+    else if( _tcsicmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.sFont = pstrValue;
     else if( _tcsicmp(pstrName, _T("itemalign")) == 0 ) {
         if( _tcsstr(pstrValue, _T("left")) != NULL ) {
             m_ListInfo.uTextStyle &= ~(DT_CENTER | DT_RIGHT);
