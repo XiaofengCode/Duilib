@@ -219,6 +219,10 @@ namespace DuiLib
 				}
 			}
 		}
+		else
+		{
+			m_pOwner->m_sText = pstr;
+		}
 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
 		return 0;
 	}
