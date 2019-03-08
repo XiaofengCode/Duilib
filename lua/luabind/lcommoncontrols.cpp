@@ -34,7 +34,7 @@ LBIND_DEFINE_FUNC(CLabelUI,SetFont)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CLabelUI,GetFont)
-	return L.lreturn(pThis->GetFont());
+	return L.lreturn(DUI_T2A(pThis->GetFont()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CLabelUI,SetTextPadding)
@@ -92,7 +92,7 @@ LBIND_DEFINE_FUNC(COptionUI,SetGroup)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(COptionUI,GetGroup)
-	return L.lreturn(pThis->GetGroup());
+	return L.lreturn(DUI_T2A(pThis->GetGroup()).c_str());
 LBIND_END_DEFINE_FUNC
 
 // LBIND_DEFINE_FUNC(COptionUI,SetSelectedTextColor)
@@ -129,7 +129,10 @@ LBIND_END_DEFINE_LIB
 namespace lbind
 {
 LBIND_DEFINE_FUNC(CTextUI,GetLinkContent)
-	return L.lreturn(pThis->GetLinkContent(arg[2].toInt()));
+	CDuiString* pContent = pThis->GetLinkContent(arg[2].toInt());
+	if (pContent)
+		return L.lreturn(DUI_T2A(*pContent).c_str());
+	return L.lreturn("");
 LBIND_END_DEFINE_FUNC
 
 }

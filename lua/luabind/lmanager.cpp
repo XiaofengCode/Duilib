@@ -15,19 +15,19 @@ namespace lbind
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetInstancePath)
-		return L.lreturn(pThis->GetInstancePath());
+		return L.lreturn(DUI_T2A(pThis->GetInstancePath()).c_str());
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetCurrentPath)
-		return L.lreturn(pThis->GetCurrentPath());
+		return L.lreturn(DUI_T2A(pThis->GetCurrentPath()).c_str());
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetResourcePath)
-		return L.lreturn(pThis->GetResourcePath());
+		return L.lreturn(DUI_T2A(pThis->GetResourcePath()).c_str());
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetResourceZip)
-		return L.lreturn(pThis->GetResourceZip());
+		return L.lreturn(DUI_T2A(pThis->GetResourceZip()).c_str());
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,IsCachedResourceZip)
@@ -46,10 +46,10 @@ namespace lbind
 		pThis->SetResourceZip(CDuiString(arg[2].toString()));
 	LBIND_END_DEFINE_FUNC
 
-		LBIND_DEFINE_FUNC(CPaintManagerUI,GetHSL)
+	LBIND_DEFINE_FUNC(CPaintManagerUI,GetHSL)
 		short h,s,l;
-	pThis->GetHSL(&h,&s,&l);
-	return L.lreturn(h,s,l);
+		pThis->GetHSL(&h,&s,&l);
+		return L.lreturn(h,s,l);
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,SetHSL)

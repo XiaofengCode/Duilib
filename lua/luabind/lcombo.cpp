@@ -10,7 +10,7 @@ using namespace lbind;
 
 
 LBIND_DEFINE_FUNC(CComboUI,GetDropBoxAttributeList)
-	return L.lreturn(pThis->GetDropBoxAttributeList());
+	return L.lreturn(DUI_T2A(pThis->GetDropBoxAttributeList()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDropBoxAttributeList)
@@ -81,7 +81,7 @@ LBIND_DEFINE_FUNC(CComboUI,SetItemBkImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetItemBkImage)
-	return L.lreturn(pThis->GetItemBkImage());
+	return L.lreturn(DUI_T2A(pThis->GetItemBkImage()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetAlternateBk)
@@ -115,7 +115,7 @@ LBIND_DEFINE_FUNC(CComboUI,SetSelectedItemImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetSelectedItemImage)
-	return L.lreturn(pThis->GetSelectedItemImage());
+	return L.lreturn(DUI_T2A(pThis->GetSelectedItemImage()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetHotItemTextColor)
@@ -140,7 +140,7 @@ LBIND_DEFINE_FUNC(CComboUI,SetHotItemImage)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetHotItemImage)
-	return L.lreturn(pThis->GetHotItemImage());
+	return L.lreturn(DUI_T2A(pThis->GetHotItemImage()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDisabledItemTextColor)
@@ -160,7 +160,7 @@ LBIND_DEFINE_FUNC(CComboUI,GetDisabledItemBkColor)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,GetDisabledItemImage)
-	return L.lreturn(pThis->GetDisabledItemImage());
+	return L.lreturn(DUI_T2A(pThis->GetDisabledItemImage()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CComboUI,SetDisabledItemImage)

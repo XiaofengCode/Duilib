@@ -237,7 +237,7 @@ LBIND_DEFINE_FUNC(CRichEditUI,SetFont)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CRichEditUI,GetFont)
-	return L.lreturn(pThis->GetFont());
+	return L.lreturn(DUI_T2A(pThis->GetFont()).c_str());
 LBIND_END_DEFINE_FUNC
 
 

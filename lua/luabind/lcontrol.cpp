@@ -142,7 +142,7 @@ LBIND_DEFINE_FUNC(CControlUI,NeedParentUpdate)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetToolTip)
-	return L.lreturn(pThis->GetToolTip());
+	return L.lreturn(DUI_T2A(pThis->GetToolTip()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetToolTip)
@@ -169,7 +169,7 @@ LBIND_END_DEFINE_FUNC
 
 
 LBIND_DEFINE_FUNC(CControlUI,GetUserData)
-	return L.lreturn(pThis->GetUserData());
+	return L.lreturn(DUI_T2A(pThis->GetUserData()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetUserData)
@@ -242,7 +242,7 @@ LBIND_DEFINE_FUNC(CControlUI,SetFloat)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetName)
-	return L.lreturn(pThis->GetName());
+	return L.lreturn(DUI_T2A(pThis->GetName()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetName)
@@ -250,7 +250,7 @@ LBIND_DEFINE_FUNC(CControlUI,SetName)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetClass)
-	return L.lreturn(pThis->GetClass());
+	return L.lreturn(DUI_T2A(pThis->GetClass()).c_str());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,Activate)

@@ -3,6 +3,10 @@ using namespace DuiLib;
 
 namespace lbind
 {
+	LBIND_DEFINE_FUNC(WindowImplBase,GetHWND)
+		return L.lreturn((INT_PTR)pThis->GetHWND());
+	LBIND_END_DEFINE_FUNC
+
 	LBIND_DEFINE_FUNC(WindowImplBase,ShowWindow)
 		if (arg.count()>2)
 			pThis->ShowWindow(arg[2].toBool(),arg[3].toBool());
@@ -52,6 +56,7 @@ namespace lbind
 }
 
 LBIND_BEGIN_DEFINE_LIB(WindowImplBase)
+{"handle",lbind::GetHWND},
 {"showWindow",lbind::ShowWindow},
 {"showMin",lbind::ShowMin},
 {"showMax",lbind::ShowMax},
@@ -61,6 +66,7 @@ LBIND_BEGIN_DEFINE_LIB(WindowImplBase)
 {"centerWindow",lbind::CenterWindow},
 {"resizeClient",lbind::ResizeClient},
 {"getDlgItem",lbind::GetDlgItem},
+{"loadString",lbind::LoadString},
 {"doString",lbind::DoString},
 LBIND_END_DEFINE_LIB
 
