@@ -64,31 +64,6 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 		{
 			_ParseWindow(pManager, root);
         }
-
-		for( CDuiXmlNode node = root.first_child() ; node; node = node.next_sibling() )
-		{
-			pstrClass = node.name();
-			if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
-			{
-				_ParseImage(node, pManager);
-			}
-			else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
-			{
-				_ParseFont(pManager, node);
-			}
-			else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
-			{
-				_ParseDefault(node, pManager);
-			}
-			else if( _tcsicmp(pstrClass, _T("Script")) == 0 )
-			{
-				_ParseScript(node, pManager);
-			}
-// 			else if( _tcsicmp(pstrClass, _T("Include")) == 0 )
-// 			{
-// 				_ParseInclude(node, pManager, pParent);
-// 			}
-		}
     }
 	
     return _ParseControl(&root, pParent, pManager);
@@ -359,10 +334,6 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
     for( CDuiXmlNode node = pRoot->first_child() ; node; node = node.next_sibling() )
 	{
         LPCTSTR pstrClass = node.name();
-        if( _tcsicmp(pstrClass, _T("Image")) == 0 ||
-			_tcsicmp(pstrClass, _T("Font")) == 0 ||
-			_tcsicmp(pstrClass, _T("Default")) == 0 )
-			continue;
 
         CControlUI* pControl = NULL;
         if( _tcsicmp(pstrClass, _T("Include")) == 0 )
@@ -370,18 +341,22 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 			_ParseInclude(node, pManager, pParent);
             continue;
 		}
-// 		else if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
-// 		{
-// 			_ParseImage(node, pManager);
-// 		}
-// 		else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
-// 		{
-// 			_ParseFont(pManager, node);
-// 		}
-// 		else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
-// 		{
-// 			_ParseDefault(node, pManager);
-// 		}
+		else if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
+		{
+			_ParseImage(node, pManager);
+		}
+		else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
+		{
+			_ParseFont(pManager, node);
+		}
+		else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
+		{
+			_ParseDefault(node, pManager);
+		}
+		else if( _tcsicmp(pstrClass, _T("Script")) == 0 )
+		{
+			_ParseScript(node, pManager);
+		}
 		else if( _tcsicmp(pstrClass, _T("Event")) == 0 )
 		{
 			_ParseEvent(node, pManager, pParent);

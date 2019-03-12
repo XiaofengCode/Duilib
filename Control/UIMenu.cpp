@@ -992,7 +992,7 @@ void CMenuElementUI::DoEvent(TEventUI& event)
 					lpMenuItemInfo->strName = GetName();
 					lpMenuItemInfo->strUserData = GetUserData();
 					lpMenuItemInfo->bChecked = GetChecked();
-
+					//DoLuaEvent(DUI_MSGTYPE_CLICK, 0, 0);
 					if (!PostMessage(CMenuWnd::GetGlobalContextMenuObserver().GetManager()->GetPaintWindow(), WM_MENUCLICK, (WPARAM)lpMenuItemInfo, 0))
 					{
 						delete lpMenuItemInfo;
