@@ -896,6 +896,11 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
+void CComboUI::DoPaint(HDC hDC, const RECT& rcPaint)
+{
+	CControlUI::DoPaint(hDC, rcPaint);
+}
+
 void CComboUI::PaintText(HDC hDC)
 {
     RECT rcText = m_rcItem;

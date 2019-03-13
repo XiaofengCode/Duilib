@@ -520,7 +520,7 @@ bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 	{
 		pImage->AddItem(img);
 	}
-	else if (pImage->GetItemCount() == 0)
+	else if (pImage->GetItemCount() == 0 && strValue.GetLength())
 	{
 		img.m_strFile = strValue;
 		pImage->AddItem(img);

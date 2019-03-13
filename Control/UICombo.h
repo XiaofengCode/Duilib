@@ -87,7 +87,8 @@ public:
     void SetPos(RECT rc);
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-    
+
+	void DoPaint(HDC hDC, const RECT& rcPaint);
     void PaintText(HDC hDC);
 
 protected:
