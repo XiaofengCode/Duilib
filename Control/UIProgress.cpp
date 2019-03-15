@@ -216,6 +216,11 @@ namespace DuiLib
 		}
 		else
 		{
+			double S = 1.0;
+			if (m_pManager)
+			{
+				S = m_pManager->GetDpiScale();
+			}
 			//if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 			Gdiplus::Graphics g(hDC);
 			g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
@@ -225,7 +230,7 @@ namespace DuiLib
 				m_rcItem.bottom + m_rcPadding.bottom);
 			//TODO:如果有边框就先绘制边框
 			//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
-			int nWidth = GetCircularFinishedWidth();
+			int nWidth = GetCircularFinishedWidth() * S;
 			if (!nWidth)
 			{
 				nWidth = rcItem.GetHeight()/5;
@@ -244,7 +249,7 @@ namespace DuiLib
 			}
 			g.DrawArc(&pen, rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle, nSweepAngle);
 
-			nWidth = GetCircularLastWidth();
+			nWidth = GetCircularLastWidth() * S;
 			if (!nWidth)
 			{
 				nWidth = rcItem.GetHeight()/5;

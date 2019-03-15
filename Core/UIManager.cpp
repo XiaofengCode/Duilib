@@ -117,7 +117,8 @@ m_bCaretShowing(false),
 m_currentCaretObject(NULL),
 m_bUseGdiplusText(false),
 m_bShowFocusDot(false),
-m_bNeedShowFocusDot(false)
+m_bNeedShowFocusDot(false),
+m_pLastControlGesture(nullptr)
 {
 	m_threadId=GetCurrentThreadId();
 	//LuaState* L=LuaManager::instance()->current();
@@ -1137,6 +1138,22 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 			{
 				delete lpInfo;
 			}
+		}
+		break;
+
+	case WM_GESTURENOTIFY:
+		{
+			GESTURECONFIG gc = {0, GC_ALLGESTURES, 0};
+			BOOL bResult = SetGestureConfig(m_hWndPaint, 0, 1, &gc, sizeof(GESTURECONFIG));
+			if(!bResult)
+			{
+				// an error
+			}
+			return false;
+		}
+	case WM_GESTURE:
+		{
+			OnGesture(wParam, lParam);
 		}
 		break;
     default:
@@ -2842,6 +2859,108 @@ bool CPaintManagerUI::OnSetCursor(WPARAM wParam, LPARAM lParam)
 	event.dwTimestamp = ::GetTickCount();
 	pControl->Event(event);
 	return true;
+}
+
+bool CPaintManagerUI::OnGesture(WPARAM wParam, LPARAM lParam)
+{
+	GESTUREINFO gi = {0};
+	gi.cbSize = sizeof(GESTUREINFO);
+	BOOL bResult  = GetGestureInfo((HGESTUREINFO)lParam, &gi);
+	if (!bResult)
+	{
+		return false;
+	}
+	bool bHandled = FALSE;
+	POINT pt = { gi.ptsLocation.x, gi.ptsLocation.y };
+	::ScreenToClient(m_hWndPaint, &pt);
+	if (gi.dwFlags & GF_BEGIN)
+	{
+		m_pLastControlGesture = FindControl(pt);
+		if( m_pLastControlGesture == NULL )
+			return false;
+		if( m_pLastControlGesture->GetManager() != this )
+			return false;
+	}
+	m_ptLastMousePos = pt;
+	if( m_pLastControlGesture == NULL )
+		return false;
+	TEventUI event = { 0 };
+	event.Type = UIEVENT_GESTURE;
+	event.ptMouse = pt;
+	event.pSender = m_pLastControlGesture;
+	event.lParam = (LPARAM)&gi;
+	event.wKeyState = MapKeyState();
+	event.dwTimestamp = ::GetTickCount();
+	m_pLastControlGesture->Event(event);
+	// now interpret the gesture
+	switch (gi.dwID)
+	{
+	case GID_ZOOM:
+		// Code for zooming goes here     
+		bHandled = TRUE;
+		break;
+	case GID_PAN:
+		// Code for panning goes here
+		{
+// 				CDuiString sDbg;
+// 				sDbg.Format(_T("mgr:%p, dwFlags:0x%X, dwID:0x%X, ptsLocation.x:%d, ptsLocation.y:%d, dwInstanceID:0x%X, dwSequenceID:0x%X, ullArguments:0x%I64X\r\n"),
+// 					this,
+// 					gi.dwFlags,
+// 					gi.dwID,
+// 					gi.ptsLocation.x,
+// 					gi.ptsLocation.y,
+// 					gi.dwInstanceID,
+// 					gi.dwSequenceID,
+// 					gi.ullArguments);
+// 				OutputDebugString(sDbg);
+			static int nLastY = 0;
+			if (gi.dwFlags & GF_BEGIN)
+			{
+				nLastY = pt.y;
+			}
+			int nDelta = pt.y - nLastY;
+			nLastY = pt.y;
+			if (nDelta)
+			{
+// 					sDbg.Format(_T("nDelta:%d"), nDelta);
+// 					OutputDebugString(sDbg);
+				TEventUI event = { 0 };
+				event.Type = UIEVENT_SCROLLWHEEL;
+				event.pSender = m_pLastControlGesture;
+				event.wParam = ((WPARAM)nDelta)<<16; //MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
+				event.lParam = UIEVENT_GESTURE;
+				event.wKeyState = MapKeyState();
+				event.dwTimestamp = ::GetTickCount();
+				m_pLastControlGesture->Event(event);
+
+				// Let's make sure that the scroll item below the cursor is the same as before...
+				bHandled = TRUE;
+			}
+		}
+		break;
+	case GID_ROTATE:
+		// Code for rotation goes here
+		bHandled = TRUE;
+		break;
+	case GID_TWOFINGERTAP:
+		// Code for two-finger tap goes here
+		bHandled = TRUE;
+		break;
+	case GID_PRESSANDTAP:
+		// Code for roll over goes here
+		bHandled = TRUE;
+		break;
+	default:
+		// A gesture was not recognized
+		break;
+	}
+// 		if (bHandled)
+// 		{
+// 			CloseGestureInfoHandle((HGESTUREINFO)lParam);
+// 		}
+	::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
+	return bHandled;
+	return false;
 }
 
 bool CPaintManagerUI::TranslateAccelerator(LPMSG pMsg)

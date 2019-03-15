@@ -841,12 +841,17 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 		S = pManager->GetDpiScale();
 	}
 	RECT rcDest = rcItem;
-	if (img.m_rcDst.left|img.m_rcDst.right|img.m_rcDst.bottom|img.m_rcDst.top)
+	RECT rcImgDst = img.m_rcDst;
+	if (rcImgDst.left|rcImgDst.right|rcImgDst.bottom|rcImgDst.top)
 	{
+		rcImgDst.left *= S;
+		rcImgDst.top *= S;
+		rcImgDst.right *= S;
+		rcImgDst.bottom *= S;
 		if (img.m_bRight)
 		{
-			rcDest.right = rcItem.right + img.m_rcDst.left;
-			rcDest.left = rcItem.right - img.m_rcDst.right;
+			rcDest.right = rcItem.right + rcImgDst.left;
+			rcDest.left = rcItem.right - rcImgDst.right;
 			if (rcDest.left < rcItem.left)
 			{
 				rcDest.left = rcItem.left;
@@ -854,8 +859,8 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 		}
 		else
 		{
-			rcDest.left = rcItem.left + img.m_rcDst.left;  
-			rcDest.right = rcItem.left + img.m_rcDst.right;
+			rcDest.left = rcItem.left + rcImgDst.left;  
+			rcDest.right = rcItem.left + rcImgDst.right;
 			if (rcDest.right > rcItem.right)
 			{
 				rcDest.right = rcItem.right;
@@ -864,8 +869,8 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 
 		if (img.m_bBottom)
 		{
-			rcDest.bottom = rcItem.bottom + img.m_rcDst.top;
-			rcDest.top = rcItem.bottom - img.m_rcDst.bottom;
+			rcDest.bottom = rcItem.bottom + rcImgDst.top;
+			rcDest.top = rcItem.bottom - rcImgDst.bottom;
 			if (rcDest.top < rcItem.top)
 			{
 				rcDest.top = rcItem.top;
@@ -873,17 +878,17 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 		}
 		else
 		{
-			rcDest.top = rcItem.top + img.m_rcDst.top;  
-			rcDest.bottom = rcItem.top + img.m_rcDst.bottom;
+			rcDest.top = rcItem.top + rcImgDst.top;  
+			rcDest.bottom = rcItem.top + rcImgDst.bottom;
 			if (rcDest.bottom > rcItem.bottom)
 			{
 				rcDest.bottom = rcItem.bottom;
 			}
 		}
-		rcDest.left *= S;
-		rcDest.top *= S;
-		rcDest.right *= S;
-		rcDest.bottom *= S;
+// 		rcDest.left *= S;
+// 		rcDest.top *= S;
+// 		rcDest.right *= S;
+// 		rcDest.bottom *= S;
 	}
 
 	RECT rcCorner = img.m_rcCorner;

@@ -40,8 +40,9 @@ enum EVENTTYPE_UI
     UIEVENT_SETCURSOR,
     UIEVENT_TIMER,
     UIEVENT_NOTIFY,
-    UIEVENT_COMMAND,
+	UIEVENT_COMMAND,
 	UIEVENT_TRAYICON,
+	UIEVENT_GESTURE,
     UIEVENT__LAST,
 };
 
@@ -378,9 +379,9 @@ private:
 	bool OnMouseWheel(WPARAM wParam, LPARAM lParam);
 	bool OnChar(WPARAM wParam, LPARAM lParam);
 	bool OnKeyDown(WPARAM wParam, LPARAM lParam);
-
 	bool OnKeyUp(WPARAM wParam, LPARAM lParam);
 	bool OnSetCursor(WPARAM wParam, LPARAM lParam);
+	bool OnGesture(WPARAM wParam, LPARAM lParam);
 private:
 	double	m_nScale;
 
@@ -525,6 +526,7 @@ public:
 	CStdPtrArray m_aTranslateAccelerator;
 	CDuiStringTable m_StringTable;
 	CDuiString m_strDefaultTooltip;
+	CControlUI* m_pLastControlGesture;
 };
 
 } // namespace DuiLib

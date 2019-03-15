@@ -450,22 +450,50 @@ void CComboUI::DoEvent(TEventUI& event)
             SelectItem(FindSelectable(GetCount() - 1, true));
             return;
         }
-    }
+	}
+	if (event.Type == UIEVENT_GESTURE)
+	{
+		PGESTUREINFO pGi = (PGESTUREINFO)event.lParam;
+		if (!pGi || pGi->dwID != GID_PAN)
+		{
+			return;
+		}
+		static POINT ptLastMouse;
+		if (pGi->dwFlags & GF_BEGIN)
+		{
+			ptLastMouse = event.ptMouse;
+		}
+		int nDeltaX = event.ptMouse.x - ptLastMouse.x;
+		int nDeltaY = event.ptMouse.y - ptLastMouse.y;
+		ptLastMouse = event.ptMouse;
+		if (nDeltaX | nDeltaY)
+		{
+			if (m_pWindow)
+			{
+				m_pWindow->Scroll(-nDeltaX, -nDeltaY);
+			}
+		}
+		return;
+	}
     if( event.Type == UIEVENT_SCROLLWHEEL )
 	{
-		short nDalta = (short)HIWORD(event.wParam);
+		if (event.lParam == UIEVENT_GESTURE)
+		{
+			return;
+		}
+		short nDelta = (short)HIWORD(event.wParam);
         //bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
 		if (!m_pWindow)
 		{
 			if (IsFocused())
 			{
-				SelectItem(FindSelectable(m_iCurSel + (nDalta < 0 ? 1 : -1), nDalta < 0));
+				SelectItem(FindSelectable(m_iCurSel + (nDelta < 0 ? 1 : -1), nDelta < 0));
 				return;
 			}
 		}
 		else
 		{
-			m_pWindow->Scroll(0, -nDalta);
+			m_pWindow->Scroll(0, -nDelta);
 			return;
 		}
     }

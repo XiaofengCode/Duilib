@@ -300,12 +300,45 @@ void CListUI::DoEvent(TEventUI& event)
             return;
         }
         break;
+	case UIEVENT_GESTURE:
+		{
+			PGESTUREINFO pGi = (PGESTUREINFO)event.lParam;
+			if (!pGi || pGi->dwID != GID_PAN)
+			{
+				break;
+			}
+			static POINT ptLastMouse;
+			if (pGi->dwFlags & GF_BEGIN)
+			{
+				ptLastMouse = event.ptMouse;
+			}
+			int nDeltaX = event.ptMouse.x - ptLastMouse.x;
+			int nDeltaY = event.ptMouse.y - ptLastMouse.y;
+			ptLastMouse = event.ptMouse;
+			if (nDeltaX | nDeltaY)
+			{
+				SIZE sz = GetScrollPos();
+				sz.cx  -= nDeltaX;
+				sz.cy  -= nDeltaY;
+				if( m_bScrollSelect)
+				{
+					return;
+				}
+				SetScrollPos(sz);
+			}
+			return;
+		}
+		break;
     case UIEVENT_SCROLLWHEEL:
         {
-			short nDalta = (short)HIWORD(event.wParam);
+			if (event.lParam == UIEVENT_GESTURE)
+			{
+				return;
+			}
+			short nDelta = (short)HIWORD(event.wParam);
 			SIZE sz = GetScrollPos();
-			sz.cy  -= nDalta;
-			if (nDalta < 0)
+			sz.cy  -= nDelta;
+			if (nDelta < 0)
 			{
 				if( m_bScrollSelect )
 					SelectItem(FindSelectable(m_iCurSel + 1, true), true);
@@ -320,16 +353,6 @@ void CListUI::DoEvent(TEventUI& event)
 					SetScrollPos(sz);
 			}
 			return;
-//             switch( LOWORD(event.wParam) ) {
-//             case SB_LINEUP:
-//                 if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel - 1, false), true);
-//                 else LineUp();
-//                 return;
-//             case SB_LINEDOWN:
-//                 if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel + 1, true), true);
-//                 else LineDown();
-//                 return;
-//             }
         }
         break;
     }
