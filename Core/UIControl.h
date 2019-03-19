@@ -119,7 +119,13 @@ public:
 	int GetBorderStyle() const;
 	void SetBorderStyle(int nStyle);
 
-    // 位置相关
+	// 位置相关
+	virtual DWORD GetStatus();
+	virtual CDuiString GetStatusString(DWORD dwStatus = 0, int nIgnorStatus = 0);
+	virtual DWORD GetStatusColor(LPCTSTR lpszAttr);
+	virtual CDuiImage GetStatusImage(LPCTSTR lpszAttr);
+	virtual RECT GetStatusRect(LPCTSTR lpszAttr);
+
     virtual const RECT& GetPos() const;
     virtual void SetPos(RECT rc);
     virtual int GetWidth() const;
@@ -233,10 +239,6 @@ public:
     CEventSource OnNotify;
 
 protected:
-	virtual DWORD GetStatus();
-	virtual CDuiString GetStatusString(DWORD dwStatus = 0, int nIgnorStatus = 0);
-	virtual DWORD GetStatusColor(LPCTSTR lpszAttr);
-	virtual CDuiImage GetStatusImage(LPCTSTR lpszAttr);
 
     CPaintManagerUI* m_pManager;
     CContainerUI* m_pParent;
@@ -245,7 +247,7 @@ protected:
     bool m_bUpdateNeeded;
     bool m_bMenuUsed;
     RECT m_rcItem;
-    RECT m_rcPadding;
+    //RECT m_rcPadding;
     SIZE m_cXY;
     SIZE m_cxyMin;
     SIZE m_cxyMax;

@@ -69,7 +69,7 @@ m_dwStatus(0)
     m_cxyMax.cx = m_cxyMax.cy = 9999;
     m_cxyBorderRound.cx = m_cxyBorderRound.cy = 0;
 
-    ::ZeroMemory(&m_rcPadding, sizeof(RECT));
+//    ::ZeroMemory(&m_rcPadding, sizeof(RECT));
     ::ZeroMemory(&m_rcItem, sizeof(RECT));
     ::ZeroMemory(&m_rcPaint, sizeof(RECT));
 	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
@@ -518,12 +518,12 @@ int CControlUI::GetY() const
 
 RECT CControlUI::GetPadding() const
 {
-    return m_rcPadding;
+	return m_attrs.GetRect(DUI_ATTR_PADDING);
 }
 
 void CControlUI::SetPadding(RECT rcPadding)
 {
-    m_rcPadding = rcPadding;
+	m_attrs.SetAttribute(DUI_ATTR_PADDING, rcPadding);
     NeedParentUpdate();
 }
 
@@ -1341,7 +1341,7 @@ SIZE CControlUI::EstimateSize(SIZE szAvailable)
 			continue;
 		}
 
-		RECT rcPadding = pControl->GetPadding();
+		RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 
 		nPaddingX += rcPadding.left + rcPadding.right;
 		nPaddingY += rcPadding.top + rcPadding.bottom;
@@ -1745,6 +1745,23 @@ DuiLib::CDuiImage CControlUI::GetStatusImage(LPCTSTR lpszAttr)
 		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
 	}
 	return m_attrs.GetImage(lpszAttr);
+}
+
+RECT CControlUI::GetStatusRect(LPCTSTR lpszAttr)
+{
+	CDuiString sStatus = GetStatusString(GetStatus());
+	int nIgnorStatus = 0;
+	while (sStatus.GetLength())
+	{
+		bool bExist;
+		RECT rc = m_attrs.GetRect(sStatus + lpszAttr, &bExist);
+		if (bExist)
+		{
+			return rc;
+		}
+		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
+	}
+	return m_attrs.GetRect(lpszAttr);
 }
 
 } // namespace DuiLib

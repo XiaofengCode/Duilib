@@ -103,6 +103,27 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType ty
 	return true;
 }
 
+bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, RECT value)
+{
+	CAttrIDQueue attrIds;
+	ValueType type = ParseStatus(lpszAttr, attrIds);
+	if (type == TypeUnknown)
+	{
+		return false;
+	}
+	CAttrItem item;
+	item.type = type;
+	item.realtype = TypeRect;
+	item.strValue.SmallFormat(_T("%d,%d,%d,%d"), value.left, value.top, value.right, value.bottom);
+	if (!item.value.pRectValue)
+	{
+		item.value.pRectValue = new RECT;
+	}
+	*item.value.pRectValue = value;
+	m_AttrTreeRoot.SetSubValue(attrIds, item);
+	return true;
+}
+
 bool CAttributeManager::ParseAttributeValue(LPCTSTR lpszAttr, LPCTSTR lpszValue)
 {
 	CAttrIDQueue attrIds;

@@ -65,7 +65,7 @@ namespace DuiLib
 				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
 				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
 			}
-			cxFixed += sz.cx +  pControl->GetPadding().left + pControl->GetPadding().right;
+			cxFixed += sz.cx +  pControl->GetStatusRect(DUI_ATTR_PADDING).left + pControl->GetStatusRect(DUI_ATTR_PADDING).right;
 			nEstimateNum++;
 		}
 		cxFixed += (nEstimateNum - 1) * m_iChildPadding;
@@ -88,7 +88,7 @@ namespace DuiLib
 				SetFloatPos(it2);
 				continue;
 			}
-			RECT rcPadding = pControl->GetPadding();
+			RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 			szRemaining.cx -= rcPadding.left;
 			SIZE sz = pControl->EstimateSize(szRemaining);
 			if( sz.cx == 0 ) {

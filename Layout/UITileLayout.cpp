@@ -115,7 +115,7 @@ namespace DuiLib
 					if( !pLineControl->IsVisible() ) continue;
 					if( pLineControl->IsFloat() ) continue;
 
-					RECT rcPadding = pLineControl->GetPadding();
+					RECT rcPadding = pLineControl->GetStatusRect(DUI_ATTR_PADDING);
 					SIZE szAvailable = { rcTile.right - rcTile.left - rcPadding.left - rcPadding.right, 9999 };
 					if( iIndex == iCount || (iIndex + 1) % m_nColumns == 0 ) {
 						szAvailable.cx -= m_iChildPadding / 2;
@@ -138,7 +138,7 @@ namespace DuiLib
 				}
 			}
 
-			RECT rcPadding = pControl->GetPadding();
+			RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 
 			rcTile.left += rcPadding.left + m_iChildPadding / 2;
 			rcTile.right -= rcPadding.right + m_iChildPadding / 2;

@@ -156,7 +156,7 @@ namespace DuiLib
 
 			if( it != m_iCurSel ) continue;
 
-			RECT rcPadding = pControl->GetPadding();
+			RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 			rc.left += rcPadding.left;
 			rc.top += rcPadding.top;
 			rc.right -= rcPadding.right;

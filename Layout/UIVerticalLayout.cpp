@@ -29,7 +29,7 @@ namespace DuiLib
 	void CVerticalLayoutUI::SetPos(RECT rc)
 	{
 		CControlUI::SetPos(rc);
-		rc = m_rcItem;
+		rc = GetPos();
 
 		// Adjust for inset
 		rc.left += m_rcInset.left;
@@ -64,7 +64,7 @@ namespace DuiLib
 				if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
 				if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
 			}
-			cyFixed += sz.cy + pControl->GetPadding().top + pControl->GetPadding().bottom;
+			cyFixed += sz.cy + pControl->GetStatusRect(DUI_ATTR_PADDING).top + pControl->GetStatusRect(DUI_ATTR_PADDING).bottom;
 			nEstimateNum++;
 		}
 		cyFixed += (nEstimateNum - 1) * m_iChildPadding;
@@ -93,7 +93,7 @@ namespace DuiLib
 				continue;
 			}
 
-			RECT rcPadding = pControl->GetPadding();
+			RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 			szRemaining.cy -= rcPadding.top;
 			SIZE sz = pControl->EstimateSize(szRemaining);
 			if( sz.cy == 0 ) {
@@ -182,7 +182,7 @@ namespace DuiLib
 				if( ::PtInRect(&rcSeparator, event.ptMouse) ) {
 					m_uButtonState |= UISTATE_CAPTURED;
 					ptLastMouse = event.ptMouse;
-					m_rcNewPos = m_rcItem;
+					m_rcNewPos = GetPos();
 					if( !m_bImmMode && m_pManager ) m_pManager->AddPostPaint(this);
 					return;
 				}

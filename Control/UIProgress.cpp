@@ -224,10 +224,11 @@ namespace DuiLib
 			//if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 			Gdiplus::Graphics g(hDC);
 			g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
-			CDuiRect rcItem(m_rcItem.left + m_rcPadding.left,
-				m_rcItem.top + m_rcPadding.top,
-				m_rcItem.right + m_rcPadding.right,
-				m_rcItem.bottom + m_rcPadding.bottom);
+			RECT rcPadding = GetStatusRect(DUI_ATTR_PADDING);
+			CDuiRect rcItem(m_rcItem.left + rcPadding.left,
+				m_rcItem.top + rcPadding.top,
+				m_rcItem.right + rcPadding.right,
+				m_rcItem.bottom + rcPadding.bottom);
 			//TODO:如果有边框就先绘制边框
 			//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
 			int nWidth = GetCircularFinishedWidth() * S;
@@ -236,7 +237,7 @@ namespace DuiLib
 				nWidth = rcItem.GetHeight()/5;
 			}
 			CDuiRect rcValue(rcItem);
-			rcValue.Deflate(nWidth/2, nWidth/2);
+			rcValue.Deflate(nWidth/2 + 1, nWidth/2 + 1);
 			Gdiplus::Pen pen(dwColor);
 			pen.SetWidth(nWidth);
 			int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
@@ -255,7 +256,7 @@ namespace DuiLib
 				nWidth = rcItem.GetHeight()/5;
 			}
 			CDuiRect rcLast(rcItem);
-			rcLast.Deflate(nWidth/2, nWidth/2);
+			rcLast.Deflate(nWidth/2 + 1, nWidth/2 + 1);
 			//rcLast.Deflate(rcItem.GetWidth()*GetCircularSpace()/360, rcItem.GetWidth()*GetCircularSpace()/360);
 			//绘制剩余部分
 			pen.SetColor(GetBkColor());

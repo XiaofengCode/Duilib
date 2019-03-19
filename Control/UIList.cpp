@@ -1084,9 +1084,9 @@ void CListBodyUI::SetPos(RECT rc)
             if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
             if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
         }
-        cyFixed += sz.cy + pControl->GetPadding().top + pControl->GetPadding().bottom;
+        cyFixed += sz.cy + pControl->GetStatusRect(DUI_ATTR_PADDING).top + pControl->GetStatusRect(DUI_ATTR_PADDING).bottom;
 
-        RECT rcPadding = pControl->GetPadding();
+        RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
         sz.cx = MAX(sz.cx, 0);
         if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
         if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
@@ -1131,7 +1131,7 @@ void CListBodyUI::SetPos(RECT rc)
             continue;
         }
 
-        RECT rcPadding = pControl->GetPadding();
+        RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
         szRemaining.cy -= rcPadding.top;
         SIZE sz = pControl->EstimateSize(szRemaining);
         if( sz.cy == 0 ) {
@@ -1272,7 +1272,7 @@ void CListHeaderUI::SetPos(RECT rc)
 			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
 			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
 		}
-		cxFixed += sz.cx +  pControl->GetPadding().left + pControl->GetPadding().right;
+		cxFixed += sz.cx +  pControl->GetStatusRect(DUI_ATTR_PADDING).left + pControl->GetStatusRect(DUI_ATTR_PADDING).right;
 		nEstimateNum++;
 	}
 	cxFixed += (nEstimateNum - 1) * m_iChildPadding;
@@ -1302,7 +1302,7 @@ void CListHeaderUI::SetPos(RECT rc)
 			SetFloatPos(it2);
 			continue;
 		}
-		RECT rcPadding = pControl->GetPadding();
+		RECT rcPadding = pControl->GetStatusRect(DUI_ATTR_PADDING);
 		szRemaining.cx -= rcPadding.left;
 
 		SIZE sz = {0,0};
