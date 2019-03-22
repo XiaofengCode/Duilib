@@ -546,6 +546,7 @@ bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 		img.m_strFile = strValue;
 		pImage->AddItem(img);
 	}
+	item.realtype = TypeImage;
 	item.value.pImageValue = pImage;
 	return true;
 }

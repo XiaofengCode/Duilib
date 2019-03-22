@@ -706,4 +706,43 @@ namespace DuiLib
 		return GetAt(nIndex);
 	}
 
+	bool IsSpace(TCHAR c)
+	{
+		if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\t')
+		{
+			return true;
+		}
+		return false;
+	}
+
+	LPCTSTR SkipSpace(LPCTSTR lpsz)
+	{
+		while (*lpsz && IsSpace(*lpsz))
+		{
+			lpsz = CharNext(lpsz);
+		}
+		return lpsz;
+	}
+
+	bool IsValueTokenChar(TCHAR c)
+	{
+		if (c >= '0' && c <= '9')
+		{
+			return true;
+		}
+		if (c >= 'A' && c <= 'Z')
+		{
+			return true;
+		}
+		if (c >= 'a' && c <= 'z')
+		{
+			return true;
+		}
+		if (c == '_' || c == '-')
+		{
+			return true;
+		}
+		return false;
+	}
+
 } // namespace DuiLib

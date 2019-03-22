@@ -16,7 +16,7 @@
 
 // Uncomment this to enable wchar_t mode
 #ifdef _UNICODE
- #define PUGIXML_WCHAR_MODE
+#define PUGIXML_WCHAR_MODE
 #endif
 
 // Uncomment this to disable XPath

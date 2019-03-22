@@ -1262,7 +1262,8 @@ void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColo
     HPEN hPen = ::CreatePen(nStyle, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
-    ::Rectangle(hDC, rc.left, rc.top, rc.right, rc.bottom);
+	nSize = (nSize + 1)/2;
+    ::Rectangle(hDC, rc.left + nSize, rc.top + nSize, rc.right + nSize-1, rc.bottom + nSize - 1);
     ::SelectObject(hDC, hOldPen);
     ::DeleteObject(hPen);
 }

@@ -19,7 +19,6 @@ m_bSetPos(false),
 m_chShortcut('\0'),
 m_pTag(NULL),
 m_bColorHSL(false),
-m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
 m_nTooltipWidth(300),
 m_dwStatus(0)
@@ -72,7 +71,7 @@ m_dwStatus(0)
 //    ::ZeroMemory(&m_rcPadding, sizeof(RECT));
     ::ZeroMemory(&m_rcItem, sizeof(RECT));
     ::ZeroMemory(&m_rcPaint, sizeof(RECT));
-	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
+//	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
     ::ZeroMemory(&m_tRelativePos, sizeof(TRelativePosUI));
 
 	m_nWidthScale = 0;
@@ -400,20 +399,24 @@ void CControlUI::SetColorHSL(bool bColorHSL)
 
 int CControlUI::GetBorderSize() const
 {
-    return m_nBorderSize;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	if (rc.left && rc.left == rc.top && rc.left == rc.right && rc.left == rc.bottom)
+	{
+		return rc.left;
+	}
+	return m_attrs.GetInt(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 }
 
 void CControlUI::SetBorderSize(int nSize)
 {
-    if( m_nBorderSize == nSize ) return;
-
-    m_nBorderSize = nSize;
+	RECT rc = {nSize, nSize, nSize, nSize};
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
     Invalidate();
 }
 
 void CControlUI::SetBorderSize( RECT rc )
 {
-	m_rcBorderSize = rc;
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
 	Invalidate();
 }
 
@@ -1060,83 +1063,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		ASSERT(pstr);
         SetRelativePos(szMove,szZoom);
     }
-    else if( _tcsicmp(pstrName, _T("padding")) == 0 ) {
-        RECT rcPadding = { 0 };
-        LPTSTR pstr = NULL;
-		rcPadding.left = (LONG)(S*_tcstol(pstrValue, &pstr, 10));
-		ASSERT(pstr);
-		rcPadding.top = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-		ASSERT(pstr);
-		rcPadding.right = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-		ASSERT(pstr);
-		rcPadding.bottom = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-		ASSERT(pstr);
-        SetPadding(rcPadding);
-    }
-    else if( _tcsicmp(pstrName, _T("bkcolor")) == 0 || _tcsicmp(pstrName, _T("bkcolor1")) == 0 )
-	{
-        while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
-        if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-        SetBkColor(clrColor);
-    }
-    else if( _tcsicmp(pstrName, _T("bkcolor2")) == 0 ) {
-        while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
-        if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-        SetBkColor2(clrColor);
-    }
-    else if( _tcsicmp(pstrName, _T("bkcolor3")) == 0 ) {
-        while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
-        if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-        SetBkColor3(clrColor);
-    }
-    else if( _tcsicmp(pstrName, _T("bordercolor")) == 0 ) {
-        if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-        SetBorderColor(clrColor);
-	}
-	else if( _tcsicmp(pstrName, _T("focusbordercolor")) == 0 ) {
-		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-		SetFocusBorderColor(clrColor);
-	}
-	else if( _tcsicmp(pstrName, _T("disabledbordercolor")) == 0 ) {
-		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-		SetDisabledBorderColor(clrColor);
-	}
     else if( _tcsicmp(pstrName, _T("colorhsl")) == 0 ) SetColorHSL(_tcsicmp(pstrValue, _T("true")) == 0);
-	else if( _tcsicmp(pstrName, _T("bordersize")) == 0 ) {
-		CDuiString nValue = pstrValue;
-		if(nValue.Find(',') < 0)
-		{
-			SetBorderSize(_ttoi(pstrValue));
-			RECT rcPadding = {0};
-			SetBorderSize(rcPadding);
-		}
-		else
-		{
-			RECT rcPadding = { 0 };
-			LPTSTR pstr = NULL;
-			rcPadding.left = (LONG)(S*_tcstol(pstrValue, &pstr, 10));
-			ASSERT(pstr);
-			rcPadding.top = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-			ASSERT(pstr);
-			rcPadding.right = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-			ASSERT(pstr);
-			rcPadding.bottom = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
-			ASSERT(pstr);
-			SetBorderSize(rcPadding);
-		}
-	}
 	else if (_tcsicmp(pstrName, _T("leftbordersize")) == 0) SetLeftBorderSize((int)(S*_ttoi(pstrValue)));
 	else if (_tcsicmp(pstrName, _T("topbordersize")) == 0) SetTopBorderSize((int)(S*_ttoi(pstrValue)));
 	else if (_tcsicmp(pstrName, _T("rightbordersize")) == 0) SetRightBorderSize((int)(S*_ttoi(pstrValue)));
@@ -1149,32 +1076,6 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         cxyRound.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);     
         SetBorderRound(cxyRound);
     }
-    else if( _tcsicmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
-	else if (_tcsicmp(pstrName, _T("width")) == 0)
-	{
-		CDuiString strValue = pstrValue;
-		if (strValue.Find('%') <= 0)
-		{
-			SetFixedWidth((int)(S*_ttoi(pstrValue)));
-		}
-		else
-		{
-			m_nWidthScale = _ttoi(pstrValue);
-		}
-	}
-	else if (_tcsicmp(pstrName, _T("height")) == 0)
-	{
-		CDuiString strValue = pstrValue;
-		if (strValue.Find('%') <= 0)
-		{
-			SetFixedHeight((int)(S*_ttoi(pstrValue)));
-		}
-		else
-		{
-			m_nHeightScale = _ttoi(pstrValue);
-		}
-	}
-
 	else if (_tcsicmp(pstrName, _T("minwidth")) == 0) SetMinWidth((int)(S*_ttoi(pstrValue)));
 	else if (_tcsicmp(pstrName, _T("minheight")) == 0) SetMinHeight((int)(S*_ttoi(pstrValue)));
 	else if (_tcsicmp(pstrName, _T("maxwidth")) == 0) SetMaxWidth((int)(S*_ttoi(pstrValue)));
@@ -1191,27 +1092,9 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcsicmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcsicmp(pstrValue, _T("true")) == 0);
 	else if (_tcsicmp(pstrName, _T("virtualwnd")) == 0) SetVirtualWnd(pstrValue);
-	else if (_tcsicmp(pstrName, _T("textcolor")) == 0) {
-		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-		SetTextColor(clrColor);
-	}
 	else if (_tcsicmp(pstrName, _T("style")) == 0)
 	{
 		SetStyle(pstrValue);
-	}
-	else if (_tcsicmp(pstrName, _T("focusdotcolor")) == 0) {
-		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-		SetFocusDotColor(clrColor);
-	}
-	else if (_tcsicmp(pstrName, _T("focusdotcolor")) == 0) {
-		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
-		SetFocusDotColor(clrColor);
 	}
 	else
 	{
@@ -1307,6 +1190,9 @@ void CControlUI::ApplyAttributeList(LPCTSTR pstrList)
         //ASSERT( *pstrList == _T('\"') );
         //if( *pstrList++ != _T('\"') ) return this;
 		pstrList++;
+
+		sValue = CDuiStringTable::FormatString(m_pManager, sValue);
+		sValue = m_pManager ? m_pManager->FormatByMacro(sValue) : sValue;
         SetAttribute(sItem, sValue);
         if( *pstrList++ != _T(' ') )
 			return;
@@ -1537,45 +1423,58 @@ void CControlUI::PaintText(HDC hDC)
 void CControlUI::PaintBorder(HDC hDC)
 {
 	DWORD dwBorderColor = GetStatusColor(DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
-// 	DWORD dwBackColor2 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR2);
-// 	DWORD dwBackColor3 = GetStatusColor(DUI_ATTR_POS_FORE DUI_ATTR_COLOR3);
-//	DWORD dwBorderColor = GetBorderColor();
-// 	DWORD dwFocusBorderColor = GetFocusBorderColor();
-// 	DWORD dwDisabledBorderColor = GetDisabledBorderColor();
 	if(dwBorderColor != 0)
 	{
-		if(m_nBorderSize > 0 && ( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ))//»­Ô²½Ç±ß¿ò
+		double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
+		RECT rcBorderSize = GetStatusRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+		int nBorderSize = GetStatusInt(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+		if (rcBorderSize.left && 
+			rcBorderSize.left == rcBorderSize.top && rcBorderSize.left == rcBorderSize.right && rcBorderSize.left == rcBorderSize.bottom)
 		{
-			CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(dwBorderColor));
+			nBorderSize = rcBorderSize.left * S;
+			rcBorderSize = RECT_NULL;
+		}
+		if(nBorderSize > 0 && ( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ))//»­Ô²½Ç±ß¿ò
+		{
+			CRenderEngine::DrawRoundRect(hDC, m_rcItem, nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(dwBorderColor));
 		}
 		else
 		{
-			if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
+			//RECT rcBorderSize = GetStatusRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+			rcBorderSize.left *= S;
+			rcBorderSize.top *= S;
+			rcBorderSize.right *= S;
+			rcBorderSize.bottom *= S;
+			if(rcBorderSize.left > 0 || rcBorderSize.top > 0 || rcBorderSize.right > 0 || rcBorderSize.bottom > 0)
 			{
 				RECT rcBorder;
-				if(m_rcBorderSize.left > 0){
+				if(rcBorderSize.left > 0)
+				{
 					rcBorder		= m_rcItem;
 					rcBorder.right	= m_rcItem.left;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(dwBorderColor),m_nBorderStyle);
+					CRenderEngine::DrawLine(hDC,rcBorder, rcBorderSize.left, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 				}
-				if(m_rcBorderSize.top > 0){
+				if(rcBorderSize.top > 0)
+				{
 					rcBorder		= m_rcItem;
 					rcBorder.bottom	= m_rcItem.top;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(dwBorderColor),m_nBorderStyle);
+					CRenderEngine::DrawLine(hDC,rcBorder, rcBorderSize.top, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 				}
-				if(m_rcBorderSize.right > 0){
+				if(rcBorderSize.right > 0)
+				{
 					rcBorder		= m_rcItem;
-					rcBorder.left	= m_rcItem.right;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(dwBorderColor),m_nBorderStyle);
+					rcBorder.left = m_rcItem.right;
+					CRenderEngine::DrawLine(hDC,rcBorder, rcBorderSize.right, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 				}
-				if(m_rcBorderSize.bottom > 0){
+				if(rcBorderSize.bottom > 0)
+				{
 					rcBorder		= m_rcItem;
-					rcBorder.top	= m_rcItem.bottom;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(dwBorderColor),m_nBorderStyle);
+					rcBorder.top = m_rcItem.bottom ;
+					CRenderEngine::DrawLine(hDC,rcBorder, rcBorderSize.bottom, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 				}
 			}
-			else if(m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(dwBorderColor), m_nBorderStyle);
+			else if(nBorderSize > 0)
+				CRenderEngine::DrawRect(hDC, m_rcItem, nBorderSize, GetAdjustColor(dwBorderColor), m_nBorderStyle);
 		}
 	}
 }
@@ -1587,45 +1486,57 @@ void CControlUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
 
 int CControlUI::GetLeftBorderSize() const
 {
-	return m_rcBorderSize.left;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	return rc.left;
 }
 
 void CControlUI::SetLeftBorderSize( int nSize )
 {
-	m_rcBorderSize.left = nSize;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	rc.left = nSize;
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
 	Invalidate();
 }
 
 int CControlUI::GetTopBorderSize() const
 {
-	return m_rcBorderSize.top;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	return rc.top;
 }
 
 void CControlUI::SetTopBorderSize( int nSize )
 {
-	m_rcBorderSize.top = nSize;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	rc.top = nSize;
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
 	Invalidate();
 }
 
 int CControlUI::GetRightBorderSize() const
 {
-	return m_rcBorderSize.right;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	return rc.right;
 }
 
 void CControlUI::SetRightBorderSize( int nSize )
 {
-	m_rcBorderSize.right = nSize;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	rc.right = nSize;
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
 	Invalidate();
 }
 
 int CControlUI::GetBottomBorderSize() const
 {
-	return m_rcBorderSize.bottom;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	return rc.bottom;
 }
 
 void CControlUI::SetBottomBorderSize( int nSize )
 {
-	m_rcBorderSize.bottom = nSize;
+	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
+	rc.bottom = nSize;
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
 	Invalidate();
 }
 
@@ -1671,8 +1582,14 @@ void CControlUI::SetStyle(LPCTSTR lpszStyle)
 	if (strStyle.GetLength())
 	{
 		LPCTSTR lpszAttrs = m_pManager->GetDefaultAttributeList(strStyle);
-		ApplyAttributeList(lpszAttrs);
-		strStyle.Empty();
+		if (lpszAttrs)
+		{
+			ApplyAttributeList(lpszAttrs);
+		}
+		else
+		{
+			ApplyAttributeList(lpszStyle); 
+		}
 	}
 }
 
@@ -1762,6 +1679,23 @@ RECT CControlUI::GetStatusRect(LPCTSTR lpszAttr)
 		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
 	}
 	return m_attrs.GetRect(lpszAttr);
+}
+
+int CControlUI::GetStatusInt(LPCTSTR lpszAttr)
+{
+	CDuiString sStatus = GetStatusString(GetStatus());
+	int nIgnorStatus = 0;
+	while (sStatus.GetLength())
+	{
+		bool bExist;
+		int n = m_attrs.GetInt(sStatus + lpszAttr, &bExist);
+		if (bExist)
+		{
+			return n;
+		}
+		sStatus = GetStatusString(GetStatus(), ++nIgnorStatus);
+	}
+	return m_attrs.GetInt(lpszAttr);
 }
 
 } // namespace DuiLib

@@ -216,6 +216,7 @@ CPaintManagerUI::~CPaintManagerUI()
     RemoveAllFonts();
     RemoveAllImages();
     RemoveAllDefaultAttributeList();
+	RemoveAllMacro();
     RemoveAllOptionGroups();
     RemoveAllTimers();
 
@@ -2182,6 +2183,133 @@ void CPaintManagerUI::RemoveAllDefaultAttributeList()
 		}
 	}
 	m_DefaultAttrHash.RemoveAll();
+}
+
+void CPaintManagerUI::AddMacro(LPCTSTR pstrName, LPCTSTR pstrValue)
+{
+	CDuiString* pMacro = new CDuiString(pstrValue);
+	if (pMacro != NULL)
+	{
+		if (m_MacroHash.Find(pstrName) == NULL)
+			m_MacroHash.Set(pstrName, (LPVOID)pMacro);
+		else
+			delete pMacro;
+	}
+	
+}
+
+LPCTSTR CPaintManagerUI::GetMacro(LPCTSTR pstrName) const
+{
+	CDuiString* pMacro = static_cast<CDuiString*>(m_MacroHash.Find(pstrName));
+	if( !pMacro && m_pParentResourcePM )
+		return m_pParentResourcePM->GetMacro(pstrName);
+	if( pMacro)
+		return pMacro->GetData();
+	else return NULL;
+}
+
+bool CPaintManagerUI::RemoveMacro(LPCTSTR pstrName)
+{
+	CDuiString* pMacro = static_cast<CDuiString*>(m_MacroHash.Find(pstrName));
+	if( !pMacro )
+		return false;
+	delete pMacro;
+	return m_MacroHash.Remove(pstrName);
+}
+
+void CPaintManagerUI::RemoveAllMacro()
+{
+	CDuiString* pMacro;
+	for( int i = 0; i< m_MacroHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_MacroHash.GetAt(i)) {
+			pMacro = static_cast<CDuiString*>(m_MacroHash.Find(key));
+			delete pMacro;
+		}
+	}
+	m_MacroHash.RemoveAll();
+}
+
+DuiLib::CDuiString CPaintManagerUI::FormatByMacro(LPCTSTR lpszValue)
+{
+	CDuiString strMacroName;
+	CDuiString strCurParam;
+	CDuiStringArray arParams;
+	if (!lpszValue)
+	{
+		return lpszValue;
+	}
+	if (*lpszValue != '$')
+	{
+		return lpszValue;
+	}
+
+	int nStatus = 0;//0:Begin; 1:Name; 2:ParamBegin; 3:Param
+	LPCTSTR p = lpszValue + 1;
+	p = SkipSpace(p);
+	while (*p && IsValueTokenChar(*p))
+	{
+		strMacroName += *p;
+		p++;
+	}
+	if (*p == 0)
+	{
+		return lpszValue;
+	}
+	CDuiString strMacro = GetMacro(strMacroName);
+	if (strMacro.GetLength() == 0)
+	{
+		return lpszValue;
+	}
+	p = SkipSpace(p);
+	if (*p != '(')
+	{
+		return lpszValue;
+	}
+	for (; *p; p++)
+	{
+		p = SkipSpace(++p);
+		if (*p != '\'')
+		{
+			return lpszValue;
+		}
+		p++;
+		strCurParam.Empty();
+		while (*p && *p != '\'')
+		{
+			strCurParam += *p;
+			p++;
+		}
+		if (*p == 0)
+		{
+			return lpszValue;
+		}
+		arParams.Add(strCurParam);
+		p = SkipSpace(++p);
+		if (*p == ',')
+		{
+			p++;
+			continue;
+		}
+		if (*p == ')')
+		{
+			p = SkipSpace(++p);
+			if (*p)
+			{
+				return lpszValue;
+			}
+			break;
+		}
+	}
+	for (int i = 0; i < arParams.GetSize(); i++)
+	{
+		CDuiString strParam;
+		CDuiString strParamValue(arParams[i]);
+		strParam.SmallFormat(_T("$(%d)"), i);
+		//strParamValue.Replace(strParam, _T("$(_param_temp_)"));
+		strMacro.Replace(strParam, strParamValue);
+		//strParam.Replace(_T("$(_param_temp_)"), strParam);
+	}
+	return strMacro;
 }
 
 CControlUI* CPaintManagerUI::GetRoot() const

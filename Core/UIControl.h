@@ -125,6 +125,7 @@ public:
 	virtual DWORD GetStatusColor(LPCTSTR lpszAttr);
 	virtual CDuiImage GetStatusImage(LPCTSTR lpszAttr);
 	virtual RECT GetStatusRect(LPCTSTR lpszAttr);
+	virtual int GetStatusInt(LPCTSTR lpszAttr);
 
     virtual const RECT& GetPos() const;
     virtual void SetPos(RECT rc);
@@ -231,6 +232,11 @@ public:
 
 	virtual CDuiString GetStyle();
 	virtual void SetStyle(LPCTSTR lpszStyle);
+
+	DWORD GetXmlOffset(){return m_dwOffsetInXml;}
+	void SetXmlOffset(DWORD dwOffset){m_dwOffsetInXml = dwOffset;}
+	LPCTSTR GetXmlFile(){return m_strXmlFileName;}
+	void SetXmlFile(LPCTSTR lpszFile){m_strXmlFileName = lpszFile;}
 public:
     CEventSource OnInit;
     CEventSource OnDestroy;
@@ -268,12 +274,12 @@ protected:
     UINT_PTR m_pTag;
 
     bool m_bColorHSL;
-    int m_nBorderSize;
+    //int m_nBorderSize;
 	int m_nBorderStyle;
 	int m_nTooltipWidth;
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
-	RECT m_rcBorderSize;
+	//RECT m_rcBorderSize;
 	bool m_bShowFocusDot;
 
 	//Gif
@@ -284,6 +290,8 @@ protected:
 
 	DWORD m_dwStatus;
 	CAttributeManager m_attrs;
+	DWORD m_dwOffsetInXml;//调试使用
+	CDuiString m_strXmlFileName;//调试使用
 };
 
 } // namespace DuiLib

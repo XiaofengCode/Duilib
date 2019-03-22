@@ -1277,7 +1277,9 @@
     <ClCompile Include="Control\UIIpAddress.cpp" />
     <ClCompile Include="Control\UIMenu.cpp" />
     <ClCompile Include="Control\UIProgressButton.cpp" />
-    <ClCompile Include="Core\AttributeManager.cpp" />
+    <ClCompile Include="Core\AttributeManager.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">false</PreprocessToFile>
+    </ClCompile>
     <ClCompile Include="Core\UIStringTable.cpp" />
     <ClCompile Include="Core\UITimer.cpp" />
     <CustomBuild Include="gitinfo.cpp">

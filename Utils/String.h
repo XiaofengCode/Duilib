@@ -119,6 +119,10 @@ namespace DuiLib
 		int m_nBuckets;
 		int m_nCount;
 	};
+
+	bool IsSpace(TCHAR c);
+	LPCTSTR SkipSpace(LPCTSTR lpsz);
+	bool IsValueTokenChar(TCHAR c);
 }// namespace DuiLib
 
 #endif // __DUI_STRING_H__

@@ -319,7 +319,7 @@ public:
 	{\
 	return invalidValue;\
 	}\
-	if (item.type != valueType && valueType != TypeString)\
+	if (item.realtype != valueType && valueType != TypeString)\
 	{\
 	if (pResult)\
 	{\

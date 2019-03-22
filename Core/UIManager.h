@@ -271,6 +271,12 @@ public:
     const CStdStringPtrMap& GetDefaultAttribultes() const;
     void RemoveAllDefaultAttributeList();
 
+	void AddMacro(LPCTSTR pstrName, LPCTSTR pstrValue);
+	LPCTSTR GetMacro(LPCTSTR pstrName) const;
+	bool RemoveMacro(LPCTSTR pstrName);
+	void RemoveAllMacro();
+	CDuiString FormatByMacro(LPCTSTR lpszValue);
+
     bool AttachDialog(CControlUI* pControl);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
     void ReapObjects(CControlUI* pControl);
@@ -498,8 +504,9 @@ private:
 	CStdStringPtrMap m_mapFont;
     //CStdPtrArray m_aCustomFonts;
 
-    CStdStringPtrMap m_mImageHash;
-    CStdStringPtrMap m_DefaultAttrHash;
+	CStdStringPtrMap m_mImageHash;
+	CStdStringPtrMap m_DefaultAttrHash;
+	CStdStringPtrMap m_MacroHash;
     //
     static HINSTANCE m_hInstance;
     static HINSTANCE m_hResourceInstance;

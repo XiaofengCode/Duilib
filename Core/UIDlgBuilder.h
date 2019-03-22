@@ -33,14 +33,11 @@ public:
         CControlUI* pParent = NULL);
 
 	void _ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent);
-
 	void _ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager);
-
 	void _ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager);
-
 	void _ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node);
-
 	void _ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager);
+	void _ParseDefine(CDuiXmlNode &node, CPaintManagerUI* pManager);
 
 	void _ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root);
 
@@ -58,6 +55,7 @@ private:
 
 	void _ParseInclude(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent);
 
+	CDuiString m_strXmlFileName;//≤‚ ‘ π”√
     CMarkup m_xml;
     IDialogBuilderCallback* m_pCallback;
     LPCTSTR m_pstrtype;

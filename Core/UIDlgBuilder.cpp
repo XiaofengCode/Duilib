@@ -16,12 +16,13 @@ CControlUI* CDialogBuilder::Create( STRINGorID xml, LPCTSTR type /*= NULL*/, IDi
 {
 	//资源ID为0-65535，两个字节；字符串指针为4个字节
 	//字符串以<开头认为是XML字符串，否则认为是XML文件
-
+	m_strXmlFileName.Empty();
 	if( HIWORD(xml.m_lpstr) != NULL ) {
 		if( *(xml.m_lpstr) == _T('<') ) {
 			if( !m_xml.Load(xml.m_lpstr) ) return NULL;
 		}
 		else {
+			m_strXmlFileName = xml.m_lpstr;
 			if( !m_xml.LoadFromFile(xml.m_lpstr) ) return NULL;
 		}
 	}
@@ -135,28 +136,26 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 
 void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
 {
-	LPCTSTR pstrName = NULL;
-	LPCTSTR pstrValue = NULL;
-
-	LPCTSTR pControlName = NULL;
-	LPCTSTR pControlValue = NULL;
 	xml_object_range<xml_attribute_iterator> attrs = node.attributes();
+	CDuiString strStyleName, strStyleValue;
 	for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
 	{
-		pstrName = attr->name();
-		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		LPCTSTR pstrName = attr->name();
+		LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
+		pstrValue = strValue;
 		if( _tcsicmp(pstrName, _T("name")) == 0 )
 		{
-			pControlName = pstrValue;
+			strStyleName = pstrValue;
 		}
 		else if( _tcsicmp(pstrName, _T("value")) == 0 )
 		{
-			pControlValue = pstrValue;
+			strStyleValue = pstrValue;
 		}
 	}
-	if( pControlName )
+	if( strStyleName.GetLength() )
 	{
-		pManager->AddDefaultAttributeList(pControlName, pControlValue);
+		pManager->AddDefaultAttributeList(strStyleName, strStyleValue);
 	}
 }
 
@@ -341,25 +340,35 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 			_ParseInclude(node, pManager, pParent);
             continue;
 		}
+		else if( _tcsicmp(pstrClass, _T("Define")) == 0 ) 
+		{
+			_ParseDefine(node, pManager);
+			continue;
+		}
 		else if( _tcsicmp(pstrClass, _T("Image")) == 0 ) 
 		{
 			_ParseImage(node, pManager);
+			continue;
 		}
 		else if( _tcsicmp(pstrClass, _T("Font")) == 0 )
 		{
 			_ParseFont(pManager, node);
+			continue;
 		}
-		else if( _tcsicmp(pstrClass, _T("Default")) == 0 )
+		else if( _tcsicmp(pstrClass, _T("Default")) == 0 || _tcsicmp(pstrClass, _T("Style")) == 0 )
 		{
 			_ParseDefault(node, pManager);
+			continue;
 		}
 		else if( _tcsicmp(pstrClass, _T("Script")) == 0 )
 		{
 			_ParseScript(node, pManager);
+			continue;
 		}
 		else if( _tcsicmp(pstrClass, _T("Event")) == 0 )
 		{
 			_ParseEvent(node, pManager, pParent);
+			continue;
 		}
 		//树控件XML解析
 		else if( _tcsicmp(pstrClass, _T("TreeNode")) == 0 )
@@ -384,9 +393,10 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 			{
 				LPCTSTR pstrName = attr->name();
 				LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+				CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
 				if (!m_pAttrbuteCallback || m_pAttrbuteCallback->SetAttribute(pNode, pstrName, pstrValue))
 				{
-					pNode->SetAttribute(pstrName, pstrValue);
+					pNode->SetAttribute(pstrName, strValue);
 				}
 			}
 
@@ -552,12 +562,14 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
 		{
 			LPCTSTR pstrName = attr->name();
 			LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
-			if (!m_pAttrbuteCallback || m_pAttrbuteCallback->SetAttribute(pControl, pstrName, pstrValue))
+			CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
+			if (!m_pAttrbuteCallback || m_pAttrbuteCallback->SetAttribute(pControl, pstrName, strValue))
 			{
-				pControl->SetAttribute(pstrName, pstrValue);
+				pControl->SetAttribute(pstrName, strValue);
 			}
-
 		}
+		pControl->SetXmlOffset(node.offset_debug());
+		pControl->SetXmlFile(m_strXmlFileName);
         if( pManager )
 		{
             pControl->SetManager(NULL, NULL, false);
@@ -645,6 +657,8 @@ void CDialogBuilder::_ParseWindow(CPaintManagerUI* pManager, CDuiXmlNode &root)
 	{
 		pstrName = attr->name();
 		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
+		pstrValue = strValue;
 		if( _tcsicmp(pstrName, _T("size")) == 0 )
 		{
 			LPTSTR pstr = NULL;
@@ -860,6 +874,8 @@ void CDialogBuilder::_ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager)
 	{
 		pstrName = attr->name();
 		pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
+		pstrValue = strValue;
 		if( _tcsicmp(pstrName, _T("name")) == 0 )
 		{
 			pImageName = pstrValue;
@@ -875,6 +891,31 @@ void CDialogBuilder::_ParseImage(CDuiXmlNode &node, CPaintManagerUI* pManager)
 		}
 	}
 	if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
+}
+
+void CDialogBuilder::_ParseDefine(CDuiXmlNode &node, CPaintManagerUI* pManager)
+{
+	xml_object_range<xml_attribute_iterator> attrs = node.attributes();
+	CDuiString strMacroName, strMacroValue;
+	for( xml_attribute_iterator attr = attrs.begin(); attr != attrs.end(); attr++ )
+	{
+		LPCTSTR pstrName = attr->name();
+		LPCTSTR pstrValue = CDuiStringTable::FormatString(pManager, attr->as_string());
+		CDuiString strValue(pManager ? pManager->FormatByMacro(pstrValue) : pstrValue);
+		pstrValue = strValue;
+		if( _tcsicmp(pstrName, _T("name")) == 0 )
+		{
+			strMacroName = pstrValue;
+		}
+		else if( _tcsicmp(pstrName, _T("value")) == 0 )
+		{
+			strMacroValue = pstrValue;
+		}
+	}
+	if( strMacroName.GetLength() )
+	{
+		pManager->AddMacro(strMacroName, strMacroValue);
+	}
 }
 
 } // namespace DuiLib
