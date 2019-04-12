@@ -1099,11 +1099,11 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else
 	{
 		//如果不是常规属性，可能是事件
-		if (!GetManager())
+		LuaState* L = nullptr;
+		if (GetManager())
 		{
-			return;
+			L = GetManager()->GetLuaState();
 		}
-		LuaState* L = GetManager()->GetLuaState();
 		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
 		{
 			m_attrs.SetAttribute(pstrName, pstrValue);

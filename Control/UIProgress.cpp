@@ -187,7 +187,10 @@ namespace DuiLib
 
 	void CProgressUI::PaintBkColor(HDC hDC)
 	{
-		
+		if (GetType() != TypeCircular)
+		{
+			__super::PaintBkColor(hDC);
+		}
 	}
 
 	void CProgressUI::PaintForeColor(HDC hDC)
@@ -269,6 +272,11 @@ namespace DuiLib
 			}
 			g.DrawArc(&pen, rcLast.left, rcLast.top, rcLast.GetWidth(), rcLast.GetHeight(), nStartAngle, nSweepAngle);
 		}
+	}
+
+	void CProgressUI::PaintForeImage(HDC hDC)
+	{
+
 	}
 
 	void CProgressUI::PaintNormalImage(HDC hDC)

@@ -49,6 +49,7 @@ namespace DuiLib
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void PaintBkColor(HDC hDC);
 		void PaintForeColor(HDC hDC);
+		void PaintForeImage(HDC hDC);
 		void PaintNormalImage(HDC hDC);
 
 		//void DoPaint(HDC hDC, const RECT& rcPaint);

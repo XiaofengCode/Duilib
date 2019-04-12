@@ -178,8 +178,6 @@
 #		define RT_LINK_TYPE	"_MT"
 #	endif
 
-#
-
 #	define DUILIB_NAME	"Duilib" MSC_VERSION "_" DUILIB_TYPE DUILIB_CODE DUILIB_CFG DUILIB_PLAT RT_LINK_TYPE ".lib"
 
 #	pragma message("Link duilib name:" DUILIB_NAME)
