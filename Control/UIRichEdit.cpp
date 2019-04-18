@@ -1973,8 +1973,8 @@ void CRichEditUI::DoEvent(TEventUI& event)
 			m_pTwh->OnTxInPlaceActivate(NULL);
 			if (m_bTip)
 			{
-				m_bTip = false;
 				ShowTipText(_T(""));
+				m_bTip = false;
 				m_pTwh->SetColor(GetTextColor());
 			}
 			m_pTwh->GetTextServices()->TxSendMessage(WM_SETFOCUS, 0, 0, 0);
