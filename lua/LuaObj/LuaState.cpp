@@ -55,14 +55,14 @@ LuaObject LuaState::getRegistery(void* key)
 	return LuaObjectImpl::createGetRegistery(this,key);
 }
 
-void LuaState::setRegistry(const char* key,const LuaObject obj)
+void LuaState::setRegistry(const char* key,const LuaObject& obj)
 {
 	lua_pushstring(m_ls,key);
 	lua_pushvalue(m_ls,obj.getIndex());
 	lua_settable(m_ls, LUA_REGISTRYINDEX);
 }
 
-void LuaState::setRegistry(const void *key,const LuaObject obj)
+void LuaState::setRegistry(const void *key,const LuaObject& obj)
 {
 	lua_pushlightuserdata(m_ls,const_cast<void*>(key));
 	lua_pushvalue(m_ls,obj.getIndex());
@@ -71,7 +71,7 @@ void LuaState::setRegistry(const void *key,const LuaObject obj)
 
 
 
-void LuaState::setGlobal(const char* name,LuaObject obj)
+void LuaState::setGlobal(const char* name, const LuaObject& obj)
 {
 	lua_pushvalue(m_ls,obj.getIndex());
 	lua_setglobal(m_ls,name);

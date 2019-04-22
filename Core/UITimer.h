@@ -58,7 +58,7 @@ namespace DuiLib{
 		virtual void OnTimer(IDuiTimer* pTimer,HWND hWnd,LPARAM lParam,WPARAM wParam) = 0;
 
 	public:
-		void SetUserData(unUserData nUserData){m_UserData = nUserData;};
+		void SetUserData(const unUserData& nUserData){m_UserData = nUserData;};
 		unUserData GetUserData(){return m_UserData;};
 
 	private:
@@ -82,6 +82,7 @@ namespace DuiLib{
 		void operator() (IDuiTimer* pTimer){return OnTimer(pTimer);};
 		void operator() (IDuiTimer* pTimer,void* param){return OnTimer(pTimer,param);};
 		void operator() (IDuiTimer* pTimer,HWND hWnd,LPARAM lParam,WPARAM wParam){return OnTimer(pTimer,hWnd,lParam,wParam);};
+		CDuiTimerBase& operator=(const CDuiTimerBase& rhs);
 		
 	public:
 		void SetTimerParam(void* pObj,void* pFun,void* pParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false);
@@ -166,7 +167,7 @@ namespace DuiLib{
 			m_pTimerOnFnA = pFun;
 			m_pTimerOnFnB = NULL;
 			m_pTimerOnFnC = NULL;
-		};
+		}
 		TDuiTimer(TObj* pObj,TimerOnFnB pFun,TParam pParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false) : CDuiTimerBase(pObj,*(void**)&pFun,pParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers)
 		{
 			if(GetTimerID())
@@ -175,7 +176,7 @@ namespace DuiLib{
 			m_pTimerOnFnA = NULL;
 			m_pTimerOnFnB = pFun;
 			m_pTimerOnFnC = NULL;
-		};
+		}
 		TDuiTimer(TObj* pObj,TimerOnFnC pFun,HWND hWnd,TParam lParam,WPARAM wParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false) : CDuiTimerBase(pObj,*(void**)&pFun,hWnd,(LPARAM)lParam,wParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers)
 		{
 			if(GetTimerID())
@@ -184,12 +185,13 @@ namespace DuiLib{
 			m_pTimerOnFnA = NULL;
 			m_pTimerOnFnB = NULL;
 			m_pTimerOnFnC = pFun;
-		};
+		}
+
 		TDuiTimer(HWND hWnd,LPARAM lParam,WPARAM wParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false) : CDuiTimerBase(hWnd,lParam,wParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers)
 		{
 			if(GetTimerID())
 				KillDuiTimer();
-		};
+		}
 		TDuiTimer(const TDuiTimer& rhs) : CDuiTimerBase(rhs)
 		{
 			m_pTimerOnFnA = rhs.m_pTimerOnFnA;
@@ -213,20 +215,28 @@ namespace DuiLib{
 		virtual bool SetDuiTimer(){ return InnerSetTimer();};
 		virtual void KillDuiTimer(){ return InnerKillTimer();};
 		virtual TDuiTimer* Copy() const { return new TDuiTimer(*this); }
+		TDuiTimer& operator=(const TDuiTimer& src)
+		{
+			CDuiTimerBase::operator=(src);
+			m_pTimerOnFnA = src.m_pTimerOnFnA;
+			m_pTimerOnFnB = src.m_pTimerOnFnB;
+			m_pTimerOnFnC = src.m_pTimerOnFnC;
+			return *this;
+		}
 
 		void OnTimer(IDuiTimer* pTimer)
 		{
 			TObj* pObject = (TObj*) GetObj();
 			if(pObject && m_pTimerOnFnA)
 				(pObject->*m_pTimerOnFnA)(pTimer);
-		};
+		}
 
 		void OnTimer(IDuiTimer* pTimer,void* param)
 		{
 			TObj* pObject = (TObj*) GetObj();
 			if(pObject && m_pTimerOnFnB)
 				(pObject->*m_pTimerOnFnB)(pTimer,(TParam)param);
-		};
+		}
 
 		void OnTimer(IDuiTimer* pTimer,HWND hWnd,LPARAM lParam,WPARAM wParam)
 		{
@@ -235,7 +245,7 @@ namespace DuiLib{
 				(pObject->*m_pTimerOnFnC)(pTimer,hWnd,(TParam)lParam,wParam);
 			else if(hWnd)
 				::PostMessage(hWnd,WM_TIMER,lParam,wParam);
-		};
+		}
 
 	private:
 		TimerOnFnA		m_pTimerOnFnA;
@@ -246,19 +256,19 @@ namespace DuiLib{
 	template <class TObj,class TFun>
 	IDuiTimer* MakeDuiTimer(TObj* pObject, void (TFun::* pFn)(IDuiTimer*),int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false)
 	{
-		return (IDuiTimer*)new TDuiTimer<TObj, TFun,void*>(pObject,pFn,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
+		return new TDuiTimer<TObj, TFun,void*>(pObject,pFn,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
 	}
 
 	template <class TObj,class TFun,class TParam>
 	IDuiTimer* MakeDuiTimer(TObj* pObject, void (TFun::* pFn)(IDuiTimer*,TParam),TParam pParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true,bool bLoop = false,bool bRevers = false)
 	{
-		return (IDuiTimer*)new TDuiTimer<TObj, TFun,TParam>(pObject,pFn,pParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
+		return new TDuiTimer<TObj, TFun,TParam>(pObject,pFn,pParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
 	}
 
 	template <class TObj,class TFun,class TParam>
 	IDuiTimer* MakeDuiTimer(TObj* pObject, void (TFun::* pFn)(IDuiTimer* pTimer,HWND hWnd,TParam lParam,WPARAM wParam),HWND hWnd,TParam lParam,WPARAM wParam,int iInterval,int iTotalTimer = NULL,bool bAutoRun = true)
 	{
-		return (IDuiTimer*)new TDuiTimer<TObj, TFun,TParam>(pObject,pFn,hWnd,lParam,wParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
+		return new TDuiTimer<TObj, TFun,TParam>(pObject,pFn,hWnd,lParam,wParam,iInterval,iTotalTimer,bAutoRun,bLoop,bRevers);
 	}
 	
 	typedef void (*TimerOnFnA)(IDuiTimer* pTimer);

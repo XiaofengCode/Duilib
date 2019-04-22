@@ -271,6 +271,14 @@ namespace DuiLib
 	}
 
 
+	CStdPtrArray& CStdPtrArray::operator=(const CStdPtrArray& src)
+	{
+		Empty();
+		for(int i=0; i < src.GetSize(); i++)
+			Add(src.GetAt(i));
+		return *this;
+	}
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 	//

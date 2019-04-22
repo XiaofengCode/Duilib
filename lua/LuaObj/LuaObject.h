@@ -74,9 +74,9 @@ extern LuaObject luaNil;//lua nil
 
 namespace StackOps
 {
-	inline void Push(lua_State* L, LuaObject value)	
+	inline void Push(lua_State* L, const LuaObject& value)	
 	{
-		lua_pushvalue(L,value.getIndex()); 
+		lua_pushvalue(L, value.getIndex()); 
 	}
 
 

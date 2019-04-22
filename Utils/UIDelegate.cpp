@@ -29,6 +29,13 @@ bool CDelegateBase::operator() (void* param)
     return Invoke(param); 
 }
 
+CDelegateBase& CDelegateBase::operator=(const CDelegateBase& rhs)
+{
+	m_pObject = rhs.m_pObject;
+	m_pFn = rhs.m_pFn; 
+	return *this;
+}
+
 void* CDelegateBase::GetFn() 
 {
     return m_pFn; 

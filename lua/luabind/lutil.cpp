@@ -29,7 +29,7 @@ namespace lbind
 		return lrc;	
 	}
 
-	RECT toRect(LuaTable obj)
+	RECT toRect(const LuaTable& obj)
 	{
 		RECT rc;
 		rc.left=obj.getTable("x").toInt();
@@ -39,7 +39,7 @@ namespace lbind
 		return rc;
 	}
 
-	SIZE toSize(LuaTable obj)
+	SIZE toSize(const LuaTable& obj)
 	{
 		SIZE sz;
 		sz.cx=obj.getTable("w").toInt();
@@ -47,7 +47,7 @@ namespace lbind
 		return sz;	
 	}
 
-	POINT toPoint(LuaTable obj)
+	POINT toPoint(const LuaTable& obj)
 	{
 		POINT pt;
 		pt.x=obj.getTable("x").toInt();

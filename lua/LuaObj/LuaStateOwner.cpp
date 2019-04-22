@@ -38,7 +38,8 @@ void LuaStateOwner::error(const char* fmt,...)
 	}
 	else
 	{
-		printf(buf);
+		OutputDebugStringA(buf);
+		//printf("%s", buf);
 	}
 }
 

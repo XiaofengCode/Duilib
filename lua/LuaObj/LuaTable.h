@@ -15,15 +15,15 @@ public:
 	bool isValid();
 
 	//lua±í²Ù×÷
-	LuaObject getTable(const char* key);
-	LuaObject getTable(lua_Integer idx);
+	LuaObject getTable(const char* key) const;
+	LuaObject getTable(lua_Integer idx) const;
 
 	LuaObject operator[](const char* key);
 	LuaObject operator[](lua_Integer idx);
 
 
-	bool setTable(const char* key,LuaObject val);
-	bool setTable(lua_Integer key,LuaObject val);
+	bool setTable(const char* key, const LuaObject& val);
+	bool setTable(lua_Integer key, const LuaObject& val);
 
 	inline size_t count()const{return objLen();}
 

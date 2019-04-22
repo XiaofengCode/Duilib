@@ -1609,21 +1609,27 @@ DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgn
 	{
 		sStatus += DUI_ATTR_POS_NORMAL;
 	}
-	if (dwStatus & UISTATE_DISABLED && nIgnorStatus-- <= 0)
+	if (dwStatus & UISTATE_DISABLED)
 	{
-		sStatus += DUI_ATTR_STATUS_DISABLED;
+		if (nIgnorStatus-- <= 0)
+		{
+			sStatus += DUI_ATTR_STATUS_DISABLED;
+		}
 	}
-	if (dwStatus & UISTATE_FOCUSED && nIgnorStatus-- <= 0)
+	else
 	{
-		sStatus += DUI_ATTR_STATUS_FOCUSED;
-	}
-	if (dwStatus & UISTATE_PUSHED && nIgnorStatus-- <= 0)
-	{
-		sStatus += DUI_ATTR_STATUS_PUSHED;
-	}
-	if (dwStatus & UISTATE_HOT && nIgnorStatus-- <= 0)
-	{
-		sStatus += DUI_ATTR_STATUS_HOT;
+		if (dwStatus & UISTATE_FOCUSED && nIgnorStatus-- <= 0)
+		{
+			sStatus += DUI_ATTR_STATUS_FOCUSED;
+		}
+		if (dwStatus & UISTATE_PUSHED && nIgnorStatus-- <= 0)
+		{
+			sStatus += DUI_ATTR_STATUS_PUSHED;
+		}
+		if (dwStatus & UISTATE_HOT && nIgnorStatus-- <= 0)
+		{
+			sStatus += DUI_ATTR_STATUS_HOT;
+		}
 	}
 	if (dwStatus & UISTATE_SELECTED && nIgnorStatus-- <= 0)
 	{

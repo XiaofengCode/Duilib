@@ -39,18 +39,19 @@ public:
 	{
 		if(BUFSZ<size)
 		{
-			if(m_bufPtr!=m_stackBuf)
+			if(m_bufPtr != m_stackBuf)
 			{
+				void * pBuf = m_bufPtr;
 				m_bufPtr=::realloc(m_bufPtr,size);
+				if (!m_bufPtr)
+				{
+					free(pBuf);
+				}
 			}
 			else
 				m_bufPtr=::malloc(size);
-
-			return m_bufPtr;
 		}
-		else
-			return m_bufPtr;
-
+		return m_bufPtr;
 	}
 
 	void * getBuf()

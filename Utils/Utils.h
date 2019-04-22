@@ -148,6 +148,7 @@ namespace DuiLib
 
 		LPVOID GetAt(int iIndex) const;
 		LPVOID operator[] (int nIndex) const;
+		CStdPtrArray& operator= (const CStdPtrArray& src);
 
 	protected:
 		LPVOID* m_ppVoid;

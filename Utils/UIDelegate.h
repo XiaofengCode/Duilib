@@ -15,6 +15,7 @@ public:
     bool operator() (void* param);
     virtual CDelegateBase* Copy() const = 0; // add const for gcc
 
+	CDelegateBase& operator=(const CDelegateBase& rhs);
 protected:
     void* GetFn();
     void* GetObject();
@@ -50,6 +51,11 @@ public:
     CDelegate(const CDelegate& rhs) : CDelegateBase(rhs) { m_pFn = rhs.m_pFn; } 
     virtual CDelegateBase* Copy() const { return new CDelegate(*this); }
 
+	CDelegate& operator=(const CDelegate& rhs)
+	{
+		CDelegateBase::operator =(rhs);
+		m_pFn = rhs.m_pFn;
+	}
 protected:
     virtual bool Invoke(void* param)
     {

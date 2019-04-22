@@ -7,7 +7,7 @@
 private:\
 	static const LuaReg _lualib[];\
 protected:\
-	static Class* _lbindBaseLuaToC(LuaObject obj)\
+	static Class* _lbindBaseLuaToC(const LuaObject& obj)\
 	{\
 		typedef void* data;\
 		if(obj.getType()==LUA_TUSERDATA)\
@@ -36,7 +36,7 @@ public:\
 		llib.setTable("__index",llib);\
 		L->setGlobal(#Class,llib);\
 	}\
-	static Class* _lbindLuaToC(LuaObject obj)\
+	static Class* _lbindLuaToC(const LuaObject& obj)\
 	{\
 		return static_cast<Class*>(_lbindBaseLuaToC(obj));\
 	}\

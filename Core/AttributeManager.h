@@ -107,6 +107,15 @@ public:
 		pRef = new LONG();
 		*pRef = 1;
 	}
+	CAttrItem(const CAttrItem& src)
+	{
+		InterlockedIncrement(src.pRef);
+		pRef = src.pRef;
+		type = src.type;
+		realtype = src.realtype;
+		strValue = src.strValue;
+		value.pValue = src.value.pValue;
+	}
 	~CAttrItem()
 	{
 		Release();

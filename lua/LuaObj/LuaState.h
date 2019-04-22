@@ -23,12 +23,12 @@ public:
 	~LuaState(void);
 
 	LuaObject getGlobal(const char* name);
-	void setGlobal(const char* name,LuaObject obj);
+	void setGlobal(const char* name, const LuaObject& obj);
 
 	LuaObject getRegistery(const char* key);
 	LuaObject getRegistery(void* key);
-	void setRegistry(const char* key,const LuaObject obj);
-	void setRegistry(const void *key,const LuaObject obj);
+	void setRegistry(const char* key,const LuaObject& obj);
+	void setRegistry(const void *key,const LuaObject& obj);
 
 	LuaObject newNil();
 	LuaObject newNumber(lua_Number);

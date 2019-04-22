@@ -139,6 +139,27 @@ namespace DuiLib{
 		return true;
 	}
 
+	DuiLib::CDuiTimerBase& CDuiTimerBase::operator=(const CDuiTimerBase& rhs)
+	{
+		InnerKillTimer();
+		m_pObject		= rhs.GetObj();
+		m_pFun			= rhs.GetFun();
+		m_pParam		= rhs.GetParam();
+		m_iCurTimer		= rhs.GetCurTimer();
+		m_iInterval		= rhs.GetInterval();
+		m_iTotalTimer	= rhs.GetTotalTimer();
+		m_uTimerID		= rhs.GetTimerID();
+		m_uTimerAccuracy= rhs.GetTimerAccuracy();
+		m_hWnd			= rhs.GetHwnd();
+		m_lParam		= rhs.GetLParam();
+		m_wParam		= rhs.GetWParam();
+		m_bAutoStart	= rhs.GetAutoStart();
+		m_bLoop			= rhs.IsLoop();
+		m_bReverse		= rhs.IsRevers();
+		m_bInverted		= rhs.IsInverted();
+		return *this;
+	}
+
 	void CDuiTimerBase::SetTimerParam( void* pObj,void* pFun,void* pParam,int iInterval,int iTotalTimer /*= NULL*/,bool bAutoRun /*= true*/,bool bLoop /*= false*/,bool bRevers /*= false*/ )
 	{
 		m_pObject		= pObj;

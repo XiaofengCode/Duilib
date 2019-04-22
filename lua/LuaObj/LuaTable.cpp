@@ -31,13 +31,13 @@ bool LuaTable::isValid()
 	return getType()==LUA_TTABLE;
 }
 
-LuaObject LuaTable::getTable(const char* key)
+LuaObject LuaTable::getTable(const char* key) const
 {
 	assert(isValid());
 	return LuaObjectImpl::createGetTable(m_ptr->getCppLuaState(),m_ptr,key);
 }
 
-LuaObject LuaTable::getTable(lua_Integer key)
+LuaObject LuaTable::getTable(lua_Integer key) const
 {
 	assert(isValid());
 	return LuaObjectImpl::createGetTable(m_ptr->getCppLuaState(),m_ptr,key);
@@ -55,7 +55,7 @@ LuaObject LuaTable::operator[](lua_Integer idx)
 	return LuaObjectImpl::createGetTable(m_ptr->getCppLuaState(),m_ptr,idx);
 }
 
-bool LuaTable::setTable(const char* key,LuaObject val)
+bool LuaTable::setTable(const char* key, const LuaObject& val)
 {
 	if(isValid())
 	{
@@ -71,7 +71,7 @@ bool LuaTable::setTable(const char* key,LuaObject val)
 	return false;
 }
 
-bool LuaTable::setTable(lua_Integer key,LuaObject val)
+bool LuaTable::setTable(lua_Integer key, const LuaObject& val)
 {
 	if(isValid())
 	{

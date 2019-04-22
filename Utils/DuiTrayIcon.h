@@ -39,10 +39,10 @@ namespace DuiLib
 		bool ShowMessage(LPCTSTR lpMsg, LPCTSTR lpTitle, UINT uTimeout = 3000);
 	private:
 		bool m_bEnabled;
-		bool m_bVisible;
+		//bool m_bVisible;
 		bool m_bTwinkling;
 		//HWND m_hWnd;
-		CPaintManagerUI* m_pManager;
+		//CPaintManagerUI* m_pManager;
 		HICON m_hIcon;
 		IDuiTimer* pIDuiTimer;
 		NOTIFYICONDATA	m_trayData;
