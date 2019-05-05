@@ -138,7 +138,15 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         ::GetCursorPos(&pt);
         ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
         CControlUI* pControl = m_pm.FindControl(pt);
-        if( pControl && _tcscmp(pControl->GetClass(), _T("ScrollBarUI")) != 0 ) PostMessage(WM_KILLFOCUS);
+        if(!pControl)
+		{
+			m_pOwner->SelectItem(m_iOldSel, true);
+			EnsureVisible(m_iOldSel);
+			PostMessage(WM_KILLFOCUS);
+			return 0;
+		}
+		if (_tcscmp(pControl->GetClass(), _T("ScrollBarUI")) != 0)
+			PostMessage(WM_KILLFOCUS);
     }
     else if( uMsg == WM_KEYDOWN ) {
         switch( wParam ) {
@@ -147,9 +155,10 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             EnsureVisible(m_iOldSel);
 			// FALL THROUGH...
 			PostMessage(WM_KILLFOCUS);
+			return 0;
         case VK_RETURN:
-            PostMessage(WM_KILLFOCUS);
-            break;
+			PostMessage(WM_KILLFOCUS);
+			return 0;
         default:
             TEventUI event;
             event.Type = UIEVENT_KEYDOWN;

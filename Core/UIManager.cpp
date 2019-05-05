@@ -2822,6 +2822,9 @@ bool CPaintManagerUI::OnLButtonUp(WPARAM wParam, LPARAM lParam)
 	if( m_pEventClick == NULL )
 		return false;
 	ReleaseCapture();
+	CControlUI* pControl = FindControl(pt);
+	if( pControl != m_pEventClick )
+		return false;
 	TEventUI event = { 0 };
 	event.Type = UIEVENT_BUTTONUP;
 	event.pSender = m_pEventClick;
@@ -3196,11 +3199,11 @@ void CPaintManagerUI::OnClose()
 		event.pSender = m_pEventHover;
 		m_pEventHover->Event(event);
 	}
-	if( m_pEventClick != NULL ) {
-		event.Type = UIEVENT_BUTTONUP;
-		event.pSender = m_pEventClick;
-		m_pEventClick->Event(event);
-	}
+// 	if( m_pEventClick != NULL ) {
+// 		event.Type = UIEVENT_BUTTONUP;
+// 		event.pSender = m_pEventClick;
+// 		m_pEventClick->Event(event);
+// 	}
 
 	SetFocus(NULL);
 
