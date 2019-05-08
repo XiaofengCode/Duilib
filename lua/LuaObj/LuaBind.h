@@ -1,7 +1,11 @@
 #include "LuaEngine.h"
 #include "LuaObject.h"
 
-
+#ifndef DUILIB_LUA
+#define LBIND_BASE_CLASS_DEFINE(Class)
+#define LBIND_CLASS_DEFINE(Class,BaseClass)
+#define LBIND_REGISTER_CLASS(Class,L)
+#else
 //基类需要实现以下几个函数
 #define LBIND_BASE_CLASS_DEFINE(Class)\
 private:\
@@ -167,9 +171,7 @@ public:\
 		return 0;\
 	}
 
-
-
-
+#endif
 /*
 
 //lua对象的使用如下：

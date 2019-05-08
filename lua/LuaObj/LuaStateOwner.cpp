@@ -3,6 +3,7 @@
 
 
 
+#ifdef DUILIB_LUA
 void * LuaStateOwner::luaAlloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
 
@@ -42,4 +43,5 @@ void LuaStateOwner::error(const char* fmt,...)
 		//printf("%s", buf);
 	}
 }
+#endif // DUILIB_LUA
 

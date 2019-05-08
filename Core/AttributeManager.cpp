@@ -31,7 +31,7 @@ void CAttributeManager::SetMetaManager(const CAttributeManager* pMgr)
 void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type)
 {
 	CPairKeyword item(lpszAttrKeyword, (DWORD)MAKELONG(m_lstKeywords.size(), type));
-	int nLen = _tcslen(lpszAttrKeyword);
+	int nLen = (int)_tcslen(lpszAttrKeyword);
 	/*
 	关键字按照长度从长到短插入，为了查找属性时候最常匹配，如bkcolor2，解析出来应该是bk color2而不是bk color 2
 	*/

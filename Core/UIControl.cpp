@@ -84,6 +84,7 @@ CControlUI::~CControlUI()
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
+#ifdef DUILIB_LUA
 bool CControlUI::DoLuaEvent(LPCTSTR evName,LuaObject wParam, LuaObject lParam, LuaObject event)
 {
 	ASSERT(evName);
@@ -180,6 +181,7 @@ void CControlUI::BindLuaEvent(LPCTSTR evName,LPCTSTR luaSrc)
 		tab.setTable(DUI_T2A(strEvent).c_str(), DUI_T2A(luaSrc).c_str());
 	}
 }
+#endif // DUILIB_LUA
 
 CDuiString CControlUI::GetName() const
 {
@@ -899,10 +901,14 @@ void CControlUI::DoInit()
 
 void CControlUI::Event(TEventUI& event)
 {
+#ifdef DUILIB_LUA
 	DoLuaEvent(_T("preevent"), event.wParam, event.lParam, event.Type);
+#endif
 	if( OnEvent(&event) ) DoEvent(event);
+#ifdef DUILIB_LUA
 	DoLuaEvent(_T("event"), event.wParam, event.lParam, event.Type);
 	DoLuaEvent(_T("postevent"), event.wParam, event.lParam, event.Type);
+#endif
 }
 
 void CControlUI::DoEvent(TEventUI& event)
@@ -1100,31 +1106,34 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
 		//如果不是常规属性，可能是事件
 		LuaState* L = nullptr;
+#ifdef DUILIB_LUA
 		if (GetManager())
 		{
 			L = GetManager()->GetLuaState();
 		}
+#endif // DUILIB_LUA
 		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
 		{
 			m_attrs.SetAttribute(pstrName, pstrValue);
 			return;
 		}
+#ifdef DUILIB_LUA
 		try
 		{
 			CDuiString strValue(pstrValue);
 			CDuiStringArray arValue = strValue.Split('.');
 			if (arValue.GetSize() == 1)
 			{
-				std::string sFun = DuiUtf16ToAscii(strValue);
+				std::string sFun = DUI_T2A(strValue);
 				BindLuaEvent(pstrName + 2, L->getGlobal(sFun.c_str()));
 			}
 			else
 			{
-				std::string sModule = DuiUtf16ToAscii(arValue[0]);
+				std::string sModule = DUI_T2A(arValue[0]);
 				LuaTable tab=L->require(sModule.c_str());
 				if (tab.isValid())
 				{
-					std::string sFun = DuiUtf16ToAscii(arValue[1]);
+					std::string sFun = DUI_T2A(arValue[1]);
 					BindLuaEvent(pstrName + 2,tab.getTable(sFun.c_str()));
 				}
 			}
@@ -1134,6 +1143,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 			OutputDebugStringA(err.what());
 			//LOGE("doString error:"<<err.what());
 		}
+#endif // DUILIB_LUA
 	}
 }
 
@@ -1591,6 +1601,13 @@ void CControlUI::SetStyle(LPCTSTR lpszStyle)
 			ApplyAttributeList(lpszStyle); 
 		}
 	}
+}
+
+LPCTSTR CControlUI::LoadString(LPCTSTR lpszID)
+{
+	if (!m_pManager)
+		return _T("");
+	return m_pManager->m_StringTable.GetString(lpszID);
 }
 
 DWORD CControlUI::GetStatus()

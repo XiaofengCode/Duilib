@@ -1,6 +1,7 @@
 #pragma once
 #include "../LuaObj/Luaobj.h"
 
+#ifdef DUILIB_LUA
 
 namespace lbind
 {
@@ -13,3 +14,4 @@ namespace lbind
 	SIZE toSize(const LuaTable& obj);
 	POINT toPoint(const LuaTable& obj);
 }
+#endif // DUILIB_LUA

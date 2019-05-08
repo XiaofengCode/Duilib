@@ -3,6 +3,7 @@
 #include "LuaObjectImpl.h"
 
 
+#ifdef DUILIB_LUA
 LuaTable::LuaTable(LuaState* L)
 	:LuaObject(L)
 {
@@ -26,7 +27,7 @@ LuaTable::LuaTable(const LuaTable& rfs)
 }
 
 
-bool LuaTable::isValid()
+bool LuaTable::isValid() const
 {
 	return getType()==LUA_TTABLE;
 }
@@ -86,3 +87,31 @@ bool LuaTable::setTable(lua_Integer key, const LuaObject& val)
 	}
 	return false;
 }
+// template<class T>
+// bool LuaTable::setTable(const char* key,T val)
+// {
+// 	if(isValid())
+// 	{
+// 		lua_State* L=getLuaState();
+// 		lua_pushstring(L,key);//key
+// 		StackOps::Push(getLuaState(),val);
+// 		lua_settable(L,getIndex());
+// 		return true;
+// 	}
+// 	return false;
+// }
+// 
+// template<class T>
+// bool LuaTable::setTable(lua_Integer key,T val)
+// {
+// 	if(isValid())
+// 	{
+// 		lua_State* L=getLuaState();
+// 		lua_pushinteger(L,key);//key
+// 		StackOps::Push(getLuaState(),val);
+// 		lua_settable(L,getIndex());
+// 		return true;
+// 	}
+// 	return false;	
+// }
+#endif // DUILIB_LUA

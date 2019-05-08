@@ -4,6 +4,7 @@
 using namespace DuiLib;
 
 
+#ifdef DUILIB_LUA
 namespace lbindcombo
 {
 using namespace lbind;
@@ -233,20 +234,4 @@ LBIND_BEGIN_DEFINE_LIB(CComboUI)
 	{"setItemShowHtml",lbindcombo::SetItemShowHtml},
 	{"isItemShowHtml",lbindcombo::IsItemShowHtml},
 LBIND_END_DEFINE_LIB
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // DUILIB_LUA

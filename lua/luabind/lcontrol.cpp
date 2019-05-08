@@ -2,6 +2,7 @@
 #include "lutil.h"
 
 using namespace DuiLib;
+#ifdef DUILIB_LUA
 
 namespace lbind
 {
@@ -15,7 +16,7 @@ LBIND_END_DEFINE_FUNC
 LBIND_DEFINE_FUNC(CControlUI,GetWindowHandle)
 	HWND wnd = pThis->GetManager()->GetPaintWindow();
 	if(wnd)
-		return L.lreturn((LUA_INTEGER)wnd);
+		return L.lreturn((int)wnd);
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetPos)
@@ -177,7 +178,7 @@ LBIND_DEFINE_FUNC(CControlUI,SetUserData)
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,GetTag)
-	return L.lreturn(pThis->GetTag());
+	return L.lreturn((unsigned long)pThis->GetTag());
 LBIND_END_DEFINE_FUNC
 
 LBIND_DEFINE_FUNC(CControlUI,SetTag)
@@ -449,6 +450,7 @@ LBIND_BEGIN_DEFINE_LIB(CControlUI)
 	{"borderRound",lbind::GetBorderRound},
 	{"setBorderRound",lbind::SetBorderRound},
 LBIND_END_DEFINE_LIB
+#endif // DUILIB_LUA
 
 
 

@@ -5,6 +5,7 @@
 #include "LuaFunction.h"
 #include "Utf.h"
 
+#ifdef DUILIB_LUA
 void LuaObjectStack::push(LuaObjectImpl* impl)
 {
 	m_data.push_back(impl);
@@ -263,3 +264,4 @@ void LuaState::enumStack()
 
 	printf("\n**************************enumStack\n");
 }
+#endif // DUILIB_LUA

@@ -2,6 +2,7 @@
 #include "LuaFunction.h"
 #include "LuaObjectImpl.h"
 
+#ifdef DUILIB_LUA
 LuaFunction::LuaFunction(LuaState* L)
 	:LuaObject(L)
 {
@@ -28,15 +29,4 @@ bool LuaFunction::isValid()
 {
 	return getType()==LUA_TFUNCTION;
 }
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // DUILIB_LUA

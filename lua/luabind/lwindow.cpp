@@ -1,10 +1,10 @@
 #include "duipub.h"
 using namespace DuiLib;
-
+#ifdef DUILIB_LUA
 namespace lbind
 {
 	LBIND_DEFINE_FUNC(WindowImplBase,GetHWND)
-		return L.lreturn((INT_PTR)pThis->GetHWND());
+		return L.lreturn((unsigned long)pThis->GetHWND());
 	LBIND_END_DEFINE_FUNC
 
 	LBIND_DEFINE_FUNC(WindowImplBase,ShowWindow)
@@ -70,20 +70,4 @@ LBIND_BEGIN_DEFINE_LIB(WindowImplBase)
 {"doString",lbind::DoString},
 LBIND_END_DEFINE_LIB
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif

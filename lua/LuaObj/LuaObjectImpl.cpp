@@ -4,6 +4,7 @@
 #include "LuaState.h"
 
 
+#ifdef DUILIB_LUA
 int LuaObjectImpl::callDelegate(lua_State* L)
 {
 	int nreturn=0;
@@ -185,19 +186,4 @@ LuaObjectImpl* LuaObjectImpl::createGetTable(LuaState* L,LuaObjectImpl* tab,lua_
 	lua_gettable(L->getLuaState(),tab->getIndex());
 	return createFromTop(L);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // DUILIB_LUA

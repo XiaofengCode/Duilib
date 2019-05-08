@@ -18,11 +18,13 @@ namespace DuiLib
 
 	WindowImplBase::WindowImplBase()
 	{
+#ifdef DUILIB_LUA
 		LuaState* L = m_PaintManager.GetLuaState();
 		if (L)
 		{
 			L->setGlobal("window", _lbindCToLua(L));
 		}
+#endif // DUILIB_LUA
 		
 	}
 	void WindowImplBase::OnFinalMessage( HWND hWnd )

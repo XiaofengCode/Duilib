@@ -60,7 +60,7 @@ public:
 
 	int GetItemCount() const
 	{
-		return m_arItem.size();
+		return (int)m_arItem.size();
 	}
 
 	CDuiImageItem& operator[](int nIndex)

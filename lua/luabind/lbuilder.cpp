@@ -2,6 +2,7 @@
 using namespace DuiLib;
 
 
+#ifdef DUILIB_LUA
 namespace lbind
 {
 
@@ -85,3 +86,4 @@ LBIND_BEGIN_DEFINE_LIB(CDialogBuilder)
 	{"delete",lbind::Delete},
 	{"__gc",lbind::Delete},
 LBIND_END_DEFINE_LIB
+#endif // DUILIB_LUA

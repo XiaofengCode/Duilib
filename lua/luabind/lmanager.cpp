@@ -1,5 +1,6 @@
 #include "duipub.h"
 using namespace DuiLib;
+#ifdef DUILIB_LUA
 
 namespace lbind
 {
@@ -11,7 +12,7 @@ namespace lbind
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetInstance)
-		return L.lreturn(((lua_Integer)pThis->GetInstance()));
+		return L.lreturn(((unsigned long)pThis->GetInstance()));
 	LBIND_END_DEFINE_FUNC
 
 		LBIND_DEFINE_FUNC(CPaintManagerUI,GetInstancePath)
@@ -86,5 +87,6 @@ LBIND_BEGIN_DEFINE_LIB(CPaintManagerUI)
 {"loadPlugin",lbind::LoadPlugin},
 
 LBIND_END_DEFINE_LIB
+#endif // DUILIB_LUA
 
 

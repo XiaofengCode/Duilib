@@ -231,9 +231,6 @@
     <ClCompile Include="lua\luabind\lcombo.cpp">
       <Filter>lua\luabind</Filter>
     </ClCompile>
-    <ClCompile Include="lua\LuaObj\malloc\dlmalloc.c">
-      <Filter>lua\luaobj\malloc</Filter>
-    </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaFunction.cpp">
       <Filter>lua\luaobj</Filter>
     </ClCompile>
@@ -272,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="Utils\String.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\LuaObj\malloc\dlmalloc.cpp">
+      <Filter>lua\luaobj\malloc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

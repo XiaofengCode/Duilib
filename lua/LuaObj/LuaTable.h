@@ -12,7 +12,7 @@ public:
 	LuaTable(const LuaTable& rfs);
 
 	//判断是否是lua表
-	bool isValid();
+	bool isValid() const;
 
 	//lua表操作
 	LuaObject getTable(const char* key) const;
@@ -30,6 +30,7 @@ public:
 	template<class T>
 	bool setTable(const char* key,T val)
 	{
+#ifdef DUILIB_LUA
 		if(isValid())
 		{
 			lua_State* L=getLuaState();
@@ -38,12 +39,14 @@ public:
 			lua_settable(L,getIndex());
 			return true;
 		}
+#endif // DUILIB_LUA
 		return false;
 	}
 
 	template<class T>
 	bool setTable(lua_Integer key,T val)
 	{
+#ifdef DUILIB_LUA
 		if(isValid())
 		{
 			lua_State* L=getLuaState();
@@ -52,6 +55,7 @@ public:
 			lua_settable(L,getIndex());
 			return true;
 		}
+#endif // DUILIB_LUA
 		return false;	
 	}
 };

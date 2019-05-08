@@ -99,7 +99,7 @@ namespace DuiLib
 		}
 		int GetSize() const
 		{
-			return m_vec.size();
+			return (int)m_vec.size();
 		}
 		LPVOID GetData()
 		{
@@ -238,41 +238,69 @@ namespace DuiLib
 		}
 	};
 
-	class CCriticalSection
+	class CDuiCriticalSection
 	{
 	public:
-		CCriticalSection()
+		CDuiCriticalSection()
 		{
-			InitializeCriticalSection(&m_CriticalSection);
+			InitializeCriticalSection(&m_cs);
 		}
-		~CCriticalSection()
+		~CDuiCriticalSection()
 		{
-			DeleteCriticalSection(&m_CriticalSection);
+			DeleteCriticalSection(&m_cs);
 		}
-		void Enter()
+		void Lock()
 		{
-			EnterCriticalSection(&m_CriticalSection);
+			EnterCriticalSection(&m_cs);
 		}
-		void Leave()
+		void Unlock()
 		{
-			LeaveCriticalSection(&m_CriticalSection);
+			LeaveCriticalSection(&m_cs);
 		}
-		CRITICAL_SECTION m_CriticalSection;
-
+	private:
+		CRITICAL_SECTION m_cs;
 	};
 
-	class CAutoCriticalSection
+	template<class T>
+	class CDuiAutoLock
 	{
 	public:
-		CAutoCriticalSection(CCriticalSection& sec) : m_sec(sec)
+		CDuiAutoLock(T* pCs)
 		{
-			m_sec.Enter();
+			if (pCs)
+			{
+				m_pCs = pCs;
+				pCs->Lock();
+			}
 		}
-		~CAutoCriticalSection()
+		~CDuiAutoLock()
 		{
-			m_sec.Leave();
+			if (m_pCs)
+			{
+				m_pCs->Unlock();
+			}
 		}
-		CCriticalSection& m_sec;
+		T* m_pCs;
+	};
+
+	class CDuiCounting
+	{
+	public:
+		CDuiCounting(long& lNumber)
+		{
+			m_p = &lNumber;
+			m_lCurValue = InterlockedIncrement(&lNumber);
+		}
+		~CDuiCounting()
+		{
+			m_lCurValue = InterlockedDecrement(m_p);
+		}
+		operator long()
+		{
+			return m_lCurValue;
+		}
+		long m_lCurValue;
+		long* m_p;
 	};
 }// namespace DuiLib
 

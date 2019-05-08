@@ -2,6 +2,7 @@
 #include "lutil.h"
 
 using namespace DuiLib;
+#ifdef DUILIB_LUA
 
 namespace lbindrichedit
 {
@@ -519,3 +520,4 @@ LBIND_BEGIN_DEFINE_LIB(CRichEditUI)
 	{"emptyUndoBuffer",lbindrichedit::EmptyUndoBuffer},
 	{"setUndoLimit",lbindrichedit::SetUndoLimit},
 LBIND_END_DEFINE_LIB
+#endif // DUILIB_LUA

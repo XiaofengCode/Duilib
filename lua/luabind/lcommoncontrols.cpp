@@ -2,6 +2,7 @@
 #include "lutil.h"
 
 using namespace DuiLib;
+#ifdef DUILIB_LUA
 
 namespace lbind
 {
@@ -360,3 +361,4 @@ LBIND_BEGIN_DEFINE_LIB(CScrollBarUI)
 	{"lineSize",lbind::GetLineSize},
 	{"setLineSize",lbind::SetLineSize},
 LBIND_END_DEFINE_LIB
+#endif // DUILIB_LUA

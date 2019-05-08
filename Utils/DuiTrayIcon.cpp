@@ -104,7 +104,7 @@ namespace DuiLib
 	bool CDuiTrayIconUI::SetTooltipText( UINT _IDResource )
 	{
 		TCHAR mbuf[64];
-		LoadString(CPaintManagerUI::GetInstance(), _IDResource, mbuf, 64);
+		::LoadString(CPaintManagerUI::GetInstance(), _IDResource, mbuf, 64);
 
 		return SetTooltipText(mbuf);
 	}

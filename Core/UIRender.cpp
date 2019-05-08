@@ -1263,7 +1263,7 @@ void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColo
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
 	nSize = (nSize + 1)/2;
-    ::Rectangle(hDC, rc.left + nSize, rc.top + nSize, rc.right + nSize-1, rc.bottom + nSize - 1);
+    ::Rectangle(hDC, rc.left, rc.top, rc.right + nSize-1, rc.bottom + nSize - 1);
     ::SelectObject(hDC, hOldPen);
     ::DeleteObject(hPen);
 }
@@ -1345,11 +1345,8 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 #ifdef _UNICODE
 			graphics.MeasureString(pstrText, -1, &font, rectF, &stringFormat, &bounds);
 #else
-			WCHAR * pwstring = AnsiToUnicode(pstrText);
-
+			LPCWSTR pwstring = AnsiToUnicode(pstrText).c_str();
 			graphics.MeasureString(pwstring, -1, &font, rectF, &stringFormat, &bounds);
-
-			delete []pwstring;
 #endif
 			
 			// MeasureString存在计算误差，这里加一像素
@@ -1362,13 +1359,9 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 #ifdef _UNICODE
 			graphics.DrawString(pstrText, -1, &font, rectF, &stringFormat, &brush);
 #else
-			WCHAR * pwstring = AnsiToUnicode(pstrText);
-
+			LPCWSTR pwstring = AnsiToUnicode(pstrText).c_str();
 			graphics.DrawString(pwstring, -1, &font, rectF, &stringFormat, &brush);
-
-			delete []pwstring;
-#endif
-			
+#endif			
 		}
 		
 	}

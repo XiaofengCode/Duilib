@@ -1,6 +1,7 @@
-#include "../../duipub.h"
+#include "duipub.h"
 #include "lutil.h"
 //#include "log/log4z.h"
+#ifdef DUILIB_LUA
 
 namespace lbind
 {
@@ -57,3 +58,4 @@ namespace lbind
 
 
 }
+#endif // DUILIB_LUA

@@ -60,6 +60,8 @@
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+#define DUILIB_LUA
+
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -183,10 +185,12 @@
 #	pragma message("Link duilib name:" DUILIB_NAME)
 #	pragma comment(lib, DUILIB_NAME)
 
+#ifdef DUILIB_LUA
 #	define LUALIB_NAME	"lua51_" MSC_VERSION".lib"
 
 #	pragma message("Link lua5.1 name:" LUALIB_NAME)
 #	pragma comment(lib, LUALIB_NAME)
+#endif // DUILIB_LUA
 	
 #endif
 #pragma message("MSC version:" STR_MACRO(_MSC_VER))

@@ -2,6 +2,7 @@
 #include "lutil.h"
 
 using namespace DuiLib;
+#ifdef DUILIB_LUA
 
 namespace lbindcontainer
 {
@@ -326,32 +327,4 @@ LBIND_BEGIN_DEFINE_LIB(CTabLayoutUI)
 	{"selectItem",lbind::SelectItem},
 	{"curSel",lbind::GetCurSel},
 LBIND_END_DEFINE_LIB
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // DUILIB_LUA

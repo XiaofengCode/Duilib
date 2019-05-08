@@ -524,7 +524,7 @@ private:
 	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
 
-	LuaEngine m_lua;
+	LuaEngine* m_pLua;
 	DWORD m_threadId;
 	std::queue<RefCountedPtr<IRunbaleUI>> m_runableQueue;
 	base::CriticalSection m_queueLock;

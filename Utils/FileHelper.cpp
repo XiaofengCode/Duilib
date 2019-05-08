@@ -1,5 +1,6 @@
 #include "duipub.h"
 #include "FileHelper.h"
+#include <io.h>
 
 namespace DuiLib {
 	bool _Failed(LPCTSTR pstrError, LPCTSTR pstrLocation /*= NULL*/)
@@ -29,11 +30,11 @@ namespace DuiLib {
 		return pstrFilename;
 	}
 
-	std::string DuiGetAbsFilePath(LPCSTR pstrFilename)
-	{
-		CDuiString sPath = DuiGetAbsFilePath(CDuiString(pstrFilename));
-		return DUI_T2A(sPath);
-	}
+// 	std::string DuiGetAbsFilePath(LPCSTR pstrFilename)
+// 	{
+// 		CDuiString sPath = DuiGetAbsFilePath(CDuiString(pstrFilename));
+// 		return DUI_T2A(sPath);
+// 	}
 
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer)
 	{

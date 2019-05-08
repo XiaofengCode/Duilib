@@ -92,15 +92,16 @@ LPCTSTR CComboWnd::GetWindowClassName() const
 
 void CComboWnd::OnFinalMessage(HWND hWnd)
 {
-    m_pOwner->m_pWindow = NULL;
+    //m_pOwner->m_pWindow = NULL;
     m_pOwner->m_dwStatus &= ~ UISTATE_PUSHED;
     m_pOwner->Invalidate();
-    delete this;
+    //delete this;
 }
 
 LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if( uMsg == WM_CREATE ) {
+	if( uMsg == WM_CREATE )
+	{
         m_pm.Init(m_hWnd);
         // The trick is to add the items to the new container. Their owner gets
         // reassigned by this operation - which is why it is important to reassign
@@ -109,7 +110,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pm.UseParentResource(m_pOwner->GetManager());
         m_pLayout->SetManager(&m_pm, NULL, true);
         LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VerticalLayout"));
-        if( pDefaultAttributes ) {
+        if( pDefaultAttributes )
+		{
             m_pLayout->ApplyAttributeList(pDefaultAttributes);
         }
         m_pLayout->SetInset(CDuiRect(1, 1, 1, 1));
@@ -128,37 +130,32 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pm.AddNotifier(this);
         return 0;
     }
-    else if( uMsg == WM_CLOSE ) {
+    else if( uMsg == WM_CLOSE )
+	{
         m_pOwner->SetManager(m_pOwner->GetManager(), m_pOwner->GetParent(), false);
         m_pOwner->SetPos(m_pOwner->GetPos());
         m_pOwner->SetFocus();
     }
-    else if( uMsg == WM_LBUTTONUP ) {
+    else if( uMsg == WM_LBUTTONUP )
+	{
         POINT pt = { 0 };
         ::GetCursorPos(&pt);
         ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
         CControlUI* pControl = m_pm.FindControl(pt);
-        if(!pControl)
-		{
-			m_pOwner->SelectItem(m_iOldSel, true);
-			EnsureVisible(m_iOldSel);
-			PostMessage(WM_KILLFOCUS);
-			return 0;
-		}
-		if (_tcscmp(pControl->GetClass(), _T("ScrollBarUI")) != 0)
-			PostMessage(WM_KILLFOCUS);
+        if( pControl && _tcscmp(pControl->GetClass(), _T("ScrollBarUI")) != 0 ) PostMessage(WM_KILLFOCUS);
     }
-    else if( uMsg == WM_KEYDOWN ) {
-        switch( wParam ) {
+    else if( uMsg == WM_KEYDOWN )
+	{
+        switch( wParam )
+		{
         case VK_ESCAPE:
             m_pOwner->SelectItem(m_iOldSel, true);
             EnsureVisible(m_iOldSel);
 			// FALL THROUGH...
-			PostMessage(WM_KILLFOCUS);
-			return 0;
+			PostMessage(WM_CLOSE);
         case VK_RETURN:
-			PostMessage(WM_KILLFOCUS);
-			return 0;
+            PostMessage(WM_CLOSE);
+            break;
         default:
             TEventUI event;
             event.Type = UIEVENT_KEYDOWN;
@@ -169,7 +166,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
     }
-    else if( uMsg == WM_MOUSEWHEEL ) {
+    else if( uMsg == WM_MOUSEWHEEL )
+	{
         //int zDelta = (int) (short) HIWORD(wParam);
         TEventUI event = { 0 };
         event.Type = UIEVENT_SCROLLWHEEL;
@@ -180,12 +178,20 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         //EnsureVisible(m_pOwner->GetCurSel());
         return 0;
     }
-    else if( uMsg == WM_KILLFOCUS ) {
-        if( m_hWnd != (HWND) wParam ) PostMessage(WM_CLOSE);
+    else if( uMsg == WM_KILLFOCUS )
+	{
+        if( m_hWnd != (HWND) wParam )
+		{
+			PostMessage(WM_CLOSE);
+		}
     }
 
     LRESULT lRes = 0;
-    if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
+	
+    if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) )
+	{
+		return lRes;
+	}
     return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 }
 
@@ -539,7 +545,16 @@ SIZE CComboUI::EstimateSize(SIZE szAvailable)
 bool CComboUI::Activate()
 {
     if( !CControlUI::Activate() ) return false;
-    if( m_pWindow ) return true;
+    if( m_pWindow )
+	{
+		if (IsWindow(m_pWindow->GetHWND()))
+		{
+			return true;
+		}
+		delete m_pWindow;
+		m_pWindow = NULL;
+		//return true;
+	}
     m_pWindow = new CComboWnd();
     ASSERT(m_pWindow);
     m_pWindow->Init(this);

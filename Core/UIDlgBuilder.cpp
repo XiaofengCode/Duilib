@@ -72,6 +72,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 
 void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent)
 {
+#ifdef DUILIB_LUA
 	if (!pManager)
 	{
 		return;
@@ -102,16 +103,16 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 			CDuiStringArray arValue = strValue.Split('.');
 			if (arValue.GetSize() == 1)
 			{
-				std::string sFun = DuiUtf16ToAscii(strValue);
+				std::string sFun = DUI_T2A(strValue);
 				pParent->BindLuaEvent(attr.name(), L->getGlobal(sFun.c_str()));
 			}
 			else
 			{
-				std::string sModule = DuiUtf16ToAscii(arValue[0]);
+				std::string sModule = DUI_T2A(arValue[0]);
 				LuaTable tab=L->require(sModule.c_str());
 				if (tab.isValid())
 				{
-					std::string sFun = DuiUtf16ToAscii(arValue[1]);
+					std::string sFun = DUI_T2A(arValue[1]);
 					pParent->BindLuaEvent(attr.name(),tab.getTable(sFun.c_str()));
 				}
 			}
@@ -131,7 +132,9 @@ void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, C
 	{
 		OutputDebugStringA(err.what());
 		//LOGE("doString error:"<<err.what());
-	}	
+	}
+#endif // DUILIB_LUA
+	
 }
 
 void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
@@ -161,6 +164,7 @@ void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
 
 void CDialogBuilder::_ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager)
 {
+#ifdef DUILIB_LUA
 	LuaState* L = pManager->GetLuaState();
 	if (!L)
 	{
@@ -171,6 +175,7 @@ void CDialogBuilder::_ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager)
 	}catch(LuaException err){
 		OutputDebugStringA(err.what());
 	}
+#endif // DUILIB_LUA
 }
 
 void CDialogBuilder::_ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node)
@@ -308,7 +313,7 @@ bool CDialogBuilder::LoadFile(LPCTSTR file)
 
 bool CDialogBuilder::LoadString(LPCWSTR str)
 {
-	return m_xml.Load(str);
+	return m_xml.Load(CDuiString(str));
 }
 
 bool CDialogBuilder::LoadString(LPCSTR str)

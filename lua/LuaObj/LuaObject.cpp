@@ -3,6 +3,7 @@
 #include "LuaTable.h"
 #include "LuaObjectImpl.h"
 
+#ifdef DUILIB_LUA
 LuaObject luaNil((LuaObjectImpl*)NULL);
 
 
@@ -207,8 +208,4 @@ LuaTable LuaObject::getMetatable()
 	lua_getmetatable(L,getIndex());
 	return LuaObject::objFromIndex(getCppLuaState(),lua_gettop(L));
 }
-
-
-
-
-
+#endif // DUILIB_LUA

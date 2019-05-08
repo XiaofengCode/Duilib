@@ -237,6 +237,7 @@ public:
 	void SetXmlOffset(DWORD dwOffset){m_dwOffsetInXml = dwOffset;}
 	LPCTSTR GetXmlFile(){return m_strXmlFileName;}
 	void SetXmlFile(LPCTSTR lpszFile){m_strXmlFileName = lpszFile;}
+	LPCTSTR LoadString( LPCTSTR lpszID );
 public:
     CEventSource OnInit;
     CEventSource OnDestroy;

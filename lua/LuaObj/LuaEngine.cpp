@@ -1,6 +1,7 @@
 #include "duipub.h"
 #include "LuaEngine.h"
 
+#ifdef DUILIB_LUA
 LuaManager s_LuaManager;
 
 LuaManager::LuaManager(void)
@@ -42,22 +43,4 @@ LuaEngine::~LuaEngine()
 {
 	s_LuaManager.setCurrent(NULL);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // DUILIB_LUA

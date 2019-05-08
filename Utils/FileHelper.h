@@ -39,7 +39,7 @@ namespace DuiLib {
 	};
 
 	CDuiString DuiGetAbsFilePath(LPCTSTR pstrFilename);
-	std::string DuiGetAbsFilePath(LPCSTR pstrFilename);
+	//std::string DuiGetAbsFilePath(LPCSTR pstrFilename);
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer);
 	BOOL DuiReadResourceFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer);
 }
