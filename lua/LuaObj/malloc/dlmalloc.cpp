@@ -6,7 +6,7 @@
   on the next line, as well as in programs that use this malloc.
   ========================================================================
 */
-
+#include "duipub.h"
 #include "dlmalloc.h" 
 #include <errno.h>
 /*------------------------------ internal #includes ---------------------- */
