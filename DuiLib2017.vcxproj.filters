@@ -55,6 +55,9 @@
     <Filter Include="lua\luaobj\malloc">
       <UniqueIdentifier>{67288b15-62cd-45e7-9ad3-b0cc92c15701}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{7d141d20-1800-4128-a280-180386a60e06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIlib.cpp">
@@ -260,6 +263,15 @@
     </ClCompile>
     <ClCompile Include="lua\LuaObj\LuaBind.cpp">
       <Filter>lua\luaobj</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\String.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\AttributeManager.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -499,6 +511,18 @@
     </ClInclude>
     <ClInclude Include="lua\LuaObj\LuaBind.h">
       <Filter>lua\luaobj</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugixml.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugiconfig.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\String.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\AttributeManager.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

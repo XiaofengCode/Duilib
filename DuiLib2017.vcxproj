@@ -1423,6 +1423,7 @@
     <ClCompile Include="Control\UIIpAddress.cpp" />
     <ClCompile Include="Control\UIMenu.cpp" />
     <ClCompile Include="Control\UIProgressButton.cpp" />
+    <ClCompile Include="Core\AttributeManager.cpp" />
     <ClCompile Include="Core\UIStringTable.cpp" />
     <ClCompile Include="Core\UITimer.cpp" />
     <CustomBuild Include="gitinfo.cpp">
@@ -1482,10 +1483,12 @@
     <ClCompile Include="lua\LuaObj\LuaTable.cpp" />
     <ClCompile Include="lua\LuaObj\malloc\dlmalloc.cpp" />
     <ClCompile Include="lua\LuaObj\Utf.cpp" />
+    <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="UIlib.cpp" />
     <ClCompile Include="Utils\DuiTrayIcon.cpp" />
     <ClCompile Include="Utils\FileHelper.cpp" />
     <ClCompile Include="Utils\GifImage.cpp" />
+    <ClCompile Include="Utils\String.cpp" />
     <ClCompile Include="Utils\UIShadow.cpp" />
     <ClCompile Include="Utils\WinImplBase.cpp" />
     <ClCompile Include="Utils\stb_image.c">
@@ -1610,6 +1613,7 @@
     <ClInclude Include="Control\UIIpAddress.h" />
     <ClInclude Include="Control\UIMenu.h" />
     <ClInclude Include="Control\UIProgressButton.h" />
+    <ClInclude Include="Core\AttributeManager.h" />
     <ClInclude Include="Core\UIStringTable.h" />
     <ClInclude Include="Core\UITimer.h" />
     <ClInclude Include="duipub.h" />
@@ -1640,6 +1644,8 @@
     <ClInclude Include="lua\LuaObj\malloc\dlmalloc.h" />
     <ClInclude Include="lua\LuaObj\MemPool.h" />
     <ClInclude Include="lua\LuaObj\Utf.h" />
+    <ClInclude Include="pugixml\pugiconfig.hpp" />
+    <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="UIlib.h" />
     <ClInclude Include="Utils\downloadmgr.h" />
     <ClInclude Include="Utils\DuiPointer.h" />
@@ -1648,6 +1654,7 @@
     <ClInclude Include="Utils\FlashEventHandler.h" />
     <ClInclude Include="Utils\GifImage.h" />
     <ClInclude Include="Utils\Internal.h" />
+    <ClInclude Include="Utils\String.h" />
     <ClInclude Include="Utils\UIDelegate.h" />
     <ClInclude Include="Utils\UIShadow.h" />
     <ClInclude Include="Utils\Utils.h" />
