@@ -186,7 +186,7 @@
 #	pragma comment(lib, DUILIB_NAME)
 
 #ifdef DUILIB_LUA
-#	define LUALIB_NAME	"lua51_" MSC_VERSION".lib"
+#	define LUALIB_NAME	"lua51_" MSC_VERSION DUILIB_PLAT ".lib"
 
 #	pragma message("Link lua5.1 name:" LUALIB_NAME)
 #	pragma comment(lib, LUALIB_NAME)

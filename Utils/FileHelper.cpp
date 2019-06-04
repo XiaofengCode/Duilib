@@ -1,6 +1,8 @@
 #include "duipub.h"
 #include "FileHelper.h"
 #include <io.h>
+#include <winhttp.h>
+#pragma comment(lib,"Winhttp.lib")
 
 namespace DuiLib {
 	bool _Failed(LPCTSTR pstrError, LPCTSTR pstrLocation /*= NULL*/)
@@ -36,8 +38,132 @@ namespace DuiLib {
 // 		return DUI_T2A(sPath);
 // 	}
 
+	BOOL HttpRequest(LPCTSTR lpszServerName, INTERNET_PORT port, bool bSSL, LPCTSTR lpszObjectName, LPCTSTR lpszMethod, LPVOID lpData, DWORD dwDataSize, CDuiBuffer& bufRes)
+	{
+		HINTERNET hOpen = 0;
+		HINTERNET hConnect = 0;
+		HINTERNET hRequest = 0;
+		BOOL bResult = FALSE;
+
+		do {
+			hOpen = WinHttpOpen(_T("DownloadFile"), WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+				WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+			if (!hOpen) {
+				wprintf(L"WinHttpOpen failed (0x%.8X)\n", GetLastError());
+				break;
+			}
+			hConnect = WinHttpConnect(hOpen, lpszServerName, port, 0);
+			if (!hConnect) {
+				DWORD dwErr = GetLastError();
+				wprintf(L"WinHttpConnect failed (0x%.8X)\n", GetLastError());
+				break;
+			}
+			hRequest = WinHttpOpenRequest(hConnect, lpszMethod, lpszObjectName,
+				NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, bSSL ? WINHTTP_FLAG_SECURE : 0);
+			if (!hRequest)
+			{
+				wprintf(L"WinHttpOpenRequest failed (0x%.8X)\n", GetLastError());
+				break;
+			}
+			TCHAR headerContentType[] = _T("Content-Type: */*";);
+			TCHAR headerContentLength[64];
+			_stprintf_s(headerContentLength, 64, _T("Content-Length: %d\r\n\r\n"), dwDataSize);
+			WinHttpAddRequestHeaders(hRequest, headerContentType, -1, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
+			WinHttpAddRequestHeaders(hRequest, headerContentLength, -1, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
+			if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, lpData, dwDataSize, 0, 0))
+			{
+				wprintf(L"WinHttpSendRequest failed (0x%.8X)\n", GetLastError());
+				break;
+			}
+			if (!WinHttpReceiveResponse(hRequest, 0))
+			{
+				wprintf(L"WinHttpReceiveResponse failed (0x%.8X)\n", GetLastError());
+				break;
+			}
+			TCHAR szContentLength[32] = { 0 };
+			DWORD cch = 64;
+			DWORD dwHeaderIndex = WINHTTP_NO_HEADER_INDEX;
+			BOOL haveContentLength = WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_CONTENT_LENGTH, NULL,
+				&szContentLength, &cch, &dwHeaderIndex);
+			DWORD dwContentLength;
+			if (haveContentLength) dwContentLength = _wtoi(szContentLength);
+
+			BYTE byBuffer[4097];
+			DWORD dwSize;
+			std::vector<CDuiBuffer*> arResBuf;
+			while (WinHttpQueryDataAvailable(hRequest, &dwSize) && dwSize) {
+				if (dwSize > 4096) dwSize = 4096;
+
+				WinHttpReadData(hRequest, byBuffer, dwSize, &dwSize);
+				byBuffer[dwSize] = 0;
+				CDuiBuffer* pBuf = new CDuiBuffer(dwSize);
+				memcpy(*pBuf, byBuffer, dwSize);
+				arResBuf.push_back(pBuf);
+			}
+			dwSize = 0;
+			for (size_t i = 0; i < arResBuf.size(); i++)
+			{
+				dwSize += arResBuf[i]->GetSize();
+			}
+			bufRes.Resize(dwSize);
+			dwSize = 0;
+			for (size_t i = 0; i < arResBuf.size(); i++)
+			{
+				memcpy((LPBYTE)bufRes + dwSize, *arResBuf[i], arResBuf[i]->GetSize());
+				dwSize += arResBuf[i]->GetSize();
+				delete arResBuf[i];
+			}			
+			bResult = TRUE;
+		} while (FALSE);
+
+		if (hRequest) WinHttpCloseHandle(hRequest);
+		if (hConnect) WinHttpCloseHandle(hConnect);
+		if (hOpen) WinHttpCloseHandle(hOpen);
+
+		return bResult;
+	}
+
 	BOOL DuiReadFileData(LPCTSTR pstrFilename, CDuiBuffer& buffer)
 	{
+		if (_tcsnicmp(pstrFilename, _T("http://"), _tcslen(_T("http://"))) == 0
+			|| _tcsnicmp(pstrFilename, _T("https://"), _tcslen(_T("https://"))) == 0)
+		{
+			INTERNET_PORT port = INTERNET_DEFAULT_HTTP_PORT;
+			CDuiString strServer;
+			CDuiString strObject;
+			bool bSSL = false;
+			LPTSTR lpszUrl = _tcsdup(pstrFilename);
+			LPTSTR p = lpszUrl;
+			p += 4;		//	"http"
+			if (*p == 's')
+			{
+				bSSL = true;
+				port = INTERNET_DEFAULT_HTTPS_PORT;
+				p++;
+			}
+			p += 3;		//	"://"
+			LPTSTR pPort = _tcschr(p, ':');
+			if (pPort)
+			{
+				*pPort = 0;
+				strServer = p;
+				p = pPort;
+			}
+			LPTSTR pSubPath = _tcschr(p, '/');
+			*pSubPath = 0;
+			if (pPort)
+			{
+				//Port
+				port = (INTERNET_PORT)_ttoi(p);
+			}
+			else
+			{
+				strServer = p;
+			}
+			*pSubPath = '/';
+			strObject = pSubPath;
+			return HttpRequest(strServer, port, bSSL, strObject, _T("GET"), NULL, 0, buffer);
+		}
 		CDuiString strFile = DuiGetAbsFilePath(pstrFilename);
 		HANDLE hFile = CreateFile(strFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if( hFile == INVALID_HANDLE_VALUE )
