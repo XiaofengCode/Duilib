@@ -563,6 +563,11 @@ namespace DuiLib
 
 	void CEditUI::PaintText(HDC hDC)
 	{
+		if (IsFocused() && m_pWindow && m_pWindow->IsFocus())
+		{
+			RECT rcParent = GetPos();
+			CRenderEngine::DrawColor(hDC, rcParent, GetNativeEditBkColor());
+		}
 		DWORD mCurTextColor = GetStatusColor(DUI_ATTR_TEXT DUI_ATTR_COLOR);
 		if( mCurTextColor == 0 )
 			mCurTextColor = IsEnabled() ? m_pManager->GetDefaultFontColor() : m_pManager->GetDefaultDisabledColor();
