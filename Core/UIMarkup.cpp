@@ -165,6 +165,13 @@ bool CMarkup::LoadFromFile(LPCTSTR pstrFilename, int encoding)
 	}
 
 	bool ret = LoadFromMem(buf, buf.GetSize(), encoding);
+	if (!ret)
+	{
+		CDuiString sErr(_T("Load xml failed:"));
+		sErr += pstrFilename;
+		sErr += _T("\n");
+		OutputDebugString(sErr);
+	}
 	return ret;
 }
 
@@ -186,8 +193,15 @@ bool CMarkup::_Parse()
 		return false;
 	pugi::xml_parse_result result = m_parser.load_string(m_pstrXML);
 
-	m_error = result.description();
-	return result.status == pugi::status_ok;
+	if (!result)
+	{
+		m_error = result.description();
+		CDuiString sErr;
+		sErr.SmallFormat(_T("Err:%s(%d)\n"), (LPCTSTR)m_error, result.offset);
+		OutputDebugString(sErr);
+		return false;
+	}
+	return true;
 }
 
 bool CMarkup::_Failed(LPCTSTR pstrError, LPCTSTR pstrLocation)

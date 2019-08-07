@@ -947,6 +947,7 @@ BOOL CListBodyUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData)
 	if (!pfnCompare)
 		return FALSE;
 	m_pCompareFunc = pfnCompare;
+	m_compareData = dwData;
 	CControlUI **pData = (CControlUI **)m_items.GetData();
 	qsort_s(m_items.GetData(), m_items.GetSize(), sizeof(CControlUI*), CListBodyUI::ItemComareFunc, this);	
 	IListItemUI *pItem = NULL;
