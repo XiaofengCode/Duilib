@@ -40,7 +40,7 @@ namespace DuiLib
 		UINT GetControlFlags() const;
 	protected:
 		SYSTEMTIME m_sysTime;
-		int        m_nDTUpdateFlag;
+		//int        m_nDTUpdateFlag;
 		bool       m_bReadOnly;
 		UINT		m_uDptStyle;
 		CDuiString	m_strFormat;

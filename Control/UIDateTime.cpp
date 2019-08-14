@@ -38,7 +38,6 @@ namespace DuiLib
 	void CDateTimeWnd::Init(CDateTimeUI* pOwner)
 	{
 		m_pOwner = pOwner;
-		m_pOwner->m_nDTUpdateFlag = DT_NONE;
 		RECT rcPos = CalPos();
 
 		if (m_hWnd == NULL)
@@ -130,18 +129,25 @@ namespace DuiLib
 		else if (uMsg == WM_KEYUP && wParam == VK_ESCAPE)
 		{
 			LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-			m_pOwner->m_nDTUpdateFlag = DT_KEEP;
 			PostMessage(WM_CLOSE);
 			return lRes;
 		}
-//	else if( uMsg == OCM_COMMAND ) {
-// 		if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-// 		else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
-// 			RECT rcClient;
-// 			::GetClientRect(m_hWnd, &rcClient);
-// 			::InvalidateRect(m_hWnd, &rcClient, FALSE);
-// 		}
-//	}
+		else if( uMsg == OCM_NOTIFY)
+		{
+			CDuiString sDbg;
+			sDbg.SmallFormat(_T("%X, %X\r\n"), wParam, lParam);
+			OutputDebugString(sDbg);
+			if(((LPNMHDR)lParam)->code == DTN_DATETIMECHANGE)
+			{
+				LPNMDATETIMECHANGE lpChangeParam = (LPNMDATETIMECHANGE)lParam;
+				if (lpChangeParam->dwFlags == GDT_VALID)
+				{
+					//::SendMessage(m_hWnd, DTM_GETSYSTEMTIME, 0, (LPARAM)& m_pOwner->m_sysTime);
+					m_pOwner->m_sysTime = lpChangeParam->st;
+					m_pOwner->UpdateText();
+				}
+			}
+		}
 //	else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
 // 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
 //	}
@@ -156,7 +162,13 @@ namespace DuiLib
 // 			}
 // 			return (LRESULT)m_hBkBrush;
 // 		}
-		else bHandled = FALSE;
+		else
+		{
+			bHandled = FALSE;
+			CDuiString sDbg;
+			sDbg.SmallFormat(_T("%X\r\n"), uMsg);
+			OutputDebugString(sDbg);
+		}
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
 	}
@@ -164,12 +176,8 @@ namespace DuiLib
 	LRESULT CDateTimeWnd::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-		if (m_pOwner->m_nDTUpdateFlag == DT_NONE)
-		{
-			::SendMessage(m_hWnd, DTM_GETSYSTEMTIME, 0, (LPARAM)&m_pOwner->m_sysTime);
-			m_pOwner->m_nDTUpdateFlag = DT_UPDATE;
-			m_pOwner->UpdateText();
-		}
+		::SendMessage(m_hWnd, DTM_GETSYSTEMTIME, 0, (LPARAM)&m_pOwner->m_sysTime);
+		m_pOwner->UpdateText();
 		PostMessage(WM_CLOSE);
 		return lRes;
 	}
@@ -195,9 +203,7 @@ namespace DuiLib
 		::GetLocalTime(&m_sysTime);
 		m_bReadOnly = false;
 		m_pWindow = NULL;
-		m_nDTUpdateFlag=DT_UPDATE;
 		UpdateText();		// add by:daviyang35 初始化界面时显示时间
-		m_nDTUpdateFlag = DT_NONE;
 	}
 
 	LPCTSTR CDateTimeUI::GetClass() const
@@ -213,6 +219,10 @@ namespace DuiLib
 
 	SYSTEMTIME& CDateTimeUI::GetTime()
 	{
+		if (m_pWindow)
+		{
+			::SendMessage(m_pWindow->GetHWND(), DTM_GETSYSTEMTIME, 0, (LPARAM)&m_sysTime);
+		}
 		return m_sysTime;
 	}
 
@@ -384,7 +394,6 @@ namespace DuiLib
 			if (_tcsicmp(pstrValue, DTUI_TIMEFORMAT) == 0)
 			{
 				m_uDptStyle = DTS_TIMEFORMAT;
-				m_nDTUpdateFlag = DT_UPDATE;
 				UpdateText();
 			}
 			return;
