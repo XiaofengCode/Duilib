@@ -145,7 +145,7 @@ namespace DuiLib
 		{
 // 			RECT rcText = {0};
 // 			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, m_dwTextColor, m_iFont, DT_CALCRECT | m_uTextStyle);
-			m_attrs.SetAttribute(DUI_ATTR_WIDTH, rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right);
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right, false);
 		}
 
 		if( GetFixedHeight() == 0 ) return CDuiSize(GetFixedWidth(), m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);

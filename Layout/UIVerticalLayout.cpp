@@ -232,7 +232,7 @@ namespace DuiLib
 
 					CDuiRect rcInvalidate = GetThumbRect(true);
 					m_rcNewPos = rc;
-					m_attrs.SetAttribute(DUI_ATTR_HEIGHT, m_rcNewPos.bottom - m_rcNewPos.top);
+					m_attrs.SetAttribute(DUI_ATTR_HEIGHT, m_rcNewPos.bottom - m_rcNewPos.top, false);
 
 					if( m_bImmMode ) {
 						m_rcItem = m_rcNewPos;

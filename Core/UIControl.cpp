@@ -25,19 +25,19 @@ m_dwStatus(0)
 {
 //	m_attrs.AddKeyword(DUI_ATTR_NAME, TypeString);
 
-	m_attrs.AddKeyword(DUI_ATTR_COLOR, TypeColor);
-	m_attrs.AddKeyword(DUI_ATTR_COLOR2, TypeColor);
-	m_attrs.AddKeyword(DUI_ATTR_COLOR3, TypeColor);
-	m_attrs.AddKeyword(DUI_ATTR_POS, TypeRect);
-	m_attrs.AddKeyword(DUI_ATTR_PADDING, TypeRect);
-	m_attrs.AddKeyword(DUI_ATTR_SIZE, TypeIntOrRect);
-	m_attrs.AddKeyword(DUI_ATTR_ROUND, TypeRect);
-	m_attrs.AddKeyword(DUI_ATTR_WIDTH, TypeInt);
-	m_attrs.AddKeyword(DUI_ATTR_HEIGHT, TypeInt);
-	m_attrs.AddKeyword(DUI_ATTR_FONT, TypeString);
-	m_attrs.AddKeyword(DUI_ATTR_TOOLTIP, TypeString);
-	m_attrs.AddKeyword(DUI_ATTR_IMAGE, TypeImage);
-	m_attrs.AddKeyword(DUI_ATTR_TIPVALUE, TypeString);
+	m_attrs.AddKeyword(DUI_ATTR_COLOR, false, TypeColor);
+	m_attrs.AddKeyword(DUI_ATTR_COLOR2, false, TypeColor);
+	m_attrs.AddKeyword(DUI_ATTR_COLOR3, false, TypeColor);
+	m_attrs.AddKeyword(DUI_ATTR_POS, true, TypeRect);
+	m_attrs.AddKeyword(DUI_ATTR_PADDING, true, TypeRect);
+	m_attrs.AddKeyword(DUI_ATTR_SIZE, true, TypeIntOrRect);
+	m_attrs.AddKeyword(DUI_ATTR_ROUND, true, TypeRect);
+	m_attrs.AddKeyword(DUI_ATTR_WIDTH, true, TypeInt);
+	m_attrs.AddKeyword(DUI_ATTR_HEIGHT, true, TypeInt);
+	m_attrs.AddKeyword(DUI_ATTR_FONT, false, TypeString);
+	m_attrs.AddKeyword(DUI_ATTR_TOOLTIP, false, TypeString);
+	m_attrs.AddKeyword(DUI_ATTR_IMAGE, false, TypeImage);
+	m_attrs.AddKeyword(DUI_ATTR_TIPVALUE, false, TypeString);
 // 	m_attrs.AddKeyword(DUI_ATTR_USERDATA, TypeString);
 // 	m_attrs.AddKeyword(DUI_ATTR_ENABLED, TypeBool);
 // 	m_attrs.AddKeyword(DUI_ATTR_KEYBOARD, TypeBool);
@@ -47,7 +47,7 @@ m_dwStatus(0)
 // 	m_attrs.AddKeyword(DUI_ATTR_MENU, TypeBool);
 //	m_attrs.AddKeyword(DUI_ATTR_VIRTUALWND, TypeString);
 
-	m_attrs.AddKeyword(DUI_ATTR_TEXT, TypeString);
+	m_attrs.AddKeyword(DUI_ATTR_TEXT, false, TypeString);
 
 	m_attrs.AddKeyword(DUI_ATTR_POS_FOCUSDOT);
 	m_attrs.AddKeyword(DUI_ATTR_POS_BK);
@@ -62,8 +62,8 @@ m_dwStatus(0)
 	m_attrs.AddKeyword(DUI_ATTR_STATUS_SELECTED);
 
 	m_cXY.cx = m_cXY.cy = 0;
-	m_attrs.SetAttribute(DUI_ATTR_WIDTH, 0);
-	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, 0);
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, 0, false);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, 0, false);
     m_cxyMin.cx = m_cxyMin.cy = 0;
     m_cxyMax.cx = m_cxyMax.cy = 9999;
     m_cxyBorderRound.cx = m_cxyBorderRound.cy = 0;
@@ -223,6 +223,7 @@ CPaintManagerUI* CControlUI::GetManager() const
 
 void CControlUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
 {
+	if (pManager)m_attrs.SetScale(pManager->GetDpiScale());
     m_pManager = pManager;
     m_pParent = (CContainerUI*)pParent;
     if( bInit && m_pParent ) Init();
@@ -412,13 +413,13 @@ int CControlUI::GetBorderSize() const
 void CControlUI::SetBorderSize(int nSize)
 {
 	RECT rc = {nSize, nSize, nSize, nSize};
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
     Invalidate();
 }
 
 void CControlUI::SetBorderSize( RECT rc )
 {
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
 	Invalidate();
 }
 
@@ -478,8 +479,8 @@ void CControlUI::SetPos(RECT rc)
             else m_cXY.cx = m_rcItem.right - rcParentPos.right;
             if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
 			else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
-			m_attrs.SetAttribute(DUI_ATTR_WIDTH, m_rcItem.right - m_rcItem.left);
-			m_attrs.SetAttribute(DUI_ATTR_HEIGHT, m_rcItem.bottom - m_rcItem.top);
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, m_rcItem.right - m_rcItem.left, false);
+			m_attrs.SetAttribute(DUI_ATTR_HEIGHT, m_rcItem.bottom - m_rcItem.top, false);
         }
     }
 
@@ -528,7 +529,7 @@ RECT CControlUI::GetPadding() const
 
 void CControlUI::SetPadding(RECT rcPadding)
 {
-	m_attrs.SetAttribute(DUI_ATTR_PADDING, rcPadding);
+	m_attrs.SetAttribute(DUI_ATTR_PADDING, rcPadding, false);
     NeedParentUpdate();
 }
 
@@ -553,7 +554,7 @@ int CControlUI::GetFixedWidth() const
 void CControlUI::SetFixedWidth(int cx)
 {
 	if( cx < 0 ) return; 
-	m_attrs.SetAttribute(DUI_ATTR_WIDTH, cx);
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, cx, false);
     if( !m_bFloat ) NeedParentUpdate();
     else NeedUpdate();
 }
@@ -566,7 +567,7 @@ int CControlUI::GetFixedHeight() const
 void CControlUI::SetFixedHeight(int cy)
 {
 	if( cy < 0 ) return; 
-	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, cy);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, cy, false);
     if( !m_bFloat ) NeedParentUpdate();
     else NeedUpdate();
 }
@@ -1059,13 +1060,13 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
         SIZE szMove,szZoom;
         LPTSTR pstr = NULL;
-		szMove.cx = (LONG)(S*_tcstol(pstrValue, &pstr, 10));
+		szMove.cx = (LONG)(S*_tcstol(pstrValue, &pstr, 10)) * S;
 		ASSERT(pstr);
-		szMove.cy = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
+		szMove.cy = (LONG)(S*_tcstol(pstr + 1, &pstr, 10)) * S;
 		ASSERT(pstr);
-		szZoom.cx = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
+		szZoom.cx = (LONG)(S*_tcstol(pstr + 1, &pstr, 10)) * S;
 		ASSERT(pstr);
-		szZoom.cy = (LONG)(S*_tcstol(pstr + 1, &pstr, 10));
+		szZoom.cy = (LONG)(S*_tcstol(pstr + 1, &pstr, 10)) * S;
 		ASSERT(pstr);
         SetRelativePos(szMove,szZoom);
     }
@@ -1078,8 +1079,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcsicmp(pstrName, _T("borderround")) == 0 ) {
         SIZE cxyRound = { 0 };
         LPTSTR pstr = NULL;
-        cxyRound.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        cxyRound.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);     
+        cxyRound.cx = _tcstol(pstrValue, &pstr, 10) * S;  ASSERT(pstr);    
+        cxyRound.cy = _tcstol(pstr + 1, &pstr, 10) * S;    ASSERT(pstr);
         SetBorderRound(cxyRound);
     }
 	else if (_tcsicmp(pstrName, _T("minwidth")) == 0) SetMinWidth((int)(S*_ttoi(pstrValue)));
@@ -1435,7 +1436,7 @@ void CControlUI::PaintBorder(HDC hDC)
 	DWORD dwBorderColor = GetStatusColor(DUI_ATTR_POS_BORDER DUI_ATTR_COLOR);
 	if(dwBorderColor != 0)
 	{
-		double S = m_pManager ? m_pManager->GetDpiScale() : 1.0;
+		double S = /*m_pManager ? m_pManager->GetDpiScale() : */1.0;
 		RECT rcBorderSize = GetStatusRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 		int nBorderSize = GetStatusInt(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 		if (rcBorderSize.left && 
@@ -1504,7 +1505,7 @@ void CControlUI::SetLeftBorderSize( int nSize )
 {
 	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 	rc.left = nSize;
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
 	Invalidate();
 }
 
@@ -1518,7 +1519,7 @@ void CControlUI::SetTopBorderSize( int nSize )
 {
 	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 	rc.top = nSize;
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
 	Invalidate();
 }
 
@@ -1532,7 +1533,7 @@ void CControlUI::SetRightBorderSize( int nSize )
 {
 	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 	rc.right = nSize;
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
 	Invalidate();
 }
 
@@ -1546,7 +1547,7 @@ void CControlUI::SetBottomBorderSize( int nSize )
 {
 	RECT rc = m_attrs.GetRect(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE);
 	rc.bottom = nSize;
-	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc);
+	m_attrs.SetAttribute(DUI_ATTR_POS_BORDER DUI_ATTR_SIZE, rc, false);
 	Invalidate();
 }
 

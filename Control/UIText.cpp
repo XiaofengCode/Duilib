@@ -124,7 +124,7 @@ namespace DuiLib
 
 		if (m_bAutoCalcWidth)
 		{
-			m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx);
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx, false);
 		}
 
 		return CControlUI::EstimateSize(szAvailable);

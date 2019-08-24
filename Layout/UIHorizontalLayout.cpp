@@ -249,7 +249,7 @@ namespace DuiLib
 
 					CDuiRect rcInvalidate = GetThumbRect(true);
 					m_rcNewPos = rc;
-					m_attrs.SetAttribute(DUI_ATTR_WIDTH, m_rcNewPos.right - m_rcNewPos.left);
+					m_attrs.SetAttribute(DUI_ATTR_WIDTH, m_rcNewPos.right - m_rcNewPos.left, false);
 
 					if( m_bImmMode ) {
 						m_rcItem = m_rcNewPos;

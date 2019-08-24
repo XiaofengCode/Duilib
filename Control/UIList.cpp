@@ -1602,7 +1602,7 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
             }
             
 			if( rc.right - rc.left > GetMinWidth() ) {
-				m_attrs.SetAttribute(DUI_ATTR_WIDTH, rc.right - rc.left);
+				m_attrs.SetAttribute(DUI_ATTR_WIDTH, rc.right - rc.left, false);
                 ptLastMouse = event.ptMouse;
                 if( GetParent() ) 
                     GetParent()->NeedParentUpdate();

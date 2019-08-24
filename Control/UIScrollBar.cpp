@@ -7,7 +7,7 @@ namespace DuiLib
 		m_pOwner(NULL), m_nLastScrollPos(0), m_nLastScrollOffset(0), m_nScrollRepeatDelay(0), m_uButton1State(0), \
 		m_uButton2State(0), m_uThumbState(0), m_bShowButton1(true), m_bShowButton2(true)
 	{
-		m_attrs.SetAttribute(DUI_ATTR_WIDTH, DEFAULT_SCROLLBAR_SIZE);
+		m_attrs.SetAttribute(DUI_ATTR_WIDTH, DEFAULT_SCROLLBAR_SIZE, true);
 		ptLastMouse.x = ptLastMouse.y = 0;
 		::ZeroMemory(&m_rcThumb, sizeof(m_rcThumb));
 		::ZeroMemory(&m_rcButton1, sizeof(m_rcButton1));
@@ -31,8 +31,7 @@ namespace DuiLib
 
 		if (GetFixedWidth() == DEFAULT_SCROLLBAR_SIZE && m_pManager)
 		{
-			double S = GetManager()->GetDpiScale();
-			m_attrs.SetAttribute(DUI_ATTR_WIDTH, (int)(DEFAULT_SCROLLBAR_SIZE * S));
+			m_attrs.SetAttribute(DUI_ATTR_WIDTH, DEFAULT_SCROLLBAR_SIZE, true);
 		}
 	}
 
@@ -86,16 +85,16 @@ namespace DuiLib
 
 			if( GetFixedHeight() == 0 )
 			{
-				m_attrs.SetAttribute(DUI_ATTR_WIDTH, 0);
-				m_attrs.SetAttribute(DUI_ATTR_HEIGHT, DEFAULT_SCROLLBAR_SIZE);
+				m_attrs.SetAttribute(DUI_ATTR_WIDTH, 0, true);
+				m_attrs.SetAttribute(DUI_ATTR_HEIGHT, DEFAULT_SCROLLBAR_SIZE, true);
 			}
 		}
 		else
 		{
 			if( GetFixedWidth() == 0 )
 			{
-				m_attrs.SetAttribute(DUI_ATTR_WIDTH, DEFAULT_SCROLLBAR_SIZE);
-				m_attrs.SetAttribute(DUI_ATTR_HEIGHT, 0);
+				m_attrs.SetAttribute(DUI_ATTR_WIDTH, DEFAULT_SCROLLBAR_SIZE, true);
+				m_attrs.SetAttribute(DUI_ATTR_HEIGHT, 0, true);
 			}
 		}
 

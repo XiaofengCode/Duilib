@@ -175,6 +175,7 @@ public:
 		return *this;
 	}
 
+	bool bIsScaled;
 	ValueType type;
 	ValueType realtype;
 	CDuiString strValue;
@@ -279,6 +280,8 @@ protected:
 	CMapAttrNodes* m_pMapSubNodes;
 };
 
+class CAttributeManager;
+typedef bool (CAttributeManager::* PFN_ParseAttrValue)(LPCTSTR lpszValue, CAttrItem& item);
 class CAttributeManager
 {
 public:
@@ -286,20 +289,23 @@ public:
 	//typedef std::map<CDuiString, DWORD> CMapStatus;
 	typedef std::pair<CDuiString, DWORD> CPairKeyword;
 	typedef std::list<CPairKeyword> CListKeywords;
-	typedef bool (*PFN_ParseAttrValue)(LPCTSTR lpszValue, CAttrItem& item);
 	CAttributeManager();
 	virtual ~CAttributeManager()
 	{
 	}
+	void SetScale(double s)
+	{
+		m_dScale = s;
+	}
 	void SetMetaManager(const CAttributeManager* pMgr);
-	void AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type = TypeUnknown);
+	void AddKeyword(LPCTSTR lpszAttrKeyword, bool bScaled = false, ValueType type = TypeUnknown);
 
 	bool SetAttribute(LPCTSTR lpszAttr, LPCTSTR lpszValue);
-	bool SetAttribute(LPCTSTR lpszAttr, int value);
+	bool SetAttribute(LPCTSTR lpszAttr, int value, bool bScale);
 	bool SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType type = TypeColor);
-	bool SetAttribute(LPCTSTR lpszAttr, RECT value);
+	bool SetAttribute(LPCTSTR lpszAttr, RECT value, bool bScale);
 	bool SetAttribute(LPCTSTR lpszAttr, bool value);
-	bool SetAttribute(LPCTSTR lpszAttr, POINT value);
+	bool SetAttribute(LPCTSTR lpszAttr, POINT value, bool bScale);
 
 	CDuiString GetString(LPCTSTR lpszAttr, bool* pResult = NULL) const
 	{
@@ -351,24 +357,25 @@ public:
 	GETATTRIBUTE(CDuiImage, GetImage, TypeImage, *item.value.pImageValue, DUIIMAGE_NULL)
 protected:
 	bool ParseAttributeValue(LPCTSTR lpszAttr, LPCTSTR lpszValue);
-	ValueType ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr) const;
+	ValueType ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr, bool& bScaled) const;
 	bool GetAttributeItem(LPCTSTR lpszAttr, CAttrItem& item) const;
-	static bool ParseInt(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseColor(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseRect(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseString(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseBool(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParsePoint(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParsePercent(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseIntOrPercent(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseIntOrRect(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseIntOrString(LPCTSTR lpszValue, CAttrItem& item);
-	static bool ParseImage(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseInt(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseColor(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseRect(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseString(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseBool(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParsePoint(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParsePercent(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseIntOrPercent(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseIntOrRect(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseIntOrString(LPCTSTR lpszValue, CAttrItem& item);
+	bool ParseImage(LPCTSTR lpszValue, CAttrItem& item);
 	const static PFN_ParseAttrValue pfnParseFunctions[TypeMax];
  	//CMapStatus m_mapKeywords;
 	CListKeywords m_lstKeywords;
 // 	CMapAttrs m_mapAttrs;
 	CAttrTreeNode	m_AttrTreeRoot;
+	double m_dScale;
 	const CAttributeManager* m_pMetaManager;
 };
 

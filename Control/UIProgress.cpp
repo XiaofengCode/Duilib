@@ -146,6 +146,11 @@ namespace DuiLib
 
 	void CProgressUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
+		double S = 1.0;
+		if (m_pManager)
+		{
+			S = m_pManager->GetDpiScale();
+		}
 		if( _tcsicmp(pstrName, _T("hor")) == 0 )
 		{
 			if(_tcsicmp(pstrValue, _T("true")) == 0)
@@ -176,9 +181,9 @@ namespace DuiLib
 				SetType(TypeHorizontal);
 			}
 		}
-		else if( _tcsicmp(pstrName, _T("CirFinishedWidth")) == 0 ) SetCircularFinishedWidth(_ttoi(pstrValue));
-		else if( _tcsicmp(pstrName, _T("CirLastWidth")) == 0 ) SetCircularLastWidth(_ttoi(pstrValue));
-		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("CirFinishedWidth")) == 0 ) SetCircularFinishedWidth(_ttoi(pstrValue) * S);
+		else if( _tcsicmp(pstrName, _T("CirLastWidth")) == 0 ) SetCircularLastWidth(_ttoi(pstrValue) * S);
+		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue) * S);
 		else if( _tcsicmp(pstrName, _T("StartAngle")) == 0 ) SetCircularStartAngle(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("SweepAngle")) == 0 ) SetCircularSweepAngle(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("Button")) == 0 ) SetButton(_tcsicmp(pstrValue, _T("true")) == 0);
@@ -219,11 +224,6 @@ namespace DuiLib
 		}
 		else
 		{
-			double S = 1.0;
-			if (m_pManager)
-			{
-				S = m_pManager->GetDpiScale();
-			}
 			//if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 			Gdiplus::Graphics g(hDC);
 			g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);//抗锯齿 
@@ -234,7 +234,7 @@ namespace DuiLib
 				m_rcItem.bottom + rcPadding.bottom);
 			//TODO:如果有边框就先绘制边框
 			//因为画笔是居中画的，因此要先缩小矩形，缩小圆环宽度的一半
-			int nWidth = GetCircularFinishedWidth() * S;
+			int nWidth = GetCircularFinishedWidth();
 			if (!nWidth)
 			{
 				nWidth = rcItem.GetHeight()/5;
@@ -253,7 +253,7 @@ namespace DuiLib
 			}
 			g.DrawArc(&pen, rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle, nSweepAngle);
 
-			nWidth = GetCircularLastWidth() * S;
+			nWidth = GetCircularLastWidth();
 			if (!nWidth)
 			{
 				nWidth = rcItem.GetHeight()/5;

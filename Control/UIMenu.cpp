@@ -740,8 +740,8 @@ m_bCheckItem(false),
 m_bShowExplandIcon(false),
 m_uTextStyle(DT_LEFT|DT_VCENTER)
 {
-	m_attrs.SetAttribute(DUI_ATTR_WIDTH, ITEM_DEFAULT_WIDTH);
-	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, ITEM_DEFAULT_HEIGHT);
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, ITEM_DEFAULT_WIDTH, true);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, ITEM_DEFAULT_HEIGHT, true);
 	m_szIconSize.cy = ITEM_DEFAULT_ICON_SIZE;
 	m_szIconSize.cx = ITEM_DEFAULT_ICON_SIZE;
 
@@ -874,8 +874,8 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 	}
 	if (S != 1.0 && (GetFixedWidth() == ITEM_DEFAULT_WIDTH || GetFixedHeight() == ITEM_DEFAULT_HEIGHT))
 	{
-		m_attrs.SetAttribute(DUI_ATTR_WIDTH, (int)(ITEM_DEFAULT_WIDTH * S));
-		m_attrs.SetAttribute(DUI_ATTR_HEIGHT, (int)(ITEM_DEFAULT_HEIGHT * S));
+		m_attrs.SetAttribute(DUI_ATTR_WIDTH, ITEM_DEFAULT_WIDTH, true);
+		m_attrs.SetAttribute(DUI_ATTR_HEIGHT, ITEM_DEFAULT_HEIGHT, true);
 	}
 
 	SIZE cXY = {0};
@@ -923,8 +923,8 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 	if ( cXY.cx < GetFixedWidth() )
 		cXY.cx = GetFixedWidth();
 
-	m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx);
-	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, cXY.cy);
+	m_attrs.SetAttribute(DUI_ATTR_WIDTH, cXY.cx, false);
+	m_attrs.SetAttribute(DUI_ATTR_HEIGHT, cXY.cy, false);
 	return cXY;
 }
 

@@ -3,22 +3,22 @@
 
 namespace DuiLib{
 
-const CAttributeManager::PFN_ParseAttrValue CAttributeManager::pfnParseFunctions[TypeMax] = {
+const PFN_ParseAttrValue CAttributeManager::pfnParseFunctions[TypeMax] = {
 	NULL,
-	CAttributeManager::ParseInt,
-	CAttributeManager::ParseColor,
-	CAttributeManager::ParseRect,
-	CAttributeManager::ParseString,
-	CAttributeManager::ParseBool,
-	CAttributeManager::ParsePoint,
-	CAttributeManager::ParsePercent,
-	CAttributeManager::ParseIntOrPercent,
-	CAttributeManager::ParseIntOrRect,
-	CAttributeManager::ParseIntOrString,
-	CAttributeManager::ParseImage
+	&CAttributeManager::ParseInt,
+	&CAttributeManager::ParseColor,
+	&CAttributeManager::ParseRect,
+	&CAttributeManager::ParseString,
+	&CAttributeManager::ParseBool,
+	&CAttributeManager::ParsePoint,
+	&CAttributeManager::ParsePercent,
+	&CAttributeManager::ParseIntOrPercent,
+	&CAttributeManager::ParseIntOrRect,
+	&CAttributeManager::ParseIntOrString,
+	&CAttributeManager::ParseImage
 };
 
-CAttributeManager::CAttributeManager():m_pMetaManager(nullptr)
+CAttributeManager::CAttributeManager():m_pMetaManager(nullptr), m_dScale(1.0)
 {
 
 }
@@ -27,10 +27,13 @@ void CAttributeManager::SetMetaManager(const CAttributeManager* pMgr)
 {
 	m_pMetaManager = pMgr;
 }
-
-void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, ValueType type)
+#define GEN_ATTR_DATA(nIndex, type, bScaled) ((DWORD)((nIndex)|(((bScaled)?1:0)<<15)|((type)<<16)))
+#define ATTR_IS_SCALED(dwData)	(((dwData)>>15)&1)
+#define ATTR_GET_TYPE(dwData)	((ValueType)((dwData)>>16))
+void CAttributeManager::AddKeyword(LPCTSTR lpszAttrKeyword, bool bScaled, ValueType type)
 {
-	CPairKeyword item(lpszAttrKeyword, (DWORD)MAKELONG(m_lstKeywords.size(), type));
+	//(DWORD)MAKELONG(m_lstKeywords.size(), type)
+	CPairKeyword item(lpszAttrKeyword, GEN_ATTR_DATA(m_lstKeywords.size(), type, bScaled));
 	int nLen = (int)_tcslen(lpszAttrKeyword);
 	/*
 	关键字按照长度从长到短插入，为了查找属性时候最常匹配，如bkcolor2，解析出来应该是bk color2而不是bk color 2
@@ -54,17 +57,20 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, LPCTSTR lpszValue)
 	return ParseAttributeValue(strAttr, lpszValue);
 }
 
-bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, int value)
+bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, int value, bool bScale)
 {
 	CAttrIDQueue attrIds;
-	ValueType type = ParseStatus(lpszAttr, attrIds);
+	bool bScaled;
+	ValueType type = ParseStatus(lpszAttr, attrIds, bScaled);
 	if (type == TypeUnknown)
 	{
 		return false;
 	}
 	CAttrItem item;
 	item.type = type;
+	item.bIsScaled = bScaled;
 	item.realtype = TypeInt;
+	value *= (item.bIsScaled && bScale ? m_dScale : 1);
 	item.strValue.SmallFormat(_T("%d"), value);
 	if (!item.value.pIntValue)
 	{
@@ -78,13 +84,15 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, int value)
 bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType type /*= TypeColor*/)
 {
 	CAttrIDQueue attrIds;
-	ValueType typeAttr = ParseStatus(lpszAttr, attrIds);
+	bool bScaled;
+	ValueType typeAttr = ParseStatus(lpszAttr, attrIds, bScaled);
 	if (typeAttr == TypeUnknown)
 	{
 		return false;
 	}
 	CAttrItem item;
 	item.type = typeAttr;
+	item.bIsScaled = bScaled;
 	item.realtype = type;
 	if (type == TypeColor)
 	{
@@ -92,6 +100,7 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType ty
 	}
 	else
 	{
+		value *= (item.bIsScaled ? m_dScale : 1);
 		item.strValue.SmallFormat(_T("%u"), value);
 	}
 	if (!item.value.pDwordValue)
@@ -103,17 +112,28 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, DWORD value, ValueType ty
 	return true;
 }
 
-bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, RECT value)
+bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, RECT value, bool bScale)
 {
 	CAttrIDQueue attrIds;
-	ValueType type = ParseStatus(lpszAttr, attrIds);
+	bool bScaled;
+	ValueType type = ParseStatus(lpszAttr, attrIds, bScaled);
 	if (type == TypeUnknown)
 	{
 		return false;
 	}
 	CAttrItem item;
 	item.type = type;
+	item.bIsScaled = bScaled;
 	item.realtype = TypeRect;
+	double S = 1.0;
+	if (bScaled && bScaled)
+	{
+		S = m_dScale;
+	}
+	value.left *= S;
+	value.top *= S;
+	value.right *= S;
+	value.bottom *= S;
 	item.strValue.SmallFormat(_T("%d,%d,%d,%d"), value.left, value.top, value.right, value.bottom);
 	if (!item.value.pRectValue)
 	{
@@ -127,16 +147,18 @@ bool CAttributeManager::SetAttribute(LPCTSTR lpszAttr, RECT value)
 bool CAttributeManager::ParseAttributeValue(LPCTSTR lpszAttr, LPCTSTR lpszValue)
 {
 	CAttrIDQueue attrIds;
-	ValueType type = ParseStatus(lpszAttr, attrIds);
+	bool bScaled;
+	ValueType type = ParseStatus(lpszAttr, attrIds, bScaled);
 	if (type == TypeUnknown)
 	{
 		return false;
 	}
 	CAttrItem value;
 	value.type = type;
+	value.bIsScaled = bScaled;
 	value.realtype = TypeUnknown;
 	value.strValue = lpszValue;
-	if (!pfnParseFunctions[type](lpszValue, value))
+	if (!(this->*(pfnParseFunctions[type]))(lpszValue, value))
 	{
 		return false;
 	}
@@ -144,7 +166,7 @@ bool CAttributeManager::ParseAttributeValue(LPCTSTR lpszAttr, LPCTSTR lpszValue)
 	return true;
 }
 
-ValueType CAttributeManager::ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr) const
+ValueType CAttributeManager::ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr, bool& bScaled) const
 {
 	std::vector<DWORD> dwAttrIDs;
 // 	if (_tcsicmp(lpszAttr, _T("bkcolor")) == 0)
@@ -174,7 +196,8 @@ ValueType CAttributeManager::ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr
 	{
 		return TypeUnknown;
 	}
-	ValueType ret = (ValueType)HIWORD(dwAttrIDs.back());
+	ValueType ret = ATTR_GET_TYPE(dwAttrIDs.back());
+	bScaled = ATTR_IS_SCALED(dwAttrIDs.back());
 	std::sort(dwAttrIDs.begin(), dwAttrIDs.end());
 	for (size_t i = 0; i < dwAttrIDs.size(); i++)
 	{
@@ -186,7 +209,8 @@ ValueType CAttributeManager::ParseStatus(LPCTSTR lpszAttr, CAttrIDQueue& queAttr
 bool CAttributeManager::GetAttributeItem(LPCTSTR lpszAttr, CAttrItem& item) const
 {
 	CAttrIDQueue attrIds;
-	ValueType type = ParseStatus(lpszAttr, attrIds);
+	bool bScaled;
+	ValueType type = ParseStatus(lpszAttr, attrIds, bScaled);
 	if (type == TypeUnknown)
 	{
 		if (m_pMetaManager)
@@ -212,6 +236,12 @@ bool CAttributeManager::ParseInt(LPCTSTR lpszValue, CAttrItem& item)
 	{
 		item.value.pIntValue = new int;
 	}
+
+	if (item.bIsScaled)
+	{
+		i *= m_dScale;
+	}
+
 	*item.value.pIntValue = i;
 	return true;
 }
@@ -236,25 +266,30 @@ bool CAttributeManager::ParseColor(LPCTSTR lpszValue, CAttrItem& item)
 
 bool CAttributeManager::ParseRect(LPCTSTR lpszValue, CAttrItem& item)
 {
+	double S = 1.0;
+	if (item.bIsScaled)
+	{
+		S = m_dScale;
+	}
 	RECT rc = {0};
 	LPTSTR pstr = NULL;
 	LPTSTR pstr2 = NULL;
-	rc.left = (LONG)(_tcstol(lpszValue, &pstr, 10));
+	rc.left = (LONG)(_tcstol(lpszValue, &pstr, 10)) * S;
 	if (pstr == lpszValue || *pstr == 0)
 	{
 		return false;
 	}
-	rc.top = (LONG)(_tcstol(pstr + 1, &pstr2, 10));
+	rc.top = (LONG)(_tcstol(pstr + 1, &pstr2, 10)) * S;
 	if (pstr == pstr2 || *pstr2 == 0)
 	{
 		return false;
 	}
-	rc.right = (LONG)(_tcstol(pstr2 + 1, &pstr, 10));
+	rc.right = (LONG)(_tcstol(pstr2 + 1, &pstr, 10)) * S;
 	if (pstr == pstr2 || *pstr == 0)
 	{
 		return false;
 	}
-	rc.bottom = (LONG)(_tcstol(pstr + 1, &pstr2, 10));
+	rc.bottom = (LONG)(_tcstol(pstr + 1, &pstr2, 10)) * S;
 	if (pstr == pstr2)
 	{
 		return false;
@@ -300,15 +335,20 @@ bool CAttributeManager::ParseBool(LPCTSTR lpszValue, CAttrItem& item)
 
 bool CAttributeManager::ParsePoint(LPCTSTR lpszValue, CAttrItem& item)
 {
+	double S = 1.0;
+	if (item.bIsScaled)
+	{
+		S = m_dScale;
+	}
 	POINT pt;
 	LPTSTR pstr = NULL;
 	LPTSTR pstr2 = NULL;
-	pt.x = (LONG)(_tcstol(lpszValue, &pstr, 10));
+	pt.x = (LONG)(_tcstol(lpszValue, &pstr, 10)) * S;
 	if (pstr == lpszValue || *pstr == 0)
 	{
 		return false;
 	}
-	pt.y = (LONG)(_tcstol(pstr + 1, &pstr2, 10));
+	pt.y = (LONG)(_tcstol(pstr + 1, &pstr2, 10)) * S;
 	if (pstr == pstr2)
 	{
 		return false;
@@ -376,6 +416,11 @@ bool CAttributeManager::ParseIntOrString(LPCTSTR lpszValue, CAttrItem& item)
 
 bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 {
+	double S = 1.0;
+// 	if (item.bIsScaled)
+// 	{
+// 		S = m_dScale;
+// 	}
 	CDuiString sImageResType;
 
 	CDuiString sItem;
@@ -450,7 +495,7 @@ bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 		else if( sItem == _T("dest") )
 		{
 			LPCTSTR lpszValue = sValue;
-			img.m_rcDst.left = _tcstol(lpszValue, &pstr, 10);
+			img.m_rcDst.left = _tcstol(lpszValue, &pstr, 10) * S;
 			ASSERT(pstr);
 			if (img.m_rcDst.left < 0)
 			{
@@ -468,7 +513,7 @@ bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 					img.m_bRight = true;
 				}
 			}
-			img.m_rcDst.top = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcDst.top = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);
 			if (img.m_rcDst.top < 0)
 			{
@@ -486,31 +531,31 @@ bool CAttributeManager::ParseImage(LPCTSTR lpszValue, CAttrItem& item)
 					img.m_bBottom = true;
 				}
 			}
-			img.m_rcDst.right = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcDst.right = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);
-			img.m_rcDst.bottom = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcDst.bottom = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);
 		}
 		else if( sItem == _T("source") ) 
 		{
-			img.m_rcSrc.left = _tcstol((LPCTSTR)sValue, &pstr, 10);
+			img.m_rcSrc.left = _tcstol((LPCTSTR)sValue, &pstr, 10) * S;
 			ASSERT(pstr);    
-			img.m_rcSrc.top = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcSrc.top = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);    
-			img.m_rcSrc.right = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcSrc.right = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);    
-			img.m_rcSrc.bottom = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcSrc.bottom = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);  
 		}
 		else if( sItem == _T("corner") ) 
 		{
-			img.m_rcCorner.left = _tcstol((LPCTSTR)sValue, &pstr, 10);
+			img.m_rcCorner.left = _tcstol((LPCTSTR)sValue, &pstr, 10) * S;
 			ASSERT(pstr);    
-			img.m_rcCorner.top = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcCorner.top = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);
-			img.m_rcCorner.right = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcCorner.right = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);    
-			img.m_rcCorner.bottom = _tcstol(pstr + 1, &pstr, 10);
+			img.m_rcCorner.bottom = _tcstol(pstr + 1, &pstr, 10) * S;
 			ASSERT(pstr);
 		}
 		else if( sItem == _T("mask") )

@@ -300,11 +300,27 @@ namespace DuiLib
 
 	int CDuiString::Compare(LPCTSTR lpsz) const 
 	{ 
+		if (!lpsz)
+		{
+			if (m_pstr)
+			{
+				return m_pstr[0];
+			}
+			return 0;
+		}
 		return _tcscmp(m_pstr, lpsz); 
 	}
 
 	int CDuiString::CompareNoCase(LPCTSTR lpsz) const 
-	{ 
+	{
+		if (!lpsz)
+		{
+			if (m_pstr)
+			{
+				return m_pstr[0];
+			}
+			return 0;
+		}
 		return _tcsicmp(m_pstr, lpsz); 
 	}
 
