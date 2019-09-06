@@ -36,7 +36,7 @@ namespace DuiLib
 		}
 	}
 
-	LPCTSTR COptionUI::GetGroup() const
+	CDuiString COptionUI::GetGroup() const
 	{
 		if (m_sGroupName.GetLength() == 0)
 		{

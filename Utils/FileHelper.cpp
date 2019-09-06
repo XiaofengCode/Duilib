@@ -46,28 +46,40 @@ namespace DuiLib {
 		BOOL bResult = FALSE;
 
 		do {
-			hOpen = WinHttpOpen(_T("DownloadFile"), WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+			hOpen = WinHttpOpen(L"DownloadFile", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
 				WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 			if (!hOpen) {
 				wprintf(L"WinHttpOpen failed (0x%.8X)\n", GetLastError());
 				break;
 			}
-			hConnect = WinHttpConnect(hOpen, lpszServerName, port, 0);
+#ifdef UNICODE
+			LPCWSTR pstrServer = lpszServerName;
+			LPCWSTR pstrObj = lpszObjectName;
+			LPCWSTR pstrMethod = lpszMethod;
+#else
+			std::wstring wsName = DuiAsciiToUtf16(lpszServerName);
+			std::wstring wsObj = DuiAsciiToUtf16(lpszObjectName);
+			std::wstring wsMethod = DuiAsciiToUtf16(lpszMethod);
+			LPCWSTR pstrServer = wsName.c_str();
+			LPCWSTR pstrObj = wsObj.c_str();
+			LPCWSTR pstrMethod = wsMethod.c_str();
+#endif
+			hConnect = WinHttpConnect(hOpen, pstrServer, port, 0);
 			if (!hConnect) {
 				DWORD dwErr = GetLastError();
 				wprintf(L"WinHttpConnect failed (0x%.8X)\n", GetLastError());
 				break;
 			}
-			hRequest = WinHttpOpenRequest(hConnect, lpszMethod, lpszObjectName,
+			hRequest = WinHttpOpenRequest(hConnect, pstrMethod, pstrObj,
 				NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, bSSL ? WINHTTP_FLAG_SECURE : 0);
 			if (!hRequest)
 			{
 				wprintf(L"WinHttpOpenRequest failed (0x%.8X)\n", GetLastError());
 				break;
 			}
-			TCHAR headerContentType[] = _T("Content-Type: */*";);
-			TCHAR headerContentLength[64];
-			_stprintf_s(headerContentLength, 64, _T("Content-Length: %d\r\n\r\n"), dwDataSize);
+			WCHAR headerContentType[] = L"Content-Type: */*";
+			WCHAR headerContentLength[64];
+			swprintf_s(headerContentLength, 64, L"Content-Length: %d\r\n\r\n", dwDataSize);
 			WinHttpAddRequestHeaders(hRequest, headerContentType, -1, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
 			WinHttpAddRequestHeaders(hRequest, headerContentLength, -1, WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE);
 			if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, lpData, dwDataSize, 0, 0))
@@ -80,7 +92,7 @@ namespace DuiLib {
 				wprintf(L"WinHttpReceiveResponse failed (0x%.8X)\n", GetLastError());
 				break;
 			}
-			TCHAR szContentLength[32] = { 0 };
+			WCHAR szContentLength[32] = { 0 };
 			DWORD cch = 64;
 			DWORD dwHeaderIndex = WINHTTP_NO_HEADER_INDEX;
 			BOOL haveContentLength = WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_CONTENT_LENGTH, NULL,

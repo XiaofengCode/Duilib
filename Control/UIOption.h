@@ -20,7 +20,7 @@ namespace DuiLib
 		bool Activate();
 		void SetEnabled(bool bEnable = true);
 
-		LPCTSTR GetGroup() const;
+		CDuiString GetGroup() const;
 		void SetGroup(LPCTSTR pStrGroupName = NULL);
 		bool IsSelected() const;
 		virtual void Selected(bool bSelected);

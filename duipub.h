@@ -33,7 +33,9 @@
 #endif
 #endif
 
+#ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
+#endif
 
 // Remove pointless warning messages
 #ifdef _MSC_VER

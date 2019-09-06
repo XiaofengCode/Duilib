@@ -283,14 +283,14 @@ std::string DuiUtf8ToAcp(const char* str, int len)
 	return strRes;
 }
 
-DuiLib::CDuiString DuiUtf8ToString(const char* str, int len /*= -1*/)
+std::wstring DuiUtf8ToUtf16(const char* str, int len /*= -1*/)
 {
 	wchar_t *lpszSrc;
 	int i = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
 	lpszSrc = (wchar_t *)malloc((i + 1) * sizeof(wchar_t));
 	memset(lpszSrc, 0, (i + 1) * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, str, len, lpszSrc, i);
-	DuiLib::CDuiString strRes(lpszSrc);
+	std::wstring strRes(lpszSrc);
 	free(lpszSrc);
 	return strRes;
 }
@@ -307,6 +307,17 @@ std::string DuiUtf16ToAscii(LPCWSTR str, int len /*= -1*/)
 	return strRes;
 }
 
+std::wstring DuiAsciiToUtf16(LPCSTR str, int len /*= -1*/)
+{
+	wchar_t* lpszSrc;
+	int i = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
+	lpszSrc = (wchar_t*)malloc((i + 1) * sizeof(wchar_t));
+	memset(lpszSrc, 0, (i + 1) * sizeof(wchar_t));
+	MultiByteToWideChar(CP_ACP, 0, str, len, lpszSrc, i);
+	std::wstring strRes(lpszSrc);
+	free(lpszSrc);
+	return strRes;
+}
 
 
 
