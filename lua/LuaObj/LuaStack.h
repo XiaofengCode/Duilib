@@ -1,5 +1,6 @@
 #pragma once
 #include "LuaCommon.h"
+#ifdef DUILIB_LUA
 
 namespace StackOps
 {
@@ -130,3 +131,4 @@ namespace StackOps
 
 
 }
+#endif // DUILIB_LUA

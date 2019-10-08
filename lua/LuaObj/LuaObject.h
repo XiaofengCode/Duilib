@@ -1,6 +1,7 @@
 #pragma once
 #include "LuaCommon.h"
 #include "LuaStack.h"
+#ifdef DUILIB_LUA
 
 class LuaObjectImpl;
 class LuaTable;
@@ -81,3 +82,4 @@ namespace StackOps
 
 
 }
+#endif // DUILIB_LUA

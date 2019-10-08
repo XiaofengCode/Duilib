@@ -2,7 +2,7 @@
 #include "LuaCommon.h"
 #include "LuaObject.h"
 
-
+#ifdef DUILIB_LUA
 template <typename T> class LuaClass {
   typedef struct { T *pT;bool owner; } userdataType;
   
@@ -186,3 +186,4 @@ private:
 		};\
 		return _methods;\
 	}
+#endif//DUILIB_LUA

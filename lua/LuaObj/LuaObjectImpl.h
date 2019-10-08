@@ -1,6 +1,7 @@
 #pragma once
 #include "LuaCommon.h"
 
+#ifdef DUILIB_LUA
 
 class LuaObjectImpl
 {
@@ -84,4 +85,5 @@ private:
 };
 
 
+#endif // DUILIB_LUA
 

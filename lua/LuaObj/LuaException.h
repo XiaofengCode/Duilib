@@ -1,4 +1,5 @@
 #pragma once
+#ifdef DUILIB_LUA
 #include "LuaCommon.h"
 
 
@@ -20,9 +21,4 @@ private:
 //´íÎó´¦Àíº¯Êý
 typedef int (*LuaErrorHandler) (const char* err);
 
-
-
-
-
-
-
+#endif

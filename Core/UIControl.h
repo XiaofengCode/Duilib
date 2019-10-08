@@ -52,12 +52,14 @@ public:
     CControlUI();
     virtual ~CControlUI();
 
+#ifdef DUILIB_LUA
 	//lua
 	bool DoLuaEvent(LPCTSTR evName, DWORD wParam, DWORD lParam, DWORD nEvent = 0);
 	bool DoLuaEvent(LPCTSTR evName, LuaObject wParam, LuaObject lParam, LuaObject event);//调用lua处理事件
 	//绑定控件事件
 	void BindLuaEvent(LPCTSTR evName, LuaObject func);//绑定event配置的事件函数
 	void BindLuaEvent(LPCTSTR evName, LPCTSTR luaSrc);//绑定lua脚本进行处理
+#endif // DUILIB_LUA
 public:
     virtual CDuiString GetName() const;
     virtual void SetName(LPCTSTR pstrName);

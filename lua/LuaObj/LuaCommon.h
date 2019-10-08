@@ -1,3 +1,4 @@
+#ifdef DUILIB_LUA
 
 #ifndef COMMON_H
 #define COMMON_H
@@ -49,3 +50,4 @@ struct lua_index
 
 
 #endif
+#endif//DUILIB_LUA

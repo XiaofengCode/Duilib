@@ -120,13 +120,13 @@ m_currentCaretObject(NULL),
 m_bUseGdiplusText(false),
 m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false),
-m_pLastControlGesture(nullptr),
-m_pLua(nullptr)
+m_pLastControlGesture(nullptr)
 {
-	m_threadId=GetCurrentThreadId();
 	//LuaState* L=LuaManager::instance()->current();
 
 #ifdef DUILIB_LUA
+	m_threadId = GetCurrentThreadId();
+	m_pLua = nullptr;
 	m_pLua = new LuaEngine();
 	LBIND_REGISTER_CLASS(CPaintManagerUI,m_pLua);
 	LBIND_REGISTER_CLASS(WindowImplBase,m_pLua);

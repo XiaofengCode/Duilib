@@ -7,6 +7,7 @@
   ========================================================================
 */
 #include "duipub.h"
+#ifdef DUILIB_LUA
 #include "dlmalloc.h" 
 #include <errno.h>
 /*------------------------------ internal #includes ---------------------- */
@@ -4863,3 +4864,4 @@ History:
          structure of old version,  but most details differ.)
 
 */
+#endif

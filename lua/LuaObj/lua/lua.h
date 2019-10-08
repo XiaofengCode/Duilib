@@ -9,6 +9,8 @@
 #ifndef lua_h
 #define lua_h
 
+#ifdef DUILIB_LUA
+
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -388,6 +390,6 @@ struct lua_Debug {
 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
-
+#endif
 
 #endif

@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef DUILIB_LUA
 #include "LuaCommon.h"
 #include "LuaObject.h"
 #include "LuaStack.h"
@@ -123,3 +124,4 @@ public:
 
 };
 
+#endif // DUILIB_LUA

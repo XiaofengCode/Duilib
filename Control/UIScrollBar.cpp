@@ -509,10 +509,10 @@ namespace DuiLib
 		{
 			return;
 		}
-		if( event.Type == UIEVENT_KILLFOCUS ) 
-		{
-			return;
-		}
+// 		if (event.Type == UIEVENT_KILLFOCUS)
+// 		{
+// 			return;
+// 		}
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK )
 		{
 			if( !IsEnabled() ) return;
@@ -573,7 +573,7 @@ namespace DuiLib
 			if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL);
 			return;
 		}
-		if( event.Type == UIEVENT_BUTTONUP )
+		if (event.Type == UIEVENT_BUTTONUP || event.Type == UIEVENT_KILLFOCUS)
 		{
 			m_nScrollRepeatDelay = 0;
 			m_nLastScrollOffset = 0;

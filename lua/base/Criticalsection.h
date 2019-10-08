@@ -1,5 +1,6 @@
 
 #pragma once
+#ifdef DUILIB_LUA
 
 #ifdef POSIX
 #include <pthread.h>
@@ -88,3 +89,5 @@ private:
 };
 
 } // namespace
+
+#endif

@@ -54,7 +54,8 @@ public:
     virtual TListInfoUI* GetListInfo() = 0;
     virtual int GetCurSel() const = 0;
     virtual bool SelectItem(int iIndex, bool bTakeFocus = false) = 0;
-    virtual void DoEvent(TEventUI& event) = 0;
+	virtual void DoEvent(TEventUI& event) = 0;
+	virtual LPCTSTR GetClass() const = 0;
 };
 
 class IListUI : public IListOwnerUI
@@ -65,7 +66,7 @@ public:
     virtual IListCallbackUI* GetTextCallback() const = 0;
     virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
     virtual bool ExpandItem(int iIndex, bool bExpand = true, bool bExpandChildren = false) = 0;
-    virtual int GetExpandedItem() const = 0;
+	virtual int GetExpandedItem() const = 0;
 };
 
 class IListItemUI

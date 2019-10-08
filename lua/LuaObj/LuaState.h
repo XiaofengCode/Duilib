@@ -4,6 +4,7 @@
 #include "LuaTable.h"
 #include "LuaException.h"
 #include "LuaStack.h"
+#ifdef DUILIB_LUA
 
 
 class LuaObjectStack
@@ -129,3 +130,4 @@ protected:
 	LuaObjectStack m_stack;
 };
 
+#endif // DUILIB_LUA

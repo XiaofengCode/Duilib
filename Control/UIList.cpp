@@ -2569,9 +2569,9 @@ void CListContainerElementUI::SetPos(RECT rc)
 	CHorizontalLayoutUI::SetPos(rc);
 	if( m_pOwner == NULL ) return;		
 
-	CListUI* pList = static_cast<CListUI*>(m_pOwner);
-	if (pList == NULL ||  _tcsicmp(_T("ListUI"), pList->GetClass()) != 0 ) return;
+	if (_tcsicmp(_T("ListUI"), m_pOwner->GetClass()) != 0 ) return;
 
+	CListUI* pList = static_cast<CListUI*>(m_pOwner);
 	CListHeaderUI *pHeader = pList->GetHeader();
 	if (pHeader == NULL || !pHeader->IsVisible())
 		return;

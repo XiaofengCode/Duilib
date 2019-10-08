@@ -1,6 +1,7 @@
 #pragma once
 #include "LuaState.h"
 
+#ifdef DUILIB_LUA
 
 //用于初始化的lua
 class LuaStateOwner:public LuaState
@@ -35,3 +36,4 @@ private:
 	MemPool m_pool;//内存分配池
 	LuaErrorHandler m_errorHandler;//错误处理函数
 };
+#endif // DUILIB_LUA

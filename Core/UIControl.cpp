@@ -1106,19 +1106,17 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else
 	{
 		//如果不是常规属性，可能是事件
-		LuaState* L = nullptr;
 #ifdef DUILIB_LUA
+		LuaState* L = nullptr;
 		if (GetManager())
 		{
 			L = GetManager()->GetLuaState();
 		}
-#endif // DUILIB_LUA
 		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
 		{
 			m_attrs.SetAttribute(pstrName, pstrValue);
 			return;
 		}
-#ifdef DUILIB_LUA
 		try
 		{
 			CDuiString strValue(pstrValue);
@@ -1131,18 +1129,24 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 			else
 			{
 				std::string sModule = DUI_T2A(arValue[0]);
-				LuaTable tab=L->require(sModule.c_str());
+				LuaTable tab = L->require(sModule.c_str());
 				if (tab.isValid())
 				{
 					std::string sFun = DUI_T2A(arValue[1]);
-					BindLuaEvent(pstrName + 2,tab.getTable(sFun.c_str()));
+					BindLuaEvent(pstrName + 2, tab.getTable(sFun.c_str()));
 				}
 			}
 		}
-		catch(LuaException err)
+		catch (LuaException err)
 		{
 			OutputDebugStringA(err.what());
 			//LOGE("doString error:"<<err.what());
+		}
+#else
+		if (_tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
+		{
+			m_attrs.SetAttribute(pstrName, pstrValue);
+			return;
 		}
 #endif // DUILIB_LUA
 	}

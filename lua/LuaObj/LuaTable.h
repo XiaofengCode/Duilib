@@ -2,6 +2,7 @@
 #include "LuaCommon.h"
 #include "LuaObject.h"
 #include "LuaStack.h"
+#ifdef DUILIB_LUA
 
 class LuaTable:public LuaObject
 {
@@ -60,3 +61,4 @@ public:
 	}
 };
 
+#endif // DUILIB_LUA

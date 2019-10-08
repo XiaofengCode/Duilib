@@ -2,7 +2,7 @@
 ** Standard library header.
 ** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
-
+#ifdef DUILIB_LUA
 #ifndef _LUALIB_H
 #define _LUALIB_H
 
@@ -40,4 +40,5 @@ LUALIB_API void luaL_openlibs(lua_State *L);
 #define lua_assert(x)	((void)0)
 #endif
 
+#endif
 #endif

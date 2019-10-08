@@ -2,7 +2,7 @@
 #include "RefBase.h"
 #include <Windows.h>
 
-
+#ifdef DUILIB_LUA
 
 namespace base
 {
@@ -22,3 +22,4 @@ int AtomicOps::Decrement(int* i)
 
 
 }
+#endif

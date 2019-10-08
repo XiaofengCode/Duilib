@@ -1,5 +1,6 @@
 #pragma once
 #include "malloc/dlmalloc.h"
+#ifdef DUILIB_LUA
 
 class MemPool
 {
@@ -43,3 +44,4 @@ private:
 	mspace m_pool;
 };
 
+#endif // DUILIB_LUA

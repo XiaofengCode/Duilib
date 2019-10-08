@@ -1,5 +1,6 @@
 #pragma once
 //#include <stdint.h>
+#ifdef DUILIB_LUA
 #include "LuaStateOwner.h"
 
 class LuaEngine;
@@ -45,3 +46,4 @@ int threadFunc(void* d)
 
 
 */
+#endif

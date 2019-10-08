@@ -2,7 +2,7 @@
 ** Configuration header.
 ** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
-
+#ifdef DUILIB_LUA
 #ifndef luaconf_h
 #define luaconf_h
 
@@ -153,4 +153,5 @@
 #define luai_apicheck(L, o)	{ (void)L; }
 #endif
 
+#endif
 #endif

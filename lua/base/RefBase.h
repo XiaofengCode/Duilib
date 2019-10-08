@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef DUILIB_LUA
 namespace base
 {
 
@@ -251,3 +251,4 @@ test->test();
 using base::RefCountedBase;
 using base::RefCountedPtr;
 using base::RefCountedObject;
+#endif
