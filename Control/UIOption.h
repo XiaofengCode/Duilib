@@ -31,6 +31,7 @@ namespace DuiLib
 	protected:
 		bool			m_bSelected;
 		CDuiString		m_sGroupName;
+		CDuiString		m_sManagerGroupName;
 
 	};
 

@@ -9,9 +9,10 @@ namespace DuiLib
 
 	COptionUI::~COptionUI()
 	{
-		CDuiString strGroup = GetGroup();
-		if( !strGroup.IsEmpty() && m_pManager )
-			m_pManager->RemoveOptionGroup(strGroup, this);
+		if (!m_sManagerGroupName.IsEmpty() && m_pManager)
+		{
+			m_pManager->RemoveOptionGroup(m_sManagerGroupName, this);
+		}
 	}
 
 	LPCTSTR COptionUI::GetClass() const
@@ -32,7 +33,10 @@ namespace DuiLib
 		if( bInit && !strGroup.IsEmpty() )
 		{
 			if (m_pManager)
+			{
+				m_sManagerGroupName = strGroup;
 				m_pManager->AddOptionGroup(strGroup, this);
+			}
 		}
 	}
 
@@ -65,18 +69,29 @@ namespace DuiLib
 			if( m_sGroupName == pStrGroupName )
 				return;
 			if (!m_sGroupName.IsEmpty() && m_pManager)
-				m_pManager->RemoveOptionGroup(GetGroup(), this);
+			{
+				m_pManager->RemoveOptionGroup(m_sManagerGroupName, this);
+				m_sManagerGroupName.Empty();
+			}
 			m_sGroupName = pStrGroupName;
 		}
 
 		CDuiString strGroup = GetGroup();
 		if( !strGroup.IsEmpty() )
 		{
-			if (m_pManager) m_pManager->AddOptionGroup(strGroup, this);
+			if (m_pManager)
+			{
+				m_pManager->AddOptionGroup(strGroup, this);
+				m_sManagerGroupName = strGroup;
+			}
 		}
 		else
 		{
-			if (m_pManager) m_pManager->RemoveOptionGroup(strGroup, this);
+			if (m_pManager)
+			{
+				m_pManager->RemoveOptionGroup(m_sManagerGroupName, this);
+				m_sManagerGroupName.Empty();
+			}
 		}
 
 		Selected(m_bSelected);

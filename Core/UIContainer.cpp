@@ -264,7 +264,7 @@ namespace DuiLib
 				SIZE sz = GetScrollPos();
 				sz.cy  -= nDalta;
 				SetScrollPos(sz);
-
+				return;
 // 				switch( LOWORD(event.wParam) )
 // 				{
 // 				case SB_LINEUP:
@@ -306,6 +306,7 @@ namespace DuiLib
 				SIZE sz = GetScrollPos();
 				sz.cx -= nDalta;
 				SetScrollPos(sz);
+				return;
 // 				switch( LOWORD(event.wParam) ) {
 // 			case SB_LINEUP:
 // 				LineLeft();
@@ -620,13 +621,13 @@ namespace DuiLib
 
 	void CContainerUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
 	{
+		CControlUI::SetManager(pManager, pParent, bInit);
 		for( int it = 0; it < m_items.GetSize(); it++ ) {
 			static_cast<CControlUI*>(m_items[it])->SetManager(pManager, this, bInit);
 		}
 
 		if( m_pVerticalScrollBar != NULL ) m_pVerticalScrollBar->SetManager(pManager, this, bInit);
 		if( m_pHorizontalScrollBar != NULL ) m_pHorizontalScrollBar->SetManager(pManager, this, bInit);
-		CControlUI::SetManager(pManager, pParent, bInit);
 	}
 
 	CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
@@ -856,8 +857,35 @@ namespace DuiLib
 		pControl->SetPos(rcCtrl);
 	}
 
-	void CContainerUI::ProcessScrollBar(RECT rc, int cxRequired, int cyRequired)
+	void CContainerUI::ProcessScrollBar(RECT rc, int cxNeeded, int cyRequired)
 	{
+		if (m_pHorizontalScrollBar != NULL)
+		{
+			if (cxNeeded > rc.right - rc.left)
+			{
+				if (m_pHorizontalScrollBar->IsVisible())
+				{
+					m_pHorizontalScrollBar->SetScrollRange(cxNeeded - (rc.right - rc.left));
+				}
+				else
+				{
+					m_pHorizontalScrollBar->SetVisible(true);
+					m_pHorizontalScrollBar->SetScrollRange(cxNeeded - (rc.right - rc.left));
+					m_pHorizontalScrollBar->SetScrollPos(0);
+					rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+				}
+			}
+			else
+			{
+				if (m_pHorizontalScrollBar->IsVisible())
+				{
+					m_pHorizontalScrollBar->SetVisible(false);
+					m_pHorizontalScrollBar->SetScrollRange(0);
+					m_pHorizontalScrollBar->SetScrollPos(0);
+					rc.bottom += m_pHorizontalScrollBar->GetFixedHeight();
+				}
+			}
+		}
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
 			RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
 			m_pHorizontalScrollBar->SetPos(rcScrollBarPos);
@@ -867,7 +895,7 @@ namespace DuiLib
 
 		if( cyRequired > rc.bottom - rc.top && !m_pVerticalScrollBar->IsVisible() ) {
 			m_pVerticalScrollBar->SetVisible(true);
-		m_pVerticalScrollBar->SetScrollRange(cyRequired - (rc.bottom - rc.top));
+			m_pVerticalScrollBar->SetScrollRange(cyRequired - (rc.bottom - rc.top));
 			m_pVerticalScrollBar->SetScrollPos(0);
 			m_bScrollProcess = true;
 			SetPos(m_rcItem);
