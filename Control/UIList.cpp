@@ -300,35 +300,6 @@ void CListUI::DoEvent(TEventUI& event)
             return;
         }
         break;
-	case UIEVENT_GESTURE:
-		{
-			PGESTUREINFO pGi = (PGESTUREINFO)event.lParam;
-			if (!pGi || pGi->dwID != GID_PAN)
-			{
-				break;
-			}
-			static POINT ptLastMouse;
-			if (pGi->dwFlags & GF_BEGIN)
-			{
-				ptLastMouse = event.ptMouse;
-			}
-			int nDeltaX = event.ptMouse.x - ptLastMouse.x;
-			int nDeltaY = event.ptMouse.y - ptLastMouse.y;
-			ptLastMouse = event.ptMouse;
-			if (nDeltaX | nDeltaY)
-			{
-				SIZE sz = GetScrollPos();
-				sz.cx  -= nDeltaX;
-				sz.cy  -= nDeltaY;
-				if( m_bScrollSelect)
-				{
-					return;
-				}
-				SetScrollPos(sz);
-			}
-			return;
-		}
-		break;
     case UIEVENT_SCROLLWHEEL:
         {
 			if (event.lParam == UIEVENT_GESTURE)

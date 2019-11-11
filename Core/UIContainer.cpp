@@ -241,6 +241,30 @@ namespace DuiLib
 			}
 			return;
 		}
+		if (event.Type == UIEVENT_GESTURE)
+		{
+			PGESTUREINFO pGi = (PGESTUREINFO)event.lParam;
+			if (!pGi || pGi->dwID != GID_PAN)
+			{
+				return;
+			}
+			static POINT ptLastMouse;
+			if (pGi->dwFlags & GF_BEGIN)
+			{
+				ptLastMouse = event.ptMouse;
+			}
+			int nDeltaX = event.ptMouse.x - ptLastMouse.x;
+			int nDeltaY = event.ptMouse.y - ptLastMouse.y;
+			ptLastMouse = event.ptMouse;
+			if (nDeltaX | nDeltaY)
+			{
+				SIZE sz = GetScrollPos();
+				sz.cx -= nDeltaX;
+				sz.cy -= nDeltaY;
+				SetScrollPos(sz);
+			}
+			return;
+		}
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() && m_pVerticalScrollBar->IsEnabled() )
 		{
 			if( event.Type == UIEVENT_KEYDOWN ) 
