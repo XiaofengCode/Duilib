@@ -2838,7 +2838,17 @@ bool CPaintManagerUI::OnLButtonUp(WPARAM wParam, LPARAM lParam)
 	ReleaseCapture();
 	CControlUI* pControl = FindControl(pt);
 	if( pControl != m_pEventClick )
+	{
+		if (pControl)
+		{
+			pControl->SetFocus();
+		}
+		else
+		{
+			SetFocus(NULL);
+		}
 		return false;
+	}
 	TEventUI event = { 0 };
 	event.Type = UIEVENT_BUTTONUP;
 	event.pSender = m_pEventClick;

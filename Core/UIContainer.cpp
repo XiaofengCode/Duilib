@@ -231,6 +231,14 @@ namespace DuiLib
 		if( event.Type == UIEVENT_KILLFOCUS ) 
 		{
 			m_dwStatus &= ~UISTATE_FOCUSED;
+			if (m_pVerticalScrollBar)
+			{
+				m_pVerticalScrollBar->DoEvent(event);
+			}
+			if (m_pHorizontalScrollBar)
+			{
+				m_pHorizontalScrollBar->DoEvent(event);
+			}
 			return;
 		}
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() && m_pVerticalScrollBar->IsEnabled() )
