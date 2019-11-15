@@ -53,6 +53,12 @@ namespace DuiLib
 		int nAdjustables = 0;
 		int cxFixed = 0;
 		int nEstimateNum = 0;
+		CDuiArray<int> arItemWidth;
+		arItemWidth.Resize(m_items.GetSize());
+		for (int i = 0; i < arItemWidth.GetSize(); i++)
+		{
+			arItemWidth[i] = -1;
+		}
 		for( int it1 = 0; it1 < m_items.GetSize(); it1++ ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
 			if( !pControl->IsVisible() ) continue;
@@ -63,16 +69,68 @@ namespace DuiLib
 			}
 			else {
 				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				if (sz.cx > pControl->GetMaxWidth()) sz.cx = pControl->GetMaxWidth();
+				arItemWidth[it1] = sz.cx;
 			}
 			cxFixed += sz.cx +  pControl->GetStatusRect(DUI_ATTR_PADDING).left + pControl->GetStatusRect(DUI_ATTR_PADDING).right;
 			nEstimateNum++;
 		}
 		cxFixed += (nEstimateNum - 1) * m_iChildPadding;
 
+		int nRemainX = szAvailable.cx - cxFixed;
 		int cxExpand = 0;
-        int cxNeeded = 0;
-		if( nAdjustables > 0 ) cxExpand = MAX(0, (szAvailable.cx - cxFixed) / nAdjustables);
+		if (nAdjustables > 0)
+		{
+			cxExpand = MAX(0, nRemainX / nAdjustables);
+			//优先适配最小的
+			for (int it1 = 0; nAdjustables && it1 < m_items.GetSize(); it1++)
+			{
+				if (arItemWidth[it1] != -1)
+				{
+					continue;
+				}
+				CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
+				if (!pControl->IsVisible()) continue;
+				if (pControl->IsFloat()) continue;
+				int nMin = pControl->GetMinWidth();
+				if (cxExpand > nMin)
+					continue;
+				arItemWidth[it1] = nMin;
+				nRemainX -= nMin;
+				nAdjustables--;
+				if (nAdjustables == 0)
+					break;
+				cxExpand = MAX(0, nRemainX / nAdjustables);
+			}
+			//适配最大的
+			for (int it1 = 0; nAdjustables && it1 < m_items.GetSize(); it1++)
+			{
+				if (arItemWidth[it1] != -1)
+				{
+					continue;
+				}
+				CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
+				if (!pControl->IsVisible()) continue;
+				if (pControl->IsFloat()) continue;
+				int nMax = pControl->GetMaxWidth();
+				if (cxExpand <= nMax)
+					continue;
+				arItemWidth[it1] = nMax;
+				nRemainX -= nMax;
+				nAdjustables--;
+				if (nAdjustables == 0)
+					break;
+				cxExpand = MAX(0, nRemainX / nAdjustables);
+			}
+			for (int it1 = 0; nAdjustables && it1 < m_items.GetSize(); it1++)
+			{
+				if (arItemWidth[it1] != -1)
+				{
+					continue;
+				}
+				arItemWidth[it1] = cxExpand;
+			}
+		}
 		// Position the elements
 		SIZE szRemaining = szAvailable;
 		int iPosX = rc.left;
@@ -81,6 +139,7 @@ namespace DuiLib
 		}
 		int iAdjustable = 0;
 		int cxFixedRemaining = cxFixed;
+		int cxNeeded = 0;
 		for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
 			if( !pControl->IsVisible() ) continue;
@@ -93,7 +152,7 @@ namespace DuiLib
 			SIZE sz = pControl->EstimateSize(szRemaining);
 			if( sz.cx == 0 ) {
 				iAdjustable++;
-				sz.cx = cxExpand;
+				sz.cx = arItemWidth[it2];
 				// Distribute remaining to last element (usually round-off left-overs)
 // 				if( iAdjustable == nAdjustables ) {
 // 					sz.cx = MAX(0, szRemaining.cx - rcPadding.right - cxFixedRemaining);

@@ -231,14 +231,6 @@ namespace DuiLib
 		if( event.Type == UIEVENT_KILLFOCUS ) 
 		{
 			m_dwStatus &= ~UISTATE_FOCUSED;
-			if (m_pVerticalScrollBar)
-			{
-				m_pVerticalScrollBar->DoEvent(event);
-			}
-			if (m_pHorizontalScrollBar)
-			{
-				m_pHorizontalScrollBar->DoEvent(event);
-			}
 			return;
 		}
 		if (event.Type == UIEVENT_GESTURE)
@@ -296,6 +288,10 @@ namespace DuiLib
 			}
 			else if( event.Type == UIEVENT_SCROLLWHEEL )
 			{
+				if (event.lParam == UIEVENT_GESTURE)
+				{
+					return;
+				}
 				short nDalta = (short)HIWORD(event.wParam);
 				SIZE sz = GetScrollPos();
 				sz.cy  -= nDalta;
@@ -338,6 +334,10 @@ namespace DuiLib
 			}
 			else if( event.Type == UIEVENT_SCROLLWHEEL )
 			{
+				if (event.lParam == UIEVENT_GESTURE)
+				{
+					return;
+				}
 				short nDalta = (short)HIWORD(event.wParam);
 				SIZE sz = GetScrollPos();
 				sz.cx -= nDalta;

@@ -1348,7 +1348,7 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl)
     HWND hFocusWnd = ::GetFocus();
     if( hFocusWnd != m_hWndPaint && pControl != m_pFocus ) ::SetFocus(m_hWndPaint);
     // Already has focus?
-    if( pControl == m_pFocus ) return;
+    if( pControl == m_pFocus && pControl == m_pEventClick) return;
     // Remove focus from old control
     if( m_pFocus != NULL ) 
     {
@@ -2839,13 +2839,16 @@ bool CPaintManagerUI::OnLButtonUp(WPARAM wParam, LPARAM lParam)
 	CControlUI* pControl = FindControl(pt);
 	if( pControl != m_pEventClick )
 	{
-		if (pControl)
+		if (m_pEventClick)
 		{
-			pControl->SetFocus();
-		}
-		else
-		{
-			SetFocus(NULL);
+			//修复按下滚动条在别的控件上松开后，滚动条还会跟随鼠标移动的问题
+			TEventUI event = {0};
+			event.Type = UIEVENT_KILLFOCUS;
+			event.pSender = m_pEventClick;
+			event.dwTimestamp = ::GetTickCount();
+			m_pEventClick->Event(event);
+			m_pEventClick = NULL;
+			return true;
 		}
 		return false;
 	}

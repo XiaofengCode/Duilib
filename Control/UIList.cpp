@@ -263,17 +263,6 @@ void CListUI::DoEvent(TEventUI& event)
         return;
     }
 
-    if( event.Type == UIEVENT_SETFOCUS ) 
-	{
-		m_dwStatus |= UISTATE_FOCUSED;
-        return;
-    }
-    if( event.Type == UIEVENT_KILLFOCUS ) 
-	{
-		m_dwStatus &= ~UISTATE_FOCUSED;
-        return;
-    }
-
     switch( event.Type ) {
     case UIEVENT_KEYDOWN:
         switch( event.chKey ) {

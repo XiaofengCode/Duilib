@@ -210,8 +210,15 @@ HRESULT InitDefaultCharFormat(CRichEditUI* re, CHARFORMAT2W* pcf, HFONT hfont)
 HRESULT InitDefaultParaFormat(CRichEditUI* re, PARAFORMAT2* ppf) 
 {	
     memset(ppf, 0, sizeof(PARAFORMAT2));
-    ppf->cbSize = sizeof(PARAFORMAT2);
-    ppf->dwMask = PFM_ALL;
+	ppf->cbSize = sizeof(PARAFORMAT2);
+	ppf->dwMask = PFM_ALL | PFM_LINESPACING;
+	ppf->bLineSpacingRule = 4;
+	LOGFONT lf;
+	HFONT hFont = re->GetManager()->GetFont(re->GetFont());
+	::GetObject(hFont, sizeof(LOGFONT), &lf);
+	TFontInfo* pInfo = re->GetManager()->GetFontInfo(hFont);
+	LONG yPixPerInch = GetDeviceCaps(re->GetManager()->GetPaintDC(), LOGPIXELSY);
+	ppf->dyLineSpacing = -(lf.lfHeight - pInfo->tm.tmInternalLeading - pInfo->tm.tmExternalLeading) * LY_PER_INCH / yPixPerInch;
     ppf->wAlignment = PFA_LEFT;
     ppf->cTabCount = 1;
     ppf->rgxTabs[0] = lDefaultTab;
@@ -810,7 +817,8 @@ void CTxtWinHost::SetFont(HFONT hFont)
     //need to thunk pcf->szFaceName to a standard char string.in this case it's easy because our thunk is also our copy
     MultiByteToWideChar(CP_ACP, 0, lf.lfFaceName, LF_FACESIZE, cf.szFaceName, LF_FACESIZE) ;
 #endif
-
+	TFontInfo* pInfo = m_re->GetManager()->GetFontInfo(hFont);
+	pf.dyLineSpacing = -(lf.lfHeight - pInfo->tm.tmInternalLeading - pInfo->tm.tmExternalLeading) * LY_PER_INCH / yPixPerInch;
     pserv->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE, 
         TXTBIT_CHARFORMATCHANGE);
 }
@@ -2001,40 +2009,36 @@ void CRichEditUI::DoEvent(TEventUI& event)
             m_pTwh->GetTextServices()->TxSendMessage(WM_TIMER, event.wParam, event.lParam, 0);
         } 
     }
-    else if( event.Type == UIEVENT_SCROLLWHEEL ) {
+    else if( event.Type == UIEVENT_SCROLLWHEEL && IsEnabled()) {
         if( (event.wKeyState & MK_CONTROL) != 0  ) {
             return;
         }
     }
-    else if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK ) 
+    else if(( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK ) && IsEnabled())
     {
         return;
     }
-    else if( event.Type == UIEVENT_MOUSEMOVE ) 
+    else if( event.Type == UIEVENT_MOUSEMOVE && IsEnabled())
     {
         return;
     }
-    else if( event.Type == UIEVENT_BUTTONUP ) 
+    else if( event.Type == UIEVENT_BUTTONUP && IsEnabled())
     {
         return;
     }
-	else if( event.Type == UIEVENT_MOUSEENTER )
+	else if( event.Type == UIEVENT_MOUSEENTER && IsEnabled())
 	{
-		if( IsEnabled() ) {
-			m_dwStatus |= UISTATE_HOT;
-			Invalidate();
-		}
+		m_dwStatus |= UISTATE_HOT;
+		Invalidate();
 		return;
 	}
-	else if( event.Type == UIEVENT_MOUSELEAVE )
+	else if( event.Type == UIEVENT_MOUSELEAVE && IsEnabled())
 	{
-		if( IsEnabled() ) {
-			m_dwStatus &= ~UISTATE_HOT;
-			Invalidate();
-		}
+		m_dwStatus &= ~UISTATE_HOT;
+		Invalidate();
 		return;
 	}
-    if( event.Type > UIEVENT__KEYBEGIN && event.Type < UIEVENT__KEYEND )
+    if( event.Type > UIEVENT__KEYBEGIN && event.Type < UIEVENT__KEYEND && IsEnabled())
     {
         return;
     }
