@@ -69,6 +69,8 @@ namespace DuiLib
 		//圆环形状属性
 		int m_nCirFinishedWidth;	// 已完成圆环宽度
 		int m_nCirLastWidth;	// 剩余圆环宽度
+		int m_nCirFinishedWidthPercent;	// 已完成圆环宽度
+		int m_nCirLastWidthPercent;	// 剩余圆环宽度
 		int m_nCirSpace;	// 已完成和未完成的间距
 		int m_nStartAngle;	// 起始角度
 		int m_nSweepAngle;	// 角度大小

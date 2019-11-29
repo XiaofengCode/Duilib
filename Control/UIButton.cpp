@@ -168,7 +168,10 @@ namespace DuiLib
 	{
 // 		if( m_cxyFixed.cy == 0 )
 // 			return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
-		return __super::EstimateSize(szAvailable);
+		SIZE szWidth = __super::EstimateSize(szAvailable);
+		SIZE szHeight = CContainerUI::EstimateSize(szAvailable);
+		szWidth.cy = szHeight.cy;
+		return szWidth;
 	}
 
 	void CButtonUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)

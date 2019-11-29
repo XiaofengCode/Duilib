@@ -3,11 +3,23 @@
 
 namespace DuiLib
 {
-	CProgressUI::CProgressUI() : m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true),
-		m_Type(TypeNormol), m_nCirFinishedWidth(0), m_nCirLastWidth(0), m_nCirSpace(0), m_nStartAngle(-90),m_nSweepAngle(0), m_bButton(false)
+	CProgressUI::CProgressUI()
+		: m_nMin(0)
+		, m_nMax(100)
+		, m_nValue(0)
+		, m_bStretchForeImage(true)
+		, m_Type(TypeNormol)
+		, m_nCirFinishedWidth(0)
+		, m_nCirFinishedWidthPercent(0)
+		, m_nCirLastWidth(0)
+		, m_nCirLastWidthPercent(0)
+		, m_nCirSpace(0)
+		, m_nStartAngle(-90)
+		, m_nSweepAngle(0)
+		, m_bButton(false)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
-		SetFixedHeight(12);
+		//SetFixedHeight(12);
 	}
 
 	LPCTSTR CProgressUI::GetClass() const
@@ -181,8 +193,28 @@ namespace DuiLib
 				SetType(TypeHorizontal);
 			}
 		}
-		else if( _tcsicmp(pstrName, _T("CirFinishedWidth")) == 0 ) SetCircularFinishedWidth(_ttoi(pstrValue) * S);
-		else if( _tcsicmp(pstrName, _T("CirLastWidth")) == 0 ) SetCircularLastWidth(_ttoi(pstrValue) * S);
+		else if( _tcsicmp(pstrName, _T("CirFinishedWidth")) == 0 )
+		{
+			if (_tcsrchr(pstrValue, '%'))
+			{
+				m_nCirFinishedWidthPercent = _ttoi(pstrValue);
+			}
+			else
+			{
+				SetCircularFinishedWidth(_ttoi(pstrValue) * S);
+			}
+		}
+		else if (_tcsicmp(pstrName, _T("CirLastWidth")) == 0)
+		{
+			if (_tcsrchr(pstrValue, '%'))
+			{
+				m_nCirLastWidthPercent = _ttoi(pstrValue);
+			}
+			else
+			{
+				SetCircularLastWidth(_ttoi(pstrValue) * S);
+			}
+		}
 		else if( _tcsicmp(pstrName, _T("CirSpace")) == 0 ) SetCircularSpace(_ttoi(pstrValue) * S);
 		else if( _tcsicmp(pstrName, _T("StartAngle")) == 0 ) SetCircularStartAngle(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("SweepAngle")) == 0 ) SetCircularSweepAngle(_ttoi(pstrValue));
@@ -233,30 +265,80 @@ namespace DuiLib
 							m_rcItem.top + rcPadding.top,
 							m_rcItem.right - rcPadding.right - 1,
 							m_rcItem.bottom - rcPadding.bottom - 1);
-			int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
-			const static double PI = 3.1415926535898;
-			double a = GetCircularSpace();				//外圆弦长
-			double r2 = rcItem.GetHeight();				//外圆半径
-			double r1 = rcItem.GetHeight() - GetCircularFinishedWidth();	//内圆半径
-			double x = a * r1 / (2 * r2);				//内圆半弦长
-			double b = a * (r2 - r1) / r2;				//内圆弦需要延长到达平行的长度
-			double tan2 = (b + x) / sqrt(r1 * r1 - x * x);	//已完成部分所占角的一半 + 延长角度 的tan值
-			double angel2 = atan(tan2) * 180 / PI;	//已完成部分所占角的一半 + 延长角度
-			double sin1 = a / 2 / r2;						//已完成部分所占角的一半的sin值
-			double angel1 = asin(sin1) * 180 / PI;			//已完成部分所占角度的一半
-			angel1 *= 2;
-			angel2 -= angel1;
+			if (rcItem.GetWidth() > rcItem.GetHeight())
+			{
+				int nDelta = rcItem.GetWidth() - rcItem.GetHeight();
+				rcItem.left += nDelta/2;
+				rcItem.right = rcItem.left + rcItem.GetHeight();
+			}
+			else
+			{
+				int nDelta = rcItem.GetHeight() - rcItem.GetWidth();
+				rcItem.top += nDelta/2;
+				rcItem.bottom = rcItem.top + rcItem.GetWidth();
+			}
 
+			int nLastWidth;
+			if (m_nCirLastWidthPercent)
+			{
+				nLastWidth = rcItem.GetWidth() * m_nCirLastWidthPercent / 100;
+			}
+			else
+			{
+				nLastWidth = GetCircularLastWidth();
+			}
+
+			int nFinishWidth;
+			if (m_nCirFinishedWidthPercent)
+			{
+				nFinishWidth = rcItem.GetWidth() * m_nCirFinishedWidthPercent / 100;
+			}
+			else
+			{
+				nFinishWidth = GetCircularFinishedWidth();
+			}
+			double dFinishRatio = GetValue() * 1.0 / GetMaxValue();
+			int nSweepValue = (int)(dFinishRatio * GetCircularSweepAngle());
+			const static double PI = 3.1415926535898;
+			double a = GetCircularSpace();					//外圆弦长
+			double r2 = rcItem.GetHeight();					//外圆半径
+			double r1 = rcItem.GetHeight() - nFinishWidth;	//内圆半径
+			double x = a * r1 / (2 * r2);					//内圆半弦长
+			double b = a * (r2 - r1) / r2;					//内圆弦需要延长到达平行的长度
+			double tan2 = (b + x) / sqrt(r1 * r1 - x * x);	//空白部分所占角的一半 + 延长角度 的tan值
+			double angel2 = atan(tan2) * 180 / PI;			//空白部分所占角的一半 + 延长角度
+			double sin1 = a / 2 / r2;						//空白部分所占角的一半的sin值
+			double angel1 = asin(sin1) * 180 / PI;			//空白部分所占角度的一半
+			angel2 -= angel1;								//延长角度
+			//angel1 *= 2;
+			double dAngelIn = (angel2 + angel1) * 2;
+			double dAngelInFinish = dAngelIn * dFinishRatio;
+			double dAngelInLast = dAngelIn - dAngelInFinish;
+
+			double dAngelOut = angel1 * 2;
+			double dAngelOutFinish = dAngelOut * dFinishRatio;
+			double dAngelOutLast = dAngelIn - dAngelOutFinish;
 			if (nSweepValue < GetCircularSweepAngle())
 			{
 				GraphicsPath pathLast;
-				int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
-				double nStartAngle = GetCircularStartAngle() + GetCircularSpace();
-				double nSweepAngle = GetCircularSweepAngle() - nSweepValue;
-				pathLast.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle, nSweepAngle);
+				//int nSweepValue = GetValue() * GetCircularSweepAngle() / GetMaxValue();
+
 				CDuiRect rcValue(rcItem);
-				rcValue.Deflate(GetCircularLastWidth(), GetCircularLastWidth());
-				pathLast.AddArc(rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle + nSweepAngle, -nSweepAngle);
+				rcValue.Deflate(nLastWidth, nLastWidth);
+				if (GetValue() == 0)
+				{
+					double nStartAngle = GetCircularStartAngle();
+					double nSweepAngle = GetCircularSweepAngle();
+					pathLast.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle, nSweepAngle);
+					pathLast.AddArc(rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle + nSweepAngle, -nSweepAngle);
+				}
+				else
+				{
+					double nStartAngle = GetCircularStartAngle() + dAngelInLast;
+					double nSweepAngle = GetCircularSweepAngle() - nSweepValue - dAngelInLast * 2;
+					pathLast.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle, nSweepAngle);
+					pathLast.AddArc(rcValue.left, rcValue.top, rcValue.GetWidth(), rcValue.GetHeight(), nStartAngle + nSweepAngle - angel2, -(nSweepAngle - 2 * angel2));
+				}
 				pathLast.CloseFigure();
 				DWORD dwBkColor = GetStatusColor(DUI_ATTR_POS_BK DUI_ATTR_COLOR);
 				SolidBrush brush(Gdiplus::Color(dwBkColor >> 24, (dwBkColor >> 16) & 0xFF, (dwBkColor >> 8) & 0xFF, dwBkColor & 0xFF));
@@ -268,34 +350,24 @@ namespace DuiLib
 			if (nSweepValue)
 			{
 				GraphicsPath pathFinish;
-				double nStartAngle = GetCircularStartAngle() + GetCircularSpace();
-				double nSweepAngle = nSweepValue;
+				double nStartAngle = GetCircularStartAngle() - dAngelOutFinish;
+				double nSweepAngle = nSweepValue - dAngelOutFinish * 2;
 				CDuiRect rcValueIn(rcItem);
-				rcValueIn.Deflate(GetCircularFinishedWidth(), GetCircularFinishedWidth());
-				if (nSweepAngle > 0 && nSweepAngle < angel1 * 2 + angel2 * 2)
+				rcValueIn.Deflate(nFinishWidth, nFinishWidth);
+				if (GetValue() == GetMaxValue())
 				{
-					nStartAngle -= angel1;
-					nSweepAngle = angel1 * 2 + 2 + angel2 * 2;
-					pathFinish.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(),
-									  nStartAngle,
-									  angel1);
-					//nStartAngle - angel1 - nSweepAngle + angel1 * 2 - angel2;
-					pathFinish.AddArc(rcValueIn.left, rcValueIn.top, rcValueIn.GetWidth(), rcValueIn.GetHeight(),
-									  nStartAngle,
-									  1);
-				}
-				else if (nSweepAngle >= GetCircularSweepAngle())
-				{
-					pathFinish.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle, -GetCircularSweepAngle());
+					pathFinish.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), GetCircularStartAngle(), -GetCircularSweepAngle());
 					pathFinish.AddArc(rcValueIn.left, rcValueIn.top, rcValueIn.GetWidth(), rcValueIn.GetHeight(),
 									  nStartAngle - GetCircularSweepAngle(), GetCircularSweepAngle());
 				}
 				else
 				{
-					pathFinish.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle - angel1, -nSweepAngle + angel1 * 2);
+					double nStartAngle = GetCircularStartAngle() - dAngelOutFinish;
+					double nSweepAngle = nSweepValue - dAngelOutFinish * 2;
+					pathFinish.AddArc(rcItem.left, rcItem.top, rcItem.GetWidth(), rcItem.GetHeight(), nStartAngle, -nSweepAngle);
 					pathFinish.AddArc(rcValueIn.left, rcValueIn.top, rcValueIn.GetWidth(), rcValueIn.GetHeight(),
-									  nStartAngle - angel1 - nSweepAngle + angel1 * 2 - angel2,
-									  nSweepAngle - angel1 * 2 + angel2 * 2);
+									  nStartAngle - nSweepAngle + angel2,
+									  nSweepAngle - angel2 * 2 );
 				}
 				pathFinish.CloseFigure();
 				SolidBrush brush(Gdiplus::Color(dwColor >> 24, (dwColor >> 16) & 0xFF, (dwColor >> 8) & 0xFF, dwColor & 0xFF));
