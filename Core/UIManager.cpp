@@ -1236,6 +1236,10 @@ bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*=
 
 void CPaintManagerUI::ReapObjects(CControlUI* pControl)
 {
+	if (!pControl)
+	{
+		return;
+	}
     if( pControl == m_pEventKey ) m_pEventKey = NULL;
     if( pControl == m_pEventHover ) m_pEventHover = NULL;
     if( pControl == m_pEventClick ) m_pEventClick = NULL;
