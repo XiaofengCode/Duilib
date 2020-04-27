@@ -730,7 +730,7 @@ void CControlUI::SetVisible(bool bVisible)
 
     bool v = IsVisible();
 	m_bVisible = bVisible;
-	if( m_dwStatus & UISTATE_FOCUSED ) m_dwStatus &= ~UISTATE_FOCUSED;
+	if (m_dwStatus & UISTATE_FOCUSED) m_dwStatus &= ~UISTATE_FOCUSED;
 	if (!bVisible && m_pManager && m_pManager->GetFocus() == this) {
 		m_pManager->SetFocus(NULL) ;
 	}
@@ -738,7 +738,7 @@ void CControlUI::SetVisible(bool bVisible)
         NeedParentUpdate();
     }
 
-	if (bVisible)
+	if (bVisible && m_gifBk.IsAutoPlay())
 		m_gifBk.Play();
 	else
 		m_gifBk.Stop();

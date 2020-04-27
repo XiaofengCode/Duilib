@@ -14,6 +14,9 @@ namespace DuiLib{
 		m_bIsPlaying		=	false;
 		m_nTimerID			=	100;
 		m_pParent			=	NULL;
+		m_nLoopCount = 0;
+		m_nCurLoop = 0;
+		m_bBackRun = false;
 	}
 
 	CGifImage::~CGifImage()
@@ -26,7 +29,7 @@ namespace DuiLib{
 		m_bIsAutoPlay = bIsAuto;
 	}
 
-	bool CGifImage::IsPlay() const
+	bool CGifImage::IsAutoPlay() const
 	{
 		return m_bIsAutoPlay;
 	}
@@ -35,12 +38,64 @@ namespace DuiLib{
 	{
 		if ( idEvent != m_nTimerID )
 			return;
+		long lPause = ((long*)m_pPropertyItem->value)[m_nFramePosition] * 10;
 		m_pParent->GetManager()->KillTimer(m_pParent, m_nTimerID );
+		if (m_nLoopCount == 0)
+		{
+			if (m_bBackRun)
+			{
+				--m_nFramePosition;
+				if (m_nFramePosition < 0)
+					m_nFramePosition = m_nFrameCount - 1;
+			}
+			else
+			{
+				m_nFramePosition = (++m_nFramePosition) % m_nFrameCount;
+			}
+		}
+		else if (!m_bBackRun && m_nCurLoop < m_nLoopCount)
+		{
+			++m_nFramePosition;
+			if (m_nFramePosition >= m_nFrameCount)
+			{
+				m_nCurLoop++;
+				if (m_nCurLoop < m_nLoopCount)
+				{
+					m_nFramePosition = 0;
+				}
+				else
+				{
+					m_nFramePosition = m_nFrameCount - 1;
+					m_nCurLoop = 0;
+				}
+			}
+		}
+		else if (m_bBackRun)
+		{
+			if (m_nFramePosition == 0)
+			{
+				if (m_nCurLoop > 0)
+				{
+					m_nCurLoop--;
+					m_nFramePosition = m_nFrameCount - 1;
+				}
+				else
+				{
+					m_bIsPlaying = false;
+					return;
+				}
+			}
+			else
+				--m_nFramePosition;
+		}
+		else
+		{
+			m_bIsPlaying = false;
+			return;
+		}
 		m_pParent->Invalidate();
 
-		m_nFramePosition = (++m_nFramePosition) % m_nFrameCount;
-
-		long lPause = ((long*) m_pPropertyItem->value)[m_nFramePosition] * 10;
+		
 		if ( lPause == 0 ) lPause = 100;
 		m_pParent->GetManager()->SetTimer( m_pParent, m_nTimerID, lPause );
 	}
@@ -75,6 +130,13 @@ namespace DuiLib{
 	
 		delete  pDimensionIDs;
 		pDimensionIDs = NULL;
+
+		// get loop count
+		UINT uSize = m_pImage->GetPropertyItemSize(PropertyTagLoopCount);
+		Gdiplus::PropertyItem* pPropLoopCount = (Gdiplus::PropertyItem*)new char[uSize];
+		m_pImage->GetPropertyItem(PropertyTagLoopCount, uSize, pPropLoopCount);
+		m_nLoopCount = *((SHORT*)pPropLoopCount->value);
+
 		if (m_bIsAutoPlay)
 		{
 			Play();
@@ -102,9 +164,9 @@ namespace DuiLib{
 	{
 		if ( NULL == hDC || NULL == m_pImage ) return;
 		GUID pageGuid = Gdiplus::FrameDimensionTime;
-		Gdiplus::Graphics graphics( hDC );
-		graphics.DrawImage( m_pImage, rcItem.left, rcItem.top, rcItem.right-rcItem.left, rcItem.bottom-rcItem.top );
-		m_pImage->SelectActiveFrame( &pageGuid, m_nFramePosition );
+		Gdiplus::Graphics graphics(hDC);
+		m_pImage->SelectActiveFrame(&pageGuid, m_nFramePosition);
+		graphics.DrawImage( m_pImage, rcItem.left, rcItem.top, rcItem.right-rcItem.left + 1, rcItem.bottom-rcItem.top + 1 );
 	}
 
 	Gdiplus::Image* CGifImage::LoadGifFromFile( LPCTSTR pstrGifPath )
@@ -130,6 +192,8 @@ namespace DuiLib{
 		m_nFramePosition = 0;
 		m_pParent->Invalidate();
 		m_bIsPlaying = false;
+		m_nCurLoop = 0;
+		m_bBackRun = false;
 	}
 
 	void CGifImage::Pause()
@@ -144,9 +208,14 @@ namespace DuiLib{
 		m_bIsPlaying = false;
 	}
 
-	void CGifImage::Play()
+	void CGifImage::Play(bool bBackRun)
 	{
-		if (m_bIsPlaying || m_pImage == NULL)
+		if (m_pImage == NULL)
+		{
+			return;
+		}
+		m_bBackRun = bBackRun;
+		if (m_bIsPlaying)
 		{
 			return;
 		}

@@ -7,6 +7,7 @@ namespace DuiLib
 		: m_iBindTabIndex(-1)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
+		m_nGifStyle = Auto;
 	}
 
 	LPCTSTR CButtonUI::GetClass() const
@@ -78,6 +79,18 @@ namespace DuiLib
 		{
 			if( IsEnabled() ) {
 				m_dwStatus |= UISTATE_HOT;
+				if (m_nGifStyle == HotRunLeaveBack || m_nGifStyle == HotRunLeaveStop)
+				{
+					m_gifBk.Play();
+				}
+				else if (m_nGifStyle == LeaveRunHotBack)
+				{
+					m_gifBk.Play(true);
+				}
+				else if (m_nGifStyle == LeaveRunHotStop)
+				{
+					m_gifBk.Stop();
+				}
 				Invalidate();
 
 				if (m_pManager != NULL)
@@ -90,6 +103,18 @@ namespace DuiLib
 		{
 			if( IsEnabled() ) {
 				m_dwStatus &= ~UISTATE_HOT;
+				if (m_nGifStyle == LeaveRunHotBack || m_nGifStyle == LeaveRunHotStop)
+				{
+					m_gifBk.Play();
+				}
+				else if (m_nGifStyle == HotRunLeaveBack)
+				{
+					m_gifBk.Play(true);
+				}
+				else if (m_nGifStyle == HotRunLeaveStop)
+				{
+					m_gifBk.Stop();
+				}
 				Invalidate();
 
 				if (m_pManager != NULL)
@@ -193,6 +218,38 @@ namespace DuiLib
 			{
 				m_uTextStyle = m_uTextStyle & ~DT_WORDBREAK;
 				m_uTextStyle |= DT_SINGLELINE;
+			}
+		}
+		else if( _tcsicmp(pstrName, _T("bkgifstyle")) == 0 )
+		{
+			if (_tcsicmp(pstrValue, _T("auto")) == 0)
+			{
+				m_nGifStyle = Auto;
+				m_gifBk.SetAutoPlay(true);
+			}
+			else if (_tcsicmp(pstrValue, _T("HotRunLeaveBack")) == 0)
+			{
+				m_nGifStyle = HotRunLeaveBack;
+				m_gifBk.SetAutoPlay(false);
+			}
+			else if (_tcsicmp(pstrValue, _T("HotRunLeaveStop")) == 0)
+			{
+				m_nGifStyle = HotRunLeaveStop;
+				m_gifBk.SetAutoPlay(false);
+			}
+			else if (_tcsicmp(pstrValue, _T("LeaveRunHotBack")) == 0)
+			{
+				m_nGifStyle = LeaveRunHotBack;
+				m_gifBk.SetAutoPlay(true);
+			}
+			else if (_tcsicmp(pstrValue, _T("LeaveRunHotStop")) == 0)
+			{
+				m_nGifStyle = LeaveRunHotStop;
+				m_gifBk.SetAutoPlay(true);
+			}
+			else
+			{
+				m_nGifStyle = Non;
 			}
 		}
 		else __super::SetAttribute(pstrName, pstrValue);

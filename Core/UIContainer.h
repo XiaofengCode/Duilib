@@ -2,7 +2,7 @@
 #define __UICONTAINER_H__
 
 #pragma once
-
+#define TIMER_SCROLL_INERTIA    101
 namespace DuiLib {
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -122,6 +122,13 @@ protected:
 
     CScrollBarUI* m_pVerticalScrollBar;
     CScrollBarUI* m_pHorizontalScrollBar;
+
+	long m_nScrollSpeedX;
+	long m_nScrollSpeedY;
+	DWORD m_dwLastScrollTick;
+	DWORD m_dwBeginScrollTick;
+	long m_nScrollBeginPosX;
+	long m_nScrollBeginPosY;
 };
 
 } // namespace DuiLib

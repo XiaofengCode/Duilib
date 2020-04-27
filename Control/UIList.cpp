@@ -296,21 +296,21 @@ void CListUI::DoEvent(TEventUI& event)
 				return;
 			}
 			short nDelta = (short)HIWORD(event.wParam);
-			SIZE sz = GetScrollPos();
-			sz.cy  -= nDelta;
+            if (!m_bScrollSelect)
+			{
+				SIZE sz = GetScrollPos();
+				sz.cy -= nDelta;
+				SetScrollPos(sz);
+                //m_pList->SetScrollPos(sz);
+                return;
+            }
 			if (nDelta < 0)
 			{
-				if( m_bScrollSelect )
-					SelectItem(FindSelectable(m_iCurSel + 1, true), true);
-				else
-					SetScrollPos(sz);
+				SelectItem(FindSelectable(m_iCurSel + 1, true), true);
 			}
 			else
 			{
-				if( m_bScrollSelect )
-					SelectItem(FindSelectable(m_iCurSel - 1, false), true);
-				else
-					SetScrollPos(sz);
+				SelectItem(FindSelectable(m_iCurSel - 1, false), true);
 			}
 			return;
         }

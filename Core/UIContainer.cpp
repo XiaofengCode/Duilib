@@ -13,7 +13,13 @@ namespace DuiLib
 		m_pVerticalScrollBar(NULL),
 		m_pHorizontalScrollBar(NULL),
 		m_bScrollProcess(false),
-		m_nScrollStepSize(0)
+		m_nScrollStepSize(0),
+		m_nScrollSpeedX(0),
+		m_nScrollSpeedY(0),
+		m_dwLastScrollTick(0),
+		m_dwBeginScrollTick(0),
+		m_nScrollBeginPosX(0),
+		m_nScrollBeginPosY(0)
 	{
 		::ZeroMemory(&m_rcInset, sizeof(m_rcInset));
 	}
@@ -294,18 +300,34 @@ namespace DuiLib
 				}
 				short nDalta = (short)HIWORD(event.wParam);
 				SIZE sz = GetScrollPos();
+				DWORD dwCurTick = GetTickCount();
+				if (dwCurTick - m_dwLastScrollTick > 200 ||		//是不是同一次滚动
+					nDalta * m_nScrollSpeedY < 0)				//滚动方向不同
+				{
+					m_dwBeginScrollTick = dwCurTick;
+					m_nScrollBeginPosY = sz.cy;
+				}
+				m_pManager->KillTimer(this, TIMER_SCROLL_INERTIA);
+				
 				sz.cy  -= nDalta;
 				SetScrollPos(sz);
+
+				m_dwLastScrollTick = dwCurTick;
+				if (dwCurTick == m_dwBeginScrollTick)
+				{
+					m_nScrollSpeedY = nDalta;
+				}
+				else
+				{
+					long l = (m_nScrollBeginPosY - sz.cy) * 40;
+					DWORD dw = (dwCurTick - m_dwBeginScrollTick);
+					m_nScrollSpeedY = l/(long)dw ;
+				}
+				if (m_nScrollSpeedX | m_nScrollSpeedY)
+				{
+					m_pManager->SetTimer(this, TIMER_SCROLL_INERTIA, 40);
+				}
 				return;
-// 				switch( LOWORD(event.wParam) )
-// 				{
-// 				case SB_LINEUP:
-// 					LineUp();
-// 					return;
-// 				case SB_LINEDOWN:
-// 					LineDown();
-// 					return;
-// 				}
 			}
 		}
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() && m_pHorizontalScrollBar->IsEnabled() ) {
@@ -338,20 +360,53 @@ namespace DuiLib
 				{
 					return;
 				}
+				m_pManager->KillTimer(this, TIMER_SCROLL_INERTIA);
 				short nDalta = (short)HIWORD(event.wParam);
 				SIZE sz = GetScrollPos();
+				DWORD dwCurTick = GetTickCount();
+				if (dwCurTick - m_dwLastScrollTick > 200 ||		//是不是同一次滚动
+					nDalta * m_nScrollSpeedX < 0)				//滚动方向不同
+				{
+					m_dwBeginScrollTick = dwCurTick;
+					m_nScrollBeginPosX = sz.cx;
+				}
 				sz.cx -= nDalta;
 				SetScrollPos(sz);
+				
+				m_dwLastScrollTick = dwCurTick;
+				if (dwCurTick == m_dwBeginScrollTick)
+				{
+					m_nScrollSpeedY = nDalta;
+				}
+				else
+				{
+					long l = (m_nScrollBeginPosY - sz.cy) * 40;
+					DWORD dw = (dwCurTick - m_dwBeginScrollTick);
+					m_nScrollSpeedY = l / (long)dw;
+				}
+				if (m_nScrollSpeedX | m_nScrollSpeedY)
+				{
+					m_pManager->SetTimer(this, TIMER_SCROLL_INERTIA, 40);
+				}
 				return;
-// 				switch( LOWORD(event.wParam) ) {
-// 			case SB_LINEUP:
-// 				LineLeft();
-// 				return;
-// 			case SB_LINEDOWN:
-// 				LineRight();
-// 				return;
-// 				}
 			}
+		}
+		if (event.Type == UIEVENT_TIMER && event.wParam == TIMER_SCROLL_INERTIA)
+		{
+			SIZE sz = GetScrollPos();
+			sz.cx -= m_nScrollSpeedX;
+			sz.cy -= m_nScrollSpeedY;
+			SetScrollPos(sz);
+
+			m_nScrollSpeedX = m_nScrollSpeedX * 1 / 10;
+			m_nScrollSpeedY = m_nScrollSpeedY * 1 / 10;
+			if (!(m_nScrollSpeedX | m_nScrollSpeedY))
+			{
+				m_dwBeginScrollTick = m_dwLastScrollTick = 0;
+				m_nScrollBeginPosY = m_nScrollSpeedX = 0;
+				m_pManager->KillTimer(this, TIMER_SCROLL_INERTIA);
+			}
+			return;
 		}
 		CControlUI::DoEvent(event);
 	}

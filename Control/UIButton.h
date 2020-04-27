@@ -5,6 +5,15 @@
 
 namespace DuiLib
 {
+	enum GifStyle
+	{
+		Non,
+		Auto,
+		HotRunLeaveBack,
+		HotRunLeaveStop,
+		LeaveRunHotBack,
+		LeaveRunHotStop
+	};
 	class UILIB_API CButtonUI : public CLabelUI
 	{
 	public:
@@ -36,6 +45,7 @@ namespace DuiLib
 // 		UINT m_uButtonState;
 		int			m_iBindTabIndex;
 		CDuiString	m_sBindTabLayoutName;
+		GifStyle	m_nGifStyle;
 	};
 
 }	// namespace DuiLib
