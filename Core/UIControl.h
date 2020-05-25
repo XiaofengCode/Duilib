@@ -171,7 +171,7 @@ public:
     virtual void SetContextMenuUsed(bool bMenuUsed);
 
     // 用户属性
-    virtual const CDuiString& GetUserData(); // 辅助函数，供用户使用
+    virtual const CDuiString& GetUserData() const; // 辅助函数，供用户使用
     virtual void SetUserData(LPCTSTR pstrText); // 辅助函数，供用户使用
     virtual UINT_PTR GetTag() const; // 辅助函数，供用户使用
     virtual void SetTag(UINT_PTR pTag); // 辅助函数，供用户使用

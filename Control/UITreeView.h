@@ -46,11 +46,11 @@ namespace DuiLib
 		bool	AddChildNode(CTreeNodeUI* _pTreeNodeUI);
 		bool	RemoveAt(CTreeNodeUI* _pTreeNodeUI);
 		void	SetParentNode(CTreeNodeUI* _pParentTreeNode);
-		CTreeNodeUI* GetParentNode();
-		long	GetCountChild();
+		CTreeNodeUI* GetParentNode() const;
+		long	GetCountChild() const;
 		void	SetTreeView(CTreeViewUI* _CTreeViewUI);
 		CTreeViewUI* GetTreeView();
-		CTreeNodeUI* GetChildNode(int _nIndex);
+		CTreeNodeUI* GetChildNode(int _nIndex) const;
 		void	SetVisibleFolderBtn(bool _IsVisibled);
 		bool	GetVisibleFolderBtn();
 		void	SetVisibleCheckBtn(bool _IsVisibled);
@@ -79,17 +79,18 @@ namespace DuiLib
 		virtual int	  GetToolTipWidth(void);	// 多行ToolTip单行最长宽度
 
 		//CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
-
+		void SetEnabled(bool bEnable = true);
 	private:
 		CTreeNodeUI* GetLastNode();
-		CTreeNodeUI* CalLocation(CTreeNodeUI* _pTreeNodeUI);
+		void CalcLocation(CTreeNodeUI* _pTreeNodeUI);
+		void CalcAllChildren();
 
 	protected:
-		CHorizontalLayoutUI*	GetTreeNodeHoriznotal() const {return pHoriz;}
-		CCheckBoxUI*			GetFolderButton() const {return pFolderButton;}
-		CLabelUI*				GetDottedLine() const {return pDottedLine;}
-		CCheckBoxUI*			GetCheckBox() const {return pCheckBox;}
-		COptionUI*				GetItemButton() const {return pItemButton;}
+		CHorizontalLayoutUI*	GetTreeNodeHoriznotal() const {return m_pHoriz;}
+		CCheckBoxUI*			GetFolderButton() const {return m_pFolderButton;}
+		CLabelUI*				GetDottedLine() const {return m_pDottedLine;}
+		CCheckBoxUI*			GetCheckBox() const {return m_pCheckBox;}
+		COptionUI*				GetItemButton() const {return m_pItemButton;}
 
 	private:
 		// Status
@@ -106,17 +107,17 @@ namespace DuiLib
 		bool	m_bExpanding;
 
 
-		CTreeViewUI*			pTreeView;
-		CHorizontalLayoutUI*	pHoriz;
-		CCheckBoxUI*			pFolderButton;
-		CLabelUI*				pDottedLine;
-		CCheckBoxUI*			pCheckBox;
-		COptionUI*				pItemButton;
-		CLabelUI*				pOverFolderButton;
+		CTreeViewUI*			m_pTreeView;
+		CHorizontalLayoutUI*	m_pHoriz;
+		CCheckBoxUI*			m_pFolderButton;
+		CLabelUI*				m_pDottedLine;
+		CCheckBoxUI*			m_pCheckBox;
+		COptionUI*				m_pItemButton;
+		CLabelUI*				m_pOverFolderButton;
 
-		CTreeNodeUI*			pParentTreeNode;
+		CTreeNodeUI*			m_pParentTreeNode;
 
-		CStdPtrArray			mTreeNodes;
+		CStdPtrArray			m_arTreeNodes;
 	};
 
 	class UILIB_API CTreeViewUI : public CListUI,public INotifyUI

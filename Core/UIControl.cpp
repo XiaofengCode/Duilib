@@ -698,7 +698,7 @@ void CControlUI::SetContextMenuUsed(bool bMenuUsed)
     m_bMenuUsed = bMenuUsed;
 }
 
-const CDuiString& CControlUI::GetUserData()
+const CDuiString& CControlUI::GetUserData() const
 {
     return m_sUserData;
 }
@@ -1025,10 +1025,133 @@ int CControlUI::GetVirtualWnd(CDuiStringArray& arVirtualWnd) const
 
 CDuiString CControlUI::GetAttribute(LPCTSTR pstrName) const
 {
+	double S = 1.0;
+	if (m_pManager)
+	{
+		S = m_pManager->GetDpiScale();
+	}
 	if( _tcsicmp(pstrName, _T("text")) == 0 )
 	{
 		return GetText();
 	}
+	else if (_tcsicmp(pstrName, _T("pos")) == 0)
+	{
+		CDuiString strResult;
+		RECT rcPos = GetPos();
+		strResult.SmallFormat(_T("%d,%d,%d,%d"), rcPos.left / S, rcPos.top/S, rcPos.right/S, rcPos.bottom/S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("colorhsl")) == 0)
+	{
+		if (IsColorHSL())
+		{
+			return _T("true");
+		}
+		return _T("false");
+	}
+	else if (_tcsicmp(pstrName, _T("leftbordersize")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetLeftBorderSize()/S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("topbordersize")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetTopBorderSize() / S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("rightbordersize")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetRightBorderSize() / S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("bottombordersize")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetBottomBorderSize() / S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("borderstyle")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetBorderStyle());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("borderround")) == 0)
+	{
+		CDuiString strResult;
+		SIZE cxyRound = GetBorderRound();
+		strResult.SmallFormat(_T("%d,%d"), cxyRound.cx / S, cxyRound.cy / S);
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("minwidth")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetMinWidth());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("minheight")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetMinHeight());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("maxwidth")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetMaxWidth());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("maxheight")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%d"), GetMaxHeight());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("name")) == 0)
+	{
+		return GetName();
+	}
+	else if (_tcsicmp(pstrName, _T("text")) == 0)
+	{
+		return GetText();
+	}
+	else if (_tcsicmp(pstrName, _T("tooltip")) == 0)
+	{
+		return GetToolTip();
+	}
+	else if (_tcsicmp(pstrName, _T("userdata")) == 0)
+	{
+		return GetUserData();
+	}
+	else if (_tcsicmp(pstrName, _T("enabled")) == 0)
+	{
+		return (!(m_dwStatus & UISTATE_DISABLED)) ? _T("true") : _T("false");
+	}
+	else if (_tcsicmp(pstrName, _T("mouse")) == 0)
+	{
+		return IsMouseEnabled() ? _T("true") : _T("false");
+	}
+	else if (_tcsicmp(pstrName, _T("keyboard")) == 0)
+	{
+		return IsKeyboardEnabled() ? _T("true") : _T("false");
+	}
+	else if (_tcsicmp(pstrName, _T("visible")) == 0)
+		return m_bVisible ? _T("true") : _T("false");
+	else if (_tcsicmp(pstrName, _T("float")) == 0)
+		return IsFloat() ? _T("true") : _T("false");
+	else if (_tcsicmp(pstrName, _T("shortcut")) == 0)
+	{
+		CDuiString strResult;
+		strResult.SmallFormat(_T("%c"), GetShortcut());
+		return strResult;
+	}
+	else if (_tcsicmp(pstrName, _T("menu")) == 0)
+		return IsContextMenuUsed() ? _T("true") : _T("false");
+	else if (_tcsicmp(pstrName, _T("virtualwnd")) == 0)
+		return GetVirtualWnd(false);
 	return m_attrs.GetString(pstrName);
 }
 

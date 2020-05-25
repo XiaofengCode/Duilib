@@ -367,6 +367,10 @@ namespace DuiLib
 
 	void CEditUI::SetEnabled(bool bEnable)
 	{
+		if (m_pWindow)
+		{
+			m_pManager->SetFocus(NULL);
+		}
 		CControlUI::SetEnabled(bEnable);
 // 		if( !IsEnabled() ) {
 // 			m_uButtonState = 0;
