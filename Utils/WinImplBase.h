@@ -21,7 +21,6 @@ namespace DuiLib
 		, public IDialogBuilderCallback
 	{
 	public:
-		LBIND_BASE_CLASS_DEFINE(WindowImplBase);
 		WindowImplBase();;
 		virtual ~WindowImplBase(){};
 		virtual void InitWindow(){}

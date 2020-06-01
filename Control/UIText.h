@@ -8,7 +8,6 @@ namespace DuiLib
 	class UILIB_API CTextUI : public CLabelUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CTextUI, CLabelUI);
 		CTextUI();
 		~CTextUI();
 

@@ -21,7 +21,6 @@ public:
 class UILIB_API CDialogBuilder
 {
 public:
-	LBIND_BASE_CLASS_DEFINE(CDialogBuilder);
     CDialogBuilder();
 
 	void SetAttrbuteCallBack(IDialogBuilderAttrbuteCallback * pAttrbuteCallback = NULL);

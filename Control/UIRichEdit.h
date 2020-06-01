@@ -5,14 +5,26 @@
 #include <Imm.h>
 #pragma comment(lib,"imm32.lib")
 
+
+#include <textserv.h> 
+#include <richole.h>
+
+#define IDM_VERBMIN                     40200
+#define IDM_VERBMAX                     40300
+#define ID_EDIT_CONVERT                 40013
+// #define ID_EDIT_CUT                     40006
+// #define ID_EDIT_COPY                    40007
+// #define ID_EDIT_PASTE                   40008
+
 namespace DuiLib {
 
 class CTxtWinHost;
+class CRichEditOleCallback;
+class COleInPlaceFrame;
 
 class UILIB_API CRichEditUI : public CContainerUI, public IMessageFilterUI
 {
 public:
-	LBIND_CLASS_DEFINE(CRichEditUI,CContainerUI);
     CRichEditUI();
     ~CRichEditUI();
 
@@ -93,9 +105,13 @@ public:
     void EmptyUndoBuffer();
     UINT SetUndoLimit(UINT nLimit);
     long StreamIn(int nFormat, EDITSTREAM &es);
-    long StreamOut(int nFormat, EDITSTREAM &es);
+    long StreamOut(int nFormat, EDITSTREAM &es); 
 	void SetAccumulateDBCMode(bool bDBCMode);
 	bool IsAccumulateDBCMode();
+	bool SetOLECallback( IRichEditOleCallback *pCallback );
+	IRichEditOleCallback *GetOLECallback();
+	LPRICHEDITOLE GetRichEditOle();
+    ITextServices* GetTextServices();
 
     void DoInit();
     // 注意：TxSendMessage和SendMessage是有区别的，TxSendMessage没有multibyte和unicode自动转换的功能，
@@ -155,6 +171,8 @@ protected:
     CDuiString m_sFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
+	LPRICHEDITOLE m_pRichEditOle;
+	IRichEditOleCallback *m_pCallback;
 	bool m_bInited;
 	bool  m_fAccumulateDBC ; // TRUE - need to cumulate ytes from 2 WM_CHAR msgs
 	// we are in this mode when we receive VK_PROCESSKEY

@@ -8,7 +8,6 @@ namespace DuiLib
 	class UILIB_API CScrollBarUI : public CControlUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CScrollBarUI, CControlUI);
 		CScrollBarUI();
 
 		LPCTSTR GetClass() const;

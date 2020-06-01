@@ -48,7 +48,6 @@ class UILIB_API CContainerUI;
 class UILIB_API CControlUI
 {
 public:
-	LBIND_BASE_CLASS_DEFINE(CControlUI);
     CControlUI();
     virtual ~CControlUI();
 

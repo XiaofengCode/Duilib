@@ -9,7 +9,6 @@ namespace DuiLib {
 	class UILIB_API CSliderTabLayoutUI : public CTabLayoutUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CSliderTabLayoutUI, CTabLayoutUI);
 		CSliderTabLayoutUI();
 
 		LPCTSTR GetClass() const;

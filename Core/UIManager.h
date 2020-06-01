@@ -5,8 +5,6 @@
 
 #include <vector>
 #include <map>
-#include "../lua/base/RefBase.h"
-#include "../lua/base/Criticalsection.h"
 
 namespace DuiLib {
 
@@ -158,7 +156,6 @@ typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 class UILIB_API CPaintManagerUI
 {
 public:
-	LBIND_BASE_CLASS_DEFINE(CPaintManagerUI);
     CPaintManagerUI();
     ~CPaintManagerUI();
 

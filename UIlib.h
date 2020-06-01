@@ -60,8 +60,6 @@
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
-#define DUILIB_LUA
-
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -73,7 +71,9 @@
 #include <malloc.h>
 #include <comdef.h>
 #include <gdiplus.h>
+#include <string>
 
+#include "Utils/Utf.h"
 #include "Utils/Utils.h"
 #include "Utils/String.h"
 #include "Utils/FileHelper.h"
@@ -81,8 +81,6 @@
 #include "Utils/UIDelegate.h"
 #include "Utils/XUnzip.h"
 #include "Utils/GifImage.h"
-
-#include "lua/LuaObj/Luaobj.h"
 
 #include "Core/AttributeManager.h"
 #include "Core/UIDefine.h"
@@ -185,12 +183,6 @@
 #	pragma message("Link duilib name:" DUILIB_NAME)
 #	pragma comment(lib, DUILIB_NAME)
 
-#ifdef DUILIB_LUA
-#	define LUALIB_NAME	"lua51_" MSC_VERSION DUILIB_PLAT ".lib"
-
-#	pragma message("Link lua5.1 name:" LUALIB_NAME)
-#	pragma comment(lib, LUALIB_NAME)
-#endif // DUILIB_LUA
 	
 #endif
 #pragma message("MSC version:" STR_MACRO(_MSC_VER))

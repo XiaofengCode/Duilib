@@ -8,7 +8,6 @@ namespace DuiLib
 	class UILIB_API CProgressUI : public CButtonUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CProgressUI, CButtonUI);
 		CProgressUI();
 		enum ProgressType{
 			TypeNormol,

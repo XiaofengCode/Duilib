@@ -8,7 +8,6 @@ namespace DuiLib
 	class UILIB_API CTileLayoutUI : public CContainerUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CTileLayoutUI, CContainerUI);
 		CTileLayoutUI();
 
 		LPCTSTR GetClass() const;

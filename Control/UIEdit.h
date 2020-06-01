@@ -11,7 +11,6 @@ namespace DuiLib
 	{
 		friend class CEditWnd;
 	public:
-		LBIND_CLASS_DEFINE(CEditUI, CLabelUI);
 		CEditUI();
 
 		LPCTSTR GetClass() const;

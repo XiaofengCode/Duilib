@@ -8,7 +8,6 @@ namespace DuiLib
 	class UILIB_API CChildLayoutUI : public CContainerUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CChildLayoutUI, CContainerUI);
 		CChildLayoutUI();
 
 		void Init();

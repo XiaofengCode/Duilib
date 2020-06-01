@@ -17,7 +17,6 @@ namespace DuiLib
 	class UILIB_API CButtonUI : public CLabelUI
 	{
 	public:
-		LBIND_CLASS_DEFINE(CButtonUI, CLabelUI);
 		CButtonUI();
 
 		LPCTSTR GetClass() const;

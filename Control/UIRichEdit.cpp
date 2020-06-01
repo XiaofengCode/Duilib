@@ -1069,7 +1069,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), 
     m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false), m_chLeadByte(0),
-	m_bTip(false),m_bEnableZoom(false)
+	m_bTip(false),m_bEnableZoom(false), m_pCallback(NULL), m_pRichEditOle(NULL)
 {
 	SetTipValueColor(_T("#FFBAC0C5"));
 #ifndef _UNICODE
@@ -1085,7 +1085,17 @@ CRichEditUI::~CRichEditUI()
     if( m_pTwh ) {
         m_pTwh->Release();
         m_pManager->RemoveMessageFilter(this);
-    }
+	}
+
+	if (m_pRichEditOle)
+	{
+		m_pRichEditOle->Release();
+	}
+
+	if (m_pCallback)
+	{
+		m_pCallback->Release();
+	}
 }
 
 LPCTSTR CRichEditUI::GetClass() const
@@ -2505,6 +2515,45 @@ bool CRichEditUI::IsAccumulateDBCMode()
 	return m_fAccumulateDBC;
 }
 
+bool CRichEditUI::SetOLECallback(IRichEditOleCallback* pCallback)
+{
+	LRESULT lResult;
+	TxSendMessage(EM_SETOLECALLBACK, 0, (LPARAM)pCallback, &lResult);
+	if ((BOOL)lResult == TRUE)
+	{
+		pCallback->AddRef();
+		m_pCallback = pCallback;
+		return true;
+	}
+	return false;
+}
 
+
+IRichEditOleCallback* CRichEditUI::GetOLECallback()
+{
+	return m_pCallback;
+}
+
+LPRICHEDITOLE CRichEditUI::GetRichEditOle()
+{
+	LRESULT lResult;
+	TxSendMessage(EM_GETOLEINTERFACE, 0, (LPARAM)(LPVOID*)&m_pRichEditOle, &lResult);
+	if ((BOOL)lResult == TRUE)
+	{
+		m_pRichEditOle->AddRef();
+		return m_pRichEditOle;
+	}
+	return NULL;
+}
+
+
+ITextServices* CRichEditUI::GetTextServices()
+{
+    if (m_pTwh)
+    {
+        return NULL;
+    }
+    return m_pTwh->GetTextServices();
+}
 
 } // namespace DuiLib

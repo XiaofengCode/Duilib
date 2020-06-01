@@ -93,7 +93,6 @@ class CListHeaderUI;
 class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI
 {
 public:
-	LBIND_CLASS_DEFINE(CListUI, CVerticalLayoutUI);
     CListUI();
 
     LPCTSTR GetClass() const;
