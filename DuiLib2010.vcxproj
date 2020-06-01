@@ -1429,20 +1429,6 @@
     </ClCompile>
     <ClCompile Include="Core\UIStringTable.cpp" />
     <ClCompile Include="Core\UITimer.cpp" />
-    <CustomBuild Include="gitinfo.cpp">
-      <Command Condition="'$(Configuration)|$(Platform)'=='u|Win32'">"D:\my projects\PlatSDK\SDK\Include.YIMA\autoinfo.py" Uilib.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='u|x64'">"D:\my projects\PlatSDK\SDK\Include.YIMA\autoinfo.py" Uilib.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='u|Win32'">xx</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='u|x64'">xx</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='su|Win32'">autoinfo.py Uilib.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">autoinfo.py Uilib.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='su|x64'">autoinfo.py Uilib.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='su_mt|x64'">autoinfo.py Uilib.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='su|Win32'">x</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">x</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='su|x64'">x</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='su_mt|x64'">x</Outputs>
-    </CustomBuild>
     <ClCompile Include="duipub.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='su_mt|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ud|Win32'">Create</PrecompiledHeader>
