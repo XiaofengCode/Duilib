@@ -72,68 +72,6 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
 
 void CDialogBuilder::_ParseEvent(CDuiXmlNode &node, CPaintManagerUI* pManager, CControlUI* pParent)
 {
-#ifdef DUILIB_LUA
-	if (!pManager)
-	{
-		return;
-	}
-	//<Event setFocus="ClickEvent.click">
-	//	<click>print("°´Å¥µã»÷")</click>
-	//</Event>
-	pParent->SetManager(pManager, NULL, false);
-// 	char nameBuf[MAX_PATH];
-// 	char valueBuf[MAX_PATH];
-	std::string sName;
-	std::string sValue;
-	LuaState* L = pManager->GetLuaState();
-	if(!L)
-	{
-		return;
-	}
-	try
-	{
-		for (CDuiXmlAttr attr=node.first_attribute();attr;attr=attr.next_attribute())
-		{
-			//sName = DuiUtf16ToAscii(attr.name());
-			CDuiString strValue(attr.value());
-			//sValue = DuiUtf16ToAscii(attr.value());
-// 			UTF16To8(nameBuf,(unsigned short*)attr.name(),sizeof(nameBuf));
-// 			UTF16To8(valueBuf,(unsigned short*)attr.value(),sizeof(valueBuf));
-			//strValue.MakeLower();
-			CDuiStringArray arValue = strValue.Split('.');
-			if (arValue.GetSize() == 1)
-			{
-				std::string sFun = DUI_T2A(strValue);
-				pParent->BindLuaEvent(attr.name(), L->getGlobal(sFun.c_str()));
-			}
-			else
-			{
-				std::string sModule = DUI_T2A(arValue[0]);
-				LuaTable tab=L->require(sModule.c_str());
-				if (tab.isValid())
-				{
-					std::string sFun = DUI_T2A(arValue[1]);
-					pParent->BindLuaEvent(attr.name(),tab.getTable(sFun.c_str()));
-				}
-			}
-		}
-
-		for( CDuiXmlNode evNode = node.first_child() ; evNode; evNode = evNode.next_sibling() )
-		{
-// 			UTF16To8(nameBuf,(unsigned short*)evNode.name(),sizeof(nameBuf));
-// 			int len=UTF16To8(NULL,(unsigned short*)evNode.text().as_string(),0);
-// 			char* buf=(char*)dlmalloc(len+1);
-// 			UTF16To8(buf,(unsigned short*)evNode.text().as_string(),len+1);
-			pParent->BindLuaEvent(evNode.name(), evNode.text().as_string());
-			//dlfree(buf);
-		}
-	}
-	catch(LuaException err)
-	{
-		OutputDebugStringA(err.what());
-		//LOGE("doString error:"<<err.what());
-	}
-#endif // DUILIB_LUA
 	
 }
 
@@ -164,18 +102,6 @@ void CDialogBuilder::_ParseDefault(CDuiXmlNode &node, CPaintManagerUI* pManager)
 
 void CDialogBuilder::_ParseScript(CDuiXmlNode &node, CPaintManagerUI* pManager)
 {
-#ifdef DUILIB_LUA
-	LuaState* L = pManager->GetLuaState();
-	if (!L)
-	{
-		return;
-	}
-	try{
-		L->doString(DUI_T2A(node.text().as_string()).c_str());
-	}catch(LuaException err){
-		OutputDebugStringA(err.what());
-	}
-#endif // DUILIB_LUA
 }
 
 void CDialogBuilder::_ParseFont(CPaintManagerUI* pManager, CDuiXmlNode &node)

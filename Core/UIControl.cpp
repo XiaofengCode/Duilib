@@ -84,105 +84,6 @@ CControlUI::~CControlUI()
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
-#ifdef DUILIB_LUA
-bool CControlUI::DoLuaEvent(LPCTSTR evName,LuaObject wParam, LuaObject lParam, LuaObject event)
-{
-	ASSERT(evName);
-	if (GetManager())
-	{
-		LuaState* L = GetManager()->GetLuaState();
-		//LOGI("DoLuaEvent:"<<evName);
-		LuaTable tab=GetManager()->GetControlEventMap(this,false);
-		if (tab.isValid() && L)
-		{
-			LuaObject evData=tab.getTable(DUI_T2A(evName).c_str());
-			if (evData.isFunction())
-			{
-				LuaFunction func=evData;
-				try
-				{
-					if (event.toInt())
-					{
-						LuaObject rtn=func(_lbindCToLua(L), wParam, lParam, event);
-						return rtn.toBool();
-					}
-					else
-					{
-						LuaObject rtn=func(_lbindCToLua(L), wParam, lParam);
-						return rtn.toBool();
-					}
-				}
-				catch(LuaException err)
-				{
-					OutputDebugStringA(err.what());
-					//LOGE("exec function error:"<<err.what());
-				}
-				return false;
-			}
-			else if(evData.isString())
-			{
-				try{
-					LuaObject lthis=_lbindCToLua(L);
-					L->setGlobal("this",lthis);
-					L->setGlobal("wParam",wParam);
-					L->setGlobal("lParam",lParam);
-					L->setGlobal("nEvent",event);
-					const char* script=evData.toString();
-					L->doString(script);
-				}
-				catch(LuaException err)
-				{
-					OutputDebugStringA(err.what());
-					//LOGE("doString error:"<<err.what());
-				}
-			}
-		}
-	}
-	return false;
-}
-
-bool CControlUI::DoLuaEvent(LPCTSTR evName, DWORD wParam, DWORD lParam, DWORD nEvent/* = 0*/)
-{
-	if (!GetManager())
-	{
-		return false;
-	}
-	LuaState* L=GetManager()->GetLuaState();
-	if (L)
-	{
-		//LOGI("DoLuaEvent:"<<evName);
-		return DoLuaEvent(evName, L->newInt(wParam),L->newInt(lParam), L->newInt(nEvent));
-	}
-	return false;
-}
-
-void CControlUI::BindLuaEvent(LPCTSTR evName,LuaObject func)
-{
-	ASSERT(evName);
-	if (GetManager() && func.isFunction())
-	{
-		LuaTable tab=GetManager()->GetControlEventMap(this,true);
-		ASSERT(tab.isValid());
-		CDuiString strEvent(evName);
-		strEvent.MakeLower();
-		tab.setTable(DUI_T2A(strEvent).c_str(), func);
-	}
-}
-
-void CControlUI::BindLuaEvent(LPCTSTR evName,LPCTSTR luaSrc)
-{
-	ASSERT(evName);
-	if (GetManager())
-	{
-		LuaTable tab=GetManager()->GetControlEventMap(this,true);
-		ASSERT(tab.isValid());
-		CDuiString strEvent(evName);
-		strEvent.MakeLower();
-		tab.setTable(DUI_T2A(strEvent).c_str(), DUI_T2A(luaSrc).c_str());
-	}
-}
-#endif // DUILIB_LUA
-
 CDuiString CControlUI::GetName() const
 {
     return m_sName;
@@ -902,14 +803,7 @@ void CControlUI::DoInit()
 
 void CControlUI::Event(TEventUI& event)
 {
-#ifdef DUILIB_LUA
-	DoLuaEvent(_T("preevent"), event.wParam, event.lParam, event.Type);
-#endif
 	if( OnEvent(&event) ) DoEvent(event);
-#ifdef DUILIB_LUA
-	DoLuaEvent(_T("event"), event.wParam, event.lParam, event.Type);
-	DoLuaEvent(_T("postevent"), event.wParam, event.lParam, event.Type);
-#endif
 }
 
 void CControlUI::DoEvent(TEventUI& event)
@@ -1228,50 +1122,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	}
 	else
 	{
-		//如果不是常规属性，可能是事件
-#ifdef DUILIB_LUA
-		LuaState* L = nullptr;
-		if (GetManager())
-		{
-			L = GetManager()->GetLuaState();
-		}
-		if (!L || _tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
-		{
-			m_attrs.SetAttribute(pstrName, pstrValue);
-			return;
-		}
-		try
-		{
-			CDuiString strValue(pstrValue);
-			CDuiStringArray arValue = strValue.Split('.');
-			if (arValue.GetSize() == 1)
-			{
-				std::string sFun = DUI_T2A(strValue);
-				BindLuaEvent(pstrName + 2, L->getGlobal(sFun.c_str()));
-			}
-			else
-			{
-				std::string sModule = DUI_T2A(arValue[0]);
-				LuaTable tab = L->require(sModule.c_str());
-				if (tab.isValid())
-				{
-					std::string sFun = DUI_T2A(arValue[1]);
-					BindLuaEvent(pstrName + 2, tab.getTable(sFun.c_str()));
-				}
-			}
-		}
-		catch (LuaException err)
-		{
-			OutputDebugStringA(err.what());
-			//LOGE("doString error:"<<err.what());
-		}
-#else
-		if (_tcslen(pstrName) < 2 || _tcsnicmp(pstrName, _T("on"), 2) != 0)
-		{
-			m_attrs.SetAttribute(pstrName, pstrValue);
-			return;
-		}
-#endif // DUILIB_LUA
+		m_attrs.SetAttribute(pstrName, pstrValue);
+		return;
 	}
 }
 

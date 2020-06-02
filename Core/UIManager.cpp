@@ -36,43 +36,6 @@ typedef struct tagTIMERINFO
     bool bKilled;
 } TIMERINFO;
 
-#ifdef DUILIB_LUA
-int MsgBox(LuaState& L,LuaTable &arg)
-{
-	if (arg.count() == 0)
-	{
-		return 0;
-	}
-	LPCSTR lpszText = NULL;
-	LPCSTR lpszCation = NULL;
-	UINT uType = MB_OK;
-	if (arg[1].isString())
-	{
-		lpszText = arg[1].toString();
-		if (arg[2].isString())
-		{
-			lpszCation = arg[2].toString();
-			if (arg[3].isNumber())
-			{
-				uType = arg[3].toInt();
-			}
-		}
-		else if (arg[2].isNumber())
-		{
-			uType = arg[2].toInt();
-		}
-	}
-	else
-	{
-		return 0;
-	}
-	LuaObject obj = L.getGlobal("manager");
-	CPaintManagerUI* pMgr = CPaintManagerUI::_lbindLuaToC(obj);
-	int n = MessageBoxA(pMgr ? pMgr->GetPaintWindow() : NULL, lpszText, lpszCation, uType);
-	return L.lreturn(L.newInt(n));
-}
-#endif // DUILIB_LUA
-
 HPEN m_hUpdateRectPen = NULL;
 HINSTANCE CPaintManagerUI::m_hInstance = NULL;
 HINSTANCE CPaintManagerUI::m_hResourceInstance = NULL;
@@ -122,42 +85,6 @@ m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false),
 m_pLastControlGesture(nullptr)
 {
-	//LuaState* L=LuaManager::instance()->current();
-
-#ifdef DUILIB_LUA
-	m_threadId = GetCurrentThreadId();
-	m_pLua = nullptr;
-	m_pLua = new LuaEngine();
-	LBIND_REGISTER_CLASS(CPaintManagerUI,m_pLua);
-	LBIND_REGISTER_CLASS(WindowImplBase,m_pLua);
-	LBIND_REGISTER_CLASS(CControlUI,m_pLua);
-	LBIND_REGISTER_CLASS(CContainerUI,m_pLua);
-	LBIND_REGISTER_CLASS(CLabelUI,m_pLua);
-	LBIND_REGISTER_CLASS(CButtonUI,m_pLua);
-	LBIND_REGISTER_CLASS(COptionUI,m_pLua);
-	LBIND_REGISTER_CLASS(CTextUI,m_pLua);
-	LBIND_REGISTER_CLASS(CProgressUI,m_pLua);
-	LBIND_REGISTER_CLASS(CSliderUI,m_pLua);
-	LBIND_REGISTER_CLASS(CEditUI,m_pLua);
-	LBIND_REGISTER_CLASS(CScrollBarUI,m_pLua);
-
-	LBIND_REGISTER_CLASS(CVerticalLayoutUI,m_pLua);
-	LBIND_REGISTER_CLASS(CHorizontalLayoutUI,m_pLua);
-	LBIND_REGISTER_CLASS(CTileLayoutUI,m_pLua);
-	LBIND_REGISTER_CLASS(CTabLayoutUI,m_pLua);
-	LBIND_REGISTER_CLASS(CComboUI,m_pLua);
-	LBIND_REGISTER_CLASS(CRichEditUI,m_pLua);
-	LBIND_REGISTER_CLASS(CDialogBuilder,m_pLua);
-	m_pLua->setGlobal("msgBox",m_pLua->newFunction(MsgBox));
-	m_pLua->setGlobal("duiManager", _lbindCToLua(m_pLua));
-
-	//LuaEngine* luaVm=LuaManager::instance()->current();
-	//if (luaVm)
-	{
-		m_pLua->setRegistry(this, m_pLua->newTable());
-	}
-#endif // DUILIB_LUA
-
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
     m_dwDefaultLinkFontColor = 0xFF0000FF;
@@ -236,59 +163,7 @@ CPaintManagerUI::~CPaintManagerUI()
     m_aPreMessages.Remove(m_aPreMessages.Find(this));
 	delete m_pMapNameToCtrl;
 	delete m_pDuiTray;
-#ifdef DUILIB_LUA
-	if (m_pLua)
-		delete m_pLua;
-#endif
 }
-
-#ifdef DUILIB_LUA
-LuaState* CPaintManagerUI::GetLuaState()
-{
-	return m_pLua;
-}
-
-bool CPaintManagerUI::CheckAvalible()
-{
-	LuaTable tab = m_pLua->getRegistery(this);
-	return tab.isValid();
-}
-
-RefCountedPtr<IRunbaleUI> CPaintManagerUI::GetRunable()
-{
-	RefCountedPtr<IRunbaleUI> runable;
-	base::CritScope lock(&m_queueLock);
-	if(!m_runableQueue.empty())
-	{
-		runable=m_runableQueue.front();
-		m_runableQueue.pop();
-	}
-	return runable;
-}
-
-LuaObject CPaintManagerUI::GetControlEventMap(CControlUI* ctl,bool bCreate)
-{
-// 	LuaEngine* luaVm=LuaManager::instance()->current();
-// 	if (luaVm)
-	{
-		LuaTable tab=m_pLua->getRegistery(this);
-		ASSERT(tab.isValid());
-
-		LuaObject ctlEvTable=tab.getTable((lua_Integer)ctl);
-		if (ctlEvTable.isTable())
-		{
-			return ctlEvTable;
-		}
-		else if(bCreate)
-		{
-			LuaObject objTab= m_pLua->newTable();
-			tab.setTable((lua_Integer)ctl,objTab);
-			return objTab;
-		}
-	}
-	return luaNil;
-}
-#endif // DUILIB_LUA
 
 void CPaintManagerUI::Init(HWND hWnd)
 {
@@ -1621,9 +1496,6 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.wParam = wParam;
     Msg.lParam = lParam;
     SendNotify(Msg, bAsync);
-#ifdef DUILIB_LUA
-	pControl->DoLuaEvent(pstrMessage, wParam, lParam);
-#endif
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)

@@ -142,13 +142,6 @@ class ITranslateAccelerator
 public:
 	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;
 };
-#ifdef DUILIB_LUA
-class IRunbaleUI:public base::RefCountedBase
-{
-public:
-	virtual void Run(LuaState* L)=0;
-};
-#endif
 
 typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 
@@ -350,13 +343,6 @@ public:
 	CDuiTrayIconUI* GetTrayObject(){return m_pDuiTray;}
 	void SetWindowTitile(LPCTSTR lpTitle);
 	CDuiStringTable& GetStringTable(){return m_StringTable;}
-#ifdef DUILIB_LUA
-	LuaState* GetLuaState();
-	bool CheckAvalible();
-	RefCountedPtr<IRunbaleUI> GetRunable();
-	//获取Control绑定的事件表，如果存在直接返回，否则判断bCreate决定是否创建
-	LuaObject GetControlEventMap(CControlUI* ctl,bool bCreate);
-#endif
 
 private:
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
@@ -523,12 +509,6 @@ private:
 	CDuiTrayIconUI* m_pDuiTray;
 	CDuiString	m_sTitile;
 
-#ifdef DUILIB_LUA
-	LuaEngine* m_pLua;
-	DWORD m_threadId;
-	std::queue<RefCountedPtr<IRunbaleUI>> m_runableQueue;
-	base::CriticalSection m_queueLock;
-#endif
 public:
 	CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;
