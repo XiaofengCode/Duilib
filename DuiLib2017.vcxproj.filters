@@ -37,24 +37,6 @@
       <UniqueIdentifier>{2930b2b3-f89f-42f3-99b2-0892d0f1cd8f}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="lua">
-      <UniqueIdentifier>{689177a1-9c0b-4102-959e-ee504dfe2353}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lua\base">
-      <UniqueIdentifier>{db6023be-86bb-4a63-a5ff-13f30fde8963}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lua\luabind">
-      <UniqueIdentifier>{8f4ac4d4-852e-49ee-a19f-10f5c2cb838e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lua\luaobj">
-      <UniqueIdentifier>{762cd17d-0129-45da-8af4-23f2e443518c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lua\luaobj\lua">
-      <UniqueIdentifier>{078ec3c8-618d-4d26-bafd-e403758bc011}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lua\luaobj\malloc">
-      <UniqueIdentifier>{67288b15-62cd-45e7-9ad3-b0cc92c15701}</UniqueIdentifier>
-    </Filter>
     <Filter Include="pugixml">
       <UniqueIdentifier>{7d141d20-1800-4128-a280-180386a60e06}</UniqueIdentifier>
     </Filter>
@@ -204,66 +186,6 @@
     <ClCompile Include="Utils\FileHelper.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="lua\base\RefBase.cpp">
-      <Filter>lua\base</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lcommoncontrols.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lcontainer.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lcontrol.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lmanager.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lrichedit.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lutil.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lwindow.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lbuilder.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\luabind\lcombo.cpp">
-      <Filter>lua\luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\malloc\dlmalloc.cpp">
-      <Filter>lua\luaobj\malloc</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaEngine.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaFunction.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaObject.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaObjectImpl.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaState.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaStateOwner.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaTable.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\Utf.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
-    <ClCompile Include="lua\LuaObj\LuaBind.cpp">
-      <Filter>lua\luaobj</Filter>
-    </ClCompile>
     <ClCompile Include="pugixml\pugixml.cpp">
       <Filter>pugixml</Filter>
     </ClCompile>
@@ -272,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="Core\AttributeManager.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Utf.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -434,84 +359,6 @@
     <ClInclude Include="Utils\FileHelper.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="lua\base\RefBase.h">
-      <Filter>lua\base</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\base\Criticalsection.h">
-      <Filter>lua\base</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\luabind\lutil.h">
-      <Filter>lua\luabind</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\lua.hpp">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\luaconf.h">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\luajit.h">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\lualib.h">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\lauxlib.h">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\lua\lua.h">
-      <Filter>lua\luaobj\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\malloc\dlmalloc.h">
-      <Filter>lua\luaobj\malloc</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaClass.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaCommon.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaEngine.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaException.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaFunction.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\Luaobj.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaObject.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaObjectImpl.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaStack.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaState.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaStateOwner.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaTable.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\MemPool.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\Utf.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\Common.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
-    <ClInclude Include="lua\LuaObj\LuaBind.h">
-      <Filter>lua\luaobj</Filter>
-    </ClInclude>
     <ClInclude Include="pugixml\pugixml.hpp">
       <Filter>pugixml</Filter>
     </ClInclude>
@@ -523,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="Core\AttributeManager.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Utf.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
