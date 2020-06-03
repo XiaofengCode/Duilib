@@ -283,7 +283,7 @@ namespace DuiLib {
 		{
 			LPVOID lpNewMem = realloc(m_lpMem, dwNewSize);
 			if (!lpNewMem)return FALSE;
-			memcpy(lpNewMem, m_lpMem, min(m_dwSize, dwNewSize));
+			//memcpy(lpNewMem, m_lpMem, min(m_dwSize, dwNewSize));
 			m_dwSize = dwNewSize;
 			m_lpMem = lpNewMem;
 		}
