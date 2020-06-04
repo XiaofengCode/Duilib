@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UIScrollBar.h"
 
 namespace DuiLib

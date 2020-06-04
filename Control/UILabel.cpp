@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UILabel.h"
 
 #include <atlconv.h>

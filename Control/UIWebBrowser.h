@@ -4,7 +4,7 @@
 #pragma once
 
 #include <MsHTML.h>
-#include "Utils/WebBrowserEventHandler.h"
+#include "../Utils/WebBrowserEventHandler.h"
 #include <ExDisp.h>
 
 namespace DuiLib

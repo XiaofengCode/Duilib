@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UIShadow.h"
 #include "math.h"
 #include "crtdbg.h"

@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "FileHelper.h"
 #include <io.h>
 #include <winhttp.h>

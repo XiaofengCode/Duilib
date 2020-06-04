@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UIWebBrowser.h"
 #include <atlconv.h>
 #include <atlcomcli.h>

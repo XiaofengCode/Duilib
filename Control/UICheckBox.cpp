@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UICheckBox.h"
 
 namespace DuiLib

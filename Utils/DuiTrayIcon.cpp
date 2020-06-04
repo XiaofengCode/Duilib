@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "DuiTrayIcon.h"
 
 namespace DuiLib

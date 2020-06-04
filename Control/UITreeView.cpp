@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UITreeView.h"
 
 #pragma warning( disable: 4251 )

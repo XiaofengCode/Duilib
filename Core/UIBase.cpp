@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 
 #ifdef _DEBUG
 #include <shlwapi.h>

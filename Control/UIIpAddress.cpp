@@ -1,4 +1,4 @@
-#include "duipub.h"
+#include "..\duipub.h"
 #include "UIDateTime.h"
 #pragma comment( lib, "ws2_32.lib" )
 
