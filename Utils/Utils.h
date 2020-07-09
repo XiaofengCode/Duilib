@@ -112,6 +112,10 @@ namespace DuiLib
 		}
 		T& operator[] (int iIndex)
 		{
+			return m_vec[iIndex];
+		}
+		const T& operator[] (int iIndex) const
+		{
 			return m_vec[iIndex];			
 		}
 		void RemoveAll()

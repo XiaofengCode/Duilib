@@ -21,12 +21,8 @@ namespace DuiLib
 		CDuiString();
 		CDuiString(const TCHAR ch);
 		CDuiString(const CDuiString& src);
-		CDuiString(LPCTSTR lpsz, int nLen = -1);
-#ifdef _UNICODE
 		CDuiString(LPCSTR lpsz, int nLen = -1);
-#else
 		CDuiString(LPCWSTR lpsz, int nLen = -1);
-#endif
 		~CDuiString();
 
 		void Empty();

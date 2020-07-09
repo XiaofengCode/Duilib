@@ -295,6 +295,18 @@ std::wstring DuiUtf8ToUtf16(const char* str, int len /*= -1*/)
 	return strRes;
 }
 
+std::string DuiUtf16ToUtf8(LPCWSTR str, int len /*= -1*/)
+{
+	char* szRes;
+	int i = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
+	szRes = (char*)malloc((i + 1) * sizeof(char));
+	memset(szRes, 0, (i + 1) * sizeof(char));
+	WideCharToMultiByte(CP_UTF8, 0, str, -1, szRes, i, NULL, NULL);
+	std::string strRes(szRes);
+	free(szRes);
+	return strRes;
+}
+
 std::string DuiUtf16ToAscii(LPCWSTR str, int len /*= -1*/)
 {
 	char* szRes;

@@ -70,6 +70,7 @@ std::string DuiAcpToUtf8(const char* str, int len = -1);
 std::string DuiUtf8ToAcp(const char* str, int len = -1);
 
 std::wstring DuiUtf8ToUtf16(const char* str, int len = -1);
+std::string DuiUtf16ToUtf8(LPCWSTR str, int len = -1);
 
 std::string DuiUtf16ToAscii(LPCWSTR str, int len = -1);
 std::wstring DuiAsciiToUtf16(LPCSTR str, int len = -1);
