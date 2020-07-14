@@ -2222,7 +2222,7 @@ CControlUI* CPaintManagerUI::FindControl(POINT pt) const
 CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 {
     ASSERT(m_pRoot);
-	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
+	auto items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	if (itor != items.second)
 	{		
@@ -2234,7 +2234,7 @@ CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 
 int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
 {
-	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
+	auto items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	while (itor != items.second)
 	{
@@ -2248,7 +2248,7 @@ int CPaintManagerUI::FindControl(LPCTSTR pstrName, CStdPtrArray& ctrls) const
 
 void CPaintManagerUI::RemoveControl(LPCTSTR pstrName, CControlUI* pControl)
 {
-	CMulMapStrToPtr::_Paircc items = m_pMapNameToCtrl->equal_range(pstrName);
+	auto items = m_pMapNameToCtrl->equal_range(pstrName);
 	CMulMapStrToPtr::const_iterator itor = items.first;
 	while (itor != items.second)
 	{
