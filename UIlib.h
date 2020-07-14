@@ -133,6 +133,8 @@
 #include "Layout/UISliderTabLayout.h"
 #include "Control/UIIpAddress.h"
 
+#include "Control/UIWke.h"
+
 #define _STR_HELP(R)  #R  
 #define STR_MACRO(R)  _STR_HELP(R)  
 #ifdef LINK_DUILIB

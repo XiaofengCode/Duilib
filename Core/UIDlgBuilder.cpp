@@ -383,7 +383,7 @@ CControlUI* CDialogBuilder::_ParseControl(CDuiXmlNode* pRoot, CControlUI* pParen
             case 7:
                 if( _tcsicmp(pstrClass, DUI_CTR_CONTROL) == 0 )                pControl = new CControlUI;
                 else if( _tcsicmp(pstrClass, DUI_CTR_ACTIVEX) == 0 )           pControl = new CActiveXUI;
-				else if( _tcsicmp(pstrClass, DUI_CTR_GIFANIM) == 0 )           pControl = new CGifAnimUI;
+				else if (_tcsicmp(pstrClass, DUI_CTR_GIFANIM) == 0)           pControl = new CGifAnimUI;
                 break;
             case 8:
                 if( _tcsicmp(pstrClass, DUI_CTR_PROGRESS) == 0 )               pControl = new CProgressUI;

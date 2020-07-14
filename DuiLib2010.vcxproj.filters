@@ -40,6 +40,9 @@
     <Filter Include="pugixml">
       <UniqueIdentifier>{3f5e9052-2a81-46ac-bfd4-c1f713fcd925}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CStyle">
+      <UniqueIdentifier>{9d0374dc-bfb5-4b58-8823-d9503ebf9bd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIlib.cpp">
@@ -197,6 +200,12 @@
     </ClCompile>
     <ClCompile Include="Utils\Utf.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\UIWke.cpp">
+      <Filter>Source Files\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="PaintManager.cpp">
+      <Filter>CStyle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +382,9 @@
     </ClInclude>
     <ClInclude Include="Utils\Utf.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PaintManager.h">
+      <Filter>CStyle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
