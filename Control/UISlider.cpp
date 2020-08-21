@@ -263,7 +263,8 @@ namespace DuiLib
 
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
-			}else
+			}
+			else
 			{
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
@@ -319,7 +320,16 @@ namespace DuiLib
 			}
 			return;
 		}
-		CControlUI::DoEvent(event);
+		if (event.Type == UIEVENT_KILLFOCUS)
+		{
+			if ((m_uButtonState & UISTATE_CAPTURED) != 0)
+			{
+				m_uButtonState &= ~UISTATE_CAPTURED;
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED, m_nValue);
+			}
+			//return;
+		}
+		__super::DoEvent(event);
 	}
 
 	void CSliderUI::SetCanSendMove(bool bCanSend) //2014.7.28 redrain
