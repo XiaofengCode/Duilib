@@ -1,5 +1,11 @@
 #include "..\duipub.h"
 
+#define strtoll _strtoi64
+#define NANOSVG_IMPLEMENTATION
+#include "nanosvg.h"
+#define NANOSVGRAST_IMPLEMENTATION
+#include "nanosvgrast.h"
+
 extern "C"
 {
     extern unsigned char *stbi_load_from_memory(unsigned char const *buffer, int len, int *x, int *y, \
@@ -247,7 +253,7 @@ DWORD CRenderEngine::AdjustColor(DWORD dwColor, short H, short S, short L)
     return dwColor;
 }
 
-TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask)
+TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask, int width, int height)
 {
 	CDuiBuffer buf;
 
@@ -284,14 +290,44 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 		//::MessageBox(0, _T("读取图片数据失败！"), _T("抓BUG"), MB_OK);
 		return NULL;
 	}
-
     LPBYTE pImage = NULL;
     int x,y,n;
     pImage = stbi_load_from_memory(buf, buf.GetSize(), &x, &y, &n, 4);
 	if( !pImage )
 	{
-		//::MessageBox(0, _T("解析图片失败"), _T("抓BUG"), MB_OK);
-		return NULL;
+        //SVG
+        NSVGimage* svg = nsvgParse((LPSTR)(LPVOID)buf, "px", 96.0f);
+		if (svg == NULL)
+		{
+            return NULL;
+		}
+
+		x = width;
+		float scale = width * 1.0 / svg->width;
+		y = svg->height * scale;
+		if (svg->height * scale > y)
+		{
+			scale = y * 1.0 / svg->height;
+			x = svg->width * scale;
+		}
+
+        NSVGrasterizer* rast = nsvgCreateRasterizer();
+		if (rast == NULL)
+		{
+			nsvgDelete(svg);
+			return NULL;
+		}
+
+        pImage = (LPBYTE)malloc((x + 1) * (y + 1) * 4);//由于使用了小数，防止被四舍五入舍去，因此都加1
+		if (!pImage)
+		{
+			nsvgDeleteRasterizer(rast);
+			nsvgDelete(svg);
+			return NULL;
+		}
+		nsvgRasterize(rast, svg, 0, 0, scale, pImage, x, y, x * 4);
+		nsvgDeleteRasterizer(rast);
+		nsvgDelete(svg);
 	}
 
     BITMAPINFO bmi;
@@ -814,10 +850,10 @@ bool DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& r
 	}
 	const TImageInfo* data = NULL;
 	if( sImageResType.IsEmpty() ) {
-		data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask);
+		data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask, rcItem.right - rcItem.left, rcItem.bottom - rcItem.top);
 	}
 	else {
-		data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask);
+		data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask, rcItem.right - rcItem.left, rcItem.bottom - rcItem.top);
 	}
 	if( !data ) return false;    
 

@@ -249,8 +249,8 @@ public:
     TFontInfo* GetFontInfo(HFONT hFont);
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
-    const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
+    const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, int width = 0, int height = 0);
+    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, int width = 0, int height = 0);
     const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha);
     bool RemoveImage(LPCTSTR bitmap);
     void RemoveAllImages();

@@ -1913,36 +1913,51 @@ const TImageInfo* CPaintManagerUI::GetImage(LPCTSTR bitmap)
     else return data;
 }
 
-const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWORD mask)
+const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWORD mask, int width, int height)
 {
-    TImageInfo* data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
+	CDuiString strName(bitmap);
+	if (width || height)
+	{
+		CDuiString strSize;
+		strSize.SmallFormat(_T("?%d*%d"), width, height);
+		strName += strSize;
+	}
+    TImageInfo* data = static_cast<TImageInfo*>(m_mImageHash.Find(strName));
     if( !data ) {
-        if( AddImage(bitmap, type, mask) ) {
-            data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
+        if( AddImage(bitmap, type, mask, width, height) ) {
+            data = static_cast<TImageInfo*>(m_mImageHash.Find(strName));
         }
     }
 
     return data;
 }
 
-const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask)
+const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask, int width, int height)
 {
     TImageInfo* data = NULL;
     if( type != NULL ) {
         if( isdigit(*bitmap) ) {
             LPTSTR pstr = NULL;
             int iIndex = _tcstol(bitmap, &pstr, 10);
-            data = CRenderEngine::LoadImage(iIndex, type, mask);
+            data = CRenderEngine::LoadImage(iIndex, type, mask, width, height);
         }
     }
     else {
-        data = CRenderEngine::LoadImage(bitmap, NULL, mask);
+        data = CRenderEngine::LoadImage(bitmap, NULL, mask, width, height);
     }
 
     if( !data ) return NULL;
     if( type != NULL ) data->sResType = type;
-    data->dwMask = mask;
-    if( !m_mImageHash.Insert(bitmap, data) ) {
+	data->dwMask = mask;
+
+	CDuiString strName(bitmap);
+	if (width || height)
+	{
+		CDuiString strSize;
+		strSize.SmallFormat(_T("?%d*%d"), width, height);
+		strName += strSize;
+	}
+    if( !m_mImageHash.Insert(strName, data) ) {
         ::DeleteObject(data->hBitmap);
         delete data;
     }
@@ -2001,16 +2016,23 @@ void CPaintManagerUI::ReloadAllImages()
     for( int i = 0; i< m_mImageHash.GetSize(); i++ ) {
         if(LPCTSTR bitmap = m_mImageHash.GetAt(i)) {
             data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
+			CDuiString strName(bitmap);
+			CDuiStringArray arName = strName.Split('?');
+			int width = 0, height = 0;
+			if (arName.GetSize() == 2)
+			{
+				_stscanf_s(arName[1], _T("%d*%d"), &width, &height);
+			}
             if( data != NULL ) {
                 if( !data->sResType.IsEmpty() ) {
-                    if( isdigit(*bitmap) ) {
+                    if( isdigit(arName[0][0]) ) {
                         LPTSTR pstr = NULL;
-                        int iIndex = _tcstol(bitmap, &pstr, 10);
-                        pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
+                        int iIndex = _tcstol(arName[0], &pstr, 10);
+                        pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask, width, height);
                     }
                 }
                 else {
-                    pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
+                    pNewData = CRenderEngine::LoadImage((LPCTSTR)arName[0], NULL, data->dwMask, width, height);
                 }
                 if( pNewData == NULL ) continue;
 
