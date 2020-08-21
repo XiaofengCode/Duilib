@@ -848,10 +848,10 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 	RECT rcImgDst = img.m_rcDst;
 	if (rcImgDst.left|rcImgDst.right|rcImgDst.bottom|rcImgDst.top)
 	{
-		rcImgDst.left *= S;
-		rcImgDst.top *= S;
-		rcImgDst.right *= S;
-		rcImgDst.bottom *= S;
+// 		rcImgDst.left *= S;
+// 		rcImgDst.top *= S;
+// 		rcImgDst.right *= S;
+// 		rcImgDst.bottom *= S;
 		if (img.m_bRight)
 		{
 			rcDest.right = rcItem.right + rcImgDst.left;
@@ -896,10 +896,10 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 	}
 
 	RECT rcCorner = img.m_rcCorner;
-	rcCorner.left *= S;
-	rcCorner.top *= S;
-	rcCorner.right *= S;
-	rcCorner.bottom *= S;
+// 	rcCorner.left *= S;
+// 	rcCorner.top *= S;
+// 	rcCorner.right *= S;
+// 	rcCorner.bottom *= S;
 	return DuiLib::DrawImage(hDC, pManager, rcItem, rcPaint, img.m_strFile, img.m_strImageResType,
 		rcDest, img.m_rcSrc, rcCorner, img.m_dwMask, img.m_byFade, img.m_bHole, img.m_bXTiled, img.m_bYTiled);
 }
