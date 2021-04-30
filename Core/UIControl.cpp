@@ -32,8 +32,8 @@ m_dwStatus(0)
 	m_attrs.AddKeyword(DUI_ATTR_PADDING, true, TypeRect);
 	m_attrs.AddKeyword(DUI_ATTR_SIZE, true, TypeIntOrRect);
 	m_attrs.AddKeyword(DUI_ATTR_ROUND, true, TypeRect);
-	m_attrs.AddKeyword(DUI_ATTR_WIDTH, true, TypeInt);
-	m_attrs.AddKeyword(DUI_ATTR_HEIGHT, true, TypeInt);
+	m_attrs.AddKeyword(DUI_ATTR_WIDTH, true, TypeIntOrPercent);
+	m_attrs.AddKeyword(DUI_ATTR_HEIGHT, true, TypeIntOrPercent);
 	m_attrs.AddKeyword(DUI_ATTR_FONT, false, TypeString);
 	m_attrs.AddKeyword(DUI_ATTR_TOOLTIP, false, TypeString);
 	m_attrs.AddKeyword(DUI_ATTR_IMAGE, false, TypeImage);
@@ -73,9 +73,6 @@ m_dwStatus(0)
     ::ZeroMemory(&m_rcPaint, sizeof(RECT));
 //	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
     ::ZeroMemory(&m_tRelativePos, sizeof(TRelativePosUI));
-
-	m_nWidthScale = 0;
-	m_nHeightScale = 0;
 }
 
 CControlUI::~CControlUI()
@@ -867,7 +864,16 @@ void CControlUI::DoEvent(TEventUI& event)
         //return;
     }
     
-    if( m_pParent != NULL ) m_pParent->DoEvent(event);
+    if( m_pParent != NULL )
+		m_pParent->DoEvent(event);
+	else if (event.Type == UIEVENT_KEYDOWN && event.chKey == VK_RETURN)
+	{
+		auto pButton = m_pManager->GetDefaultButton();
+		if (pButton && pButton->IsVisible() && pButton->IsEnabled())
+		{
+			pButton->Activate();
+		}
+	}
 }
 
 
@@ -1191,6 +1197,8 @@ void CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
+	int m_nWidthScale = m_attrs.GetPercent(DUI_ATTR_WIDTH);
+	int m_nHeightScale = m_attrs.GetPercent(DUI_ATTR_HEIGHT);
 	SIZE si = {GetFixedWidth(), GetFixedHeight()};
 	if (m_nWidthScale == 0 &&
 		m_nHeightScale == 0)
@@ -1623,7 +1631,7 @@ DuiLib::CDuiString CControlUI::GetStatusString( DWORD dwStatus /*= 0*/, int nIgn
 		{
 			sStatus += DUI_ATTR_STATUS_PUSHED;
 		}
-		if (dwStatus & UISTATE_HOT && nIgnorStatus-- <= 0)
+		else if (dwStatus & UISTATE_HOT && nIgnorStatus-- <= 0)
 		{
 			sStatus += DUI_ATTR_STATUS_HOT;
 		}

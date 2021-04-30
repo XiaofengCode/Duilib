@@ -83,7 +83,8 @@ m_currentCaretObject(NULL),
 m_bUseGdiplusText(false),
 m_bShowFocusDot(false),
 m_bNeedShowFocusDot(false),
-m_pLastControlGesture(nullptr)
+m_pLastControlGesture(nullptr),
+m_pDefaultButton(nullptr)
 {
     m_dwDefaultDisabledColor = 0xFFA7A6AA;
     m_dwDefaultFontColor = 0xFF000001;
@@ -608,15 +609,48 @@ bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam,
     switch( uMsg ) {
     case WM_KEYDOWN:
         {
-           // Tabbing between controls
-           if( wParam == VK_TAB ) {
-               if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL ) {
-                   if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() ) return false;
-               }
-			   SetNeedShowFocusDot(true);
-			   SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
-               return true;
-           }
+			switch (wParam)
+			{
+			case VK_TAB:
+				{
+					// Tabbing between controls
+					if (m_pFocus && 
+						m_pFocus->IsVisible() && 
+						m_pFocus->IsEnabled() && 
+						_tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL) 
+					{
+						if (static_cast<CRichEditUI*>(m_pFocus)->IsWantTab()) return false;
+					}
+					SetNeedShowFocusDot(true);
+					SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
+					return true;
+				}
+				break;
+			case VK_LEFT:
+			case VK_UP:
+			case VK_RIGHT:
+			case VK_DOWN:
+				{
+					if (m_pFocus && 
+						m_pFocus->IsVisible() &&
+						m_pFocus->IsEnabled()) 
+					{
+						if (_tcsstr(m_pFocus->GetClass(), _T("ButtonUI")) == NULL &&
+							_tcsstr(m_pFocus->GetClass(), _T("CheckBoxUI")) == NULL &&
+							_tcsstr(m_pFocus->GetClass(), _T("OptionUI")) == NULL)
+						{
+							//not button
+							return false;
+						}
+					}
+
+					SetNeedShowFocusDot(true);
+					SetNextTabControl((wParam == VK_LEFT || wParam == VK_UP) ? false : true);
+					return true;
+
+				}
+				break;
+			}
         }
         break;
     case WM_SYSCHAR:
@@ -764,7 +798,15 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 
 			   if(m_bFocusNeeded)
 			   {
-				   SetNextTabControl();
+				   if (m_pDefaultButton && m_pDefaultButton->IsVisible() && m_pDefaultButton->IsEnabled())
+				   {
+					   SetFocus(m_pDefaultButton);
+					   m_bFocusNeeded = false;
+				   }
+				   else
+				   {
+					   SetNextTabControl();
+				   }
 			   }
 
 			   int width = rcClient.right - rcClient.left;
@@ -844,7 +886,15 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 		   // Set focus to first control?
 		   if(m_bFocusNeeded)
 		   {
-			   SetNextTabControl();
+			   if (m_pDefaultButton && m_pDefaultButton->IsVisible() && m_pDefaultButton->IsEnabled())
+			   {
+				   SetFocus(m_pDefaultButton);
+				   m_bFocusNeeded = false;
+			   }
+			   else
+			   {
+				   SetNextTabControl();
+			   }
 		   }
 		   //
 		   // Render screen
@@ -1092,7 +1142,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     m_pRoot = pControl;
     // Go ahead...
     m_bUpdateNeeded = true;
-    m_bFocusNeeded = true;
+	m_bFocusNeeded = true;
 
 	m_shadow.Create(this);
 
@@ -1507,7 +1557,10 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
 	{
 		Msg.nVirualWndLevel = Msg.pSender->GetVirtualWnd(Msg.arVirtualWnd);
 	}
-
+	if (Msg.sType == DUI_MSGTYPE_RETURN && m_pDefaultButton && m_pDefaultButton->IsVisible() && m_pDefaultButton->IsEnabled())
+	{
+		m_pDefaultButton->Activate();
+	}
     if( !bAsync ) {
         // Send to all listeners
         if( Msg.pSender != NULL ) {
@@ -1906,6 +1959,16 @@ TFontInfo* CPaintManagerUI::GetFontInfo(HFONT hFont)
     return GetDefaultFontInfo();
 }
 
+CButtonUI* CPaintManagerUI::GetDefaultButton() const
+{
+	return m_pDefaultButton;
+}
+
+void CPaintManagerUI::SetDefaultButton(CButtonUI* pButton)
+{
+	m_pDefaultButton = pButton;
+}
+
 const TImageInfo* CPaintManagerUI::GetImage(LPCTSTR bitmap)
 {
     TImageInfo* data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
@@ -1922,7 +1985,7 @@ const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWOR
 		strSize.SmallFormat(_T("?%d*%d"), width, height);
 		strName += strSize;
 	}
-    TImageInfo* data = static_cast<TImageInfo*>(m_mImageHash.Find(strName));
+	TImageInfo* data = static_cast<TImageInfo*>(m_mImageHash.Find(strName));
     if( !data ) {
         if( AddImage(bitmap, type, mask, width, height) ) {
             data = static_cast<TImageInfo*>(m_mImageHash.Find(strName));
@@ -1957,7 +2020,8 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 		strSize.SmallFormat(_T("?%d*%d"), width, height);
 		strName += strSize;
 	}
-    if( !m_mImageHash.Insert(strName, data) ) {
+	if (!m_mImageHash.Insert(strName, data))
+	{
         ::DeleteObject(data->hBitmap);
         delete data;
     }
@@ -2015,7 +2079,7 @@ void CPaintManagerUI::ReloadAllImages()
     TImageInfo* pNewData;
     for( int i = 0; i< m_mImageHash.GetSize(); i++ ) {
         if(LPCTSTR bitmap = m_mImageHash.GetAt(i)) {
-            data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
+			data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
 			CDuiString strName(bitmap);
 			CDuiStringArray arName = strName.Split('?');
 			int width = 0, height = 0;

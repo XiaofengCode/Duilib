@@ -32,7 +32,7 @@ namespace DuiLib
 		m_pCheckBox->SetManager(pManager, this);
 		m_pItemButton		= new COptionUI();
 		m_pItemButton->SetManager(pManager, this);
-		m_pOverFolderButton = new CLabelUI();
+		m_pOverFolderButton = new CCheckBoxUI();
 		m_pOverFolderButton->SetManager(pManager, this);		
 
 		double S = 1.0;
@@ -44,7 +44,9 @@ namespace DuiLib
 		this->SetFixedHeight((int)(S * 18));
 		//this->SetFixedWidth(250);
 		m_pFolderButton->SetFixedWidth(GetFixedHeight());
+		m_pFolderButton->SetName(_T("m_pFolderButton"));
 		m_pOverFolderButton->SetFixedWidth(GetFixedHeight());
+		m_pOverFolderButton->SetName(_T("m_pOverFolderButton"));
 		m_pDottedLine->SetFixedWidth((int)(S * 2));
 		m_pCheckBox->SetFixedWidth(GetFixedHeight());
 		m_pItemButton->SetAttribute(_T("align"),_T("left"));
@@ -420,7 +422,10 @@ namespace DuiLib
 		else if(_tcsicmp(pstrName, _T("dotlineattr")) == 0 )
 			m_pDottedLine->ApplyAttributeList(pstrValue);
 		else if(_tcsicmp(pstrName, _T("folderattr")) == 0 )
+		{
 			m_pFolderButton->ApplyAttributeList(pstrValue);
+			m_pOverFolderButton->ApplyAttributeList(pstrValue);
+		}
 		else if(_tcsicmp(pstrName, _T("checkboxattr")) == 0 )
 			m_pCheckBox->ApplyAttributeList(pstrValue);
 		else if(_tcsicmp(pstrName, _T("itemattr")) == 0 )
@@ -823,13 +828,10 @@ namespace DuiLib
 	{
 		if(pControl->GetCountChild() > 0)
 		{
-			int nCount = pControl->GetCountChild();
-			for(int nIndex = 0;nIndex < nCount;nIndex++)
+			CTreeNodeUI* pNode;
+			while (pNode = pControl->GetChildNode(0))
 			{
-				CTreeNodeUI* pNode = pControl->GetChildNode(nIndex);
-				if(pNode){
-					pControl->Remove(pNode);
-				}
+				pControl->Remove(pNode);
 			}
 		}
 		CListUI::Remove(pControl);
@@ -1072,12 +1074,17 @@ namespace DuiLib
 
 	void CTreeViewUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 	{
+		double S = 1.0;
+		if (m_pManager)
+		{
+			S = m_pManager->GetDpiScale();
+		}
 		if(_tcsicmp(pstrName,_T("visiblefolderbtn")) == 0)
 			SetVisibleFolderBtn(_tcsicmp(pstrValue,_T("true")) == 0);
 		else if(_tcsicmp(pstrName,_T("visiblecheckbtn")) == 0)
 			SetVisibleCheckBtn(_tcsicmp(pstrValue,_T("true")) == 0);
 		else if(_tcsicmp(pstrName,_T("itemminwidth")) == 0)
-			SetItemMinWidth(_ttoi(pstrValue));
+			SetItemMinWidth(_ttoi(pstrValue) * S);
 		else if(_tcsicmp(pstrName, _T("itemtextcolor")) == 0 ){
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;

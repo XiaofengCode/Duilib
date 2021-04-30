@@ -11,6 +11,7 @@ namespace DuiLib {
 class CControlUI;
 class CRichEditUI;
 class CDuiTrayIconUI;
+class CButtonUI;
 enum EVENTTYPE_UI
 {
     UIEVENT__FIRST = 1,
@@ -248,6 +249,9 @@ public:
     TFontInfo* GetFontInfo(LPCTSTR lpszFontID);
     TFontInfo* GetFontInfo(HFONT hFont);
 
+	CButtonUI* GetDefaultButton() const;
+	void SetDefaultButton(CButtonUI* pButton);
+
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, int width = 0, int height = 0);
     const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, int width = 0, int height = 0);
@@ -431,7 +435,9 @@ private:
     CControlUI* m_pFocus;
     CControlUI* m_pEventHover;
     CControlUI* m_pEventClick;
-    CControlUI* m_pEventKey;
+	CControlUI* m_pEventKey;
+
+	CButtonUI* m_pDefaultButton;
     //
     POINT m_ptLastMousePos;
     SIZE m_szMinWindow;

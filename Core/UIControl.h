@@ -278,8 +278,8 @@ protected:
 
 	//Gif
 	CGifImage		m_gifBk;
-	int  m_nWidthScale;
-	int  m_nHeightScale;
+// 	int  m_nWidthScale;
+// 	int  m_nHeightScale;
 	CDuiString	m_strStyle;
 
 	DWORD m_dwStatus;

@@ -10,6 +10,14 @@ namespace DuiLib
 		m_nGifStyle = Auto;
 	}
 
+	CButtonUI::~CButtonUI()
+	{
+		if (m_pManager && m_pManager->GetDefaultButton() == this)
+		{
+			m_pManager->SetDefaultButton(nullptr);
+		}
+	}
+
 	LPCTSTR CButtonUI::GetClass() const
 	{
 		return _T("ButtonUI");
@@ -38,6 +46,16 @@ namespace DuiLib
 			if (IsKeyboardEnabled()) {
 				if( event.chKey == VK_SPACE || event.chKey == VK_RETURN ) {
 					Activate();
+					return;
+				}
+				if (event.chKey == VK_RIGHT || event.chKey == VK_DOWN)
+				{
+					m_pManager->SetNextTabControl(true);
+					return;
+				}
+				if (event.chKey == VK_LEFT || event.chKey == VK_UP)
+				{
+					m_pManager->SetNextTabControl(false);
 					return;
 				}
 			}
@@ -207,6 +225,13 @@ namespace DuiLib
 		}
 		if( _tcsicmp(pstrName, _T("bindtabindex")) == 0 ) BindTabIndex(_ttoi(pstrValue));
 		else if( _tcsicmp(pstrName, _T("bindtablayoutname")) == 0 ) BindTabLayoutName(pstrValue);
+		else if (m_pManager && _tcsicmp(pstrName, _T("default")) == 0)
+		{
+			if (_tcsicmp(pstrValue, _T("true")) == 0)
+			{
+				m_pManager->SetDefaultButton(this);
+			}
+		}
 		else if( _tcsicmp(pstrName, _T("multiline")) == 0 )
 		{
 			if( _tcsicmp(pstrValue, _T("true")) == 0)

@@ -16,6 +16,7 @@ namespace DuiLib
 
 		void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
+		virtual void DoEvent(TEventUI& event);
 		bool Activate();
 		void SetEnabled(bool bEnable = true);
 

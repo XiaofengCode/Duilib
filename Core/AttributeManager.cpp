@@ -372,6 +372,7 @@ bool CAttributeManager::ParsePercent(LPCTSTR lpszValue, CAttrItem& item)
 	{
 		return false;
 	}
+	item.realtype = TypePercent;	
 	return true;
 }
 

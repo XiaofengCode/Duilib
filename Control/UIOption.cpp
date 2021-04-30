@@ -40,6 +40,24 @@ namespace DuiLib
 		}
 	}
 
+	void COptionUI::DoEvent(TEventUI& event)
+	{
+		if (event.Type == UIEVENT_KEYDOWN)
+		{
+			if (IsKeyboardEnabled())
+			{
+				if (event.chKey == VK_SPACE)
+				{
+					Activate();
+					return;
+				}
+			}
+			CLabelUI::DoEvent(event);
+			return;
+		}
+		CButtonUI::DoEvent(event);
+	}
+
 	CDuiString COptionUI::GetGroup() const
 	{
 		if (m_sGroupName.GetLength() == 0)

@@ -18,6 +18,7 @@ namespace DuiLib
 	{
 	public:
 		CButtonUI();
+		virtual ~CButtonUI();
 
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
